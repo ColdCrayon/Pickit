@@ -2,7 +2,7 @@
 A betting picks app based on thousands of games of data
 
 # Todo
-- View Models
+- #### View Models
     - Home ViewModel
         - Sync Previous tickets and News
         - Add loading
@@ -15,14 +15,14 @@ A betting picks app based on thousands of games of data
             - Login
         - Swipe feature
 
-- Admin
+- #### Admin
     - Admin Dashboard
     - Admin account title
     - Push to fire base
         - Create tickets
         - Arbitrage Tickets
 
-- Arbitrage
+- #### Arbitrage
     - Webscraping
         - Pull data from multiple sportsbooks
         - Proxies, VPNS?
