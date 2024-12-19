@@ -26,6 +26,9 @@ struct PickitView: View {
     @State var activeView: currentView = currentView.previousTickets
     
     var body: some View {
+        
+        //==========================================================================================
+        
         //        ZStack {
         //            PicksView(screenName: "Previous Picks",
         //                      currentDate: getCurrentDate(),
@@ -43,33 +46,84 @@ struct PickitView: View {
         //            }
         //        }
         
-//        ZStack() {
-//            AccountViewInformation(screenName: "Account", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true)
-//            HeaderView2Section(screenName: "Account",
-//                               date: getCurrentDate(),
-//                               accountName: "Cadel Saszik",
-//                               isSubscribed: true,
-//                               leftSection: "Information",
-//                               rightSection: "Billing",
-//                               leftSectionActive: true)
-//            VStack {
-//                NavbarView()
-//            }
-//        }
+        //==========================================================================================
+        
+        //        ZStack() {
+        //            AccountViewInformation(screenName: "Account", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true)
+        //            HeaderView2Section(screenName: "Account",
+        //                               date: getCurrentDate(),
+        //                               accountName: "Cadel Saszik",
+        //                               isSubscribed: true,
+        //                               leftSection: "Information",
+        //                               rightSection: "Billing",
+        //                               leftSectionActive: true)
+        //            VStack {
+        //                NavbarView()
+        //            }
+        //        }
+        
+        //==========================================================================================
+        
+        //        ZStack() {
+        //            AccountViewBilling(screenName: "Account", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true)
+        //            HeaderView2Section(screenName: "Account",
+        //                               date: getCurrentDate(),
+        //                               accountName: "Cadel Saszik",
+        //                               isSubscribed: true,
+        //                               leftSection: "Information",
+        //                               rightSection: "Billing",
+        //                               leftSectionActive: true)
+        //            VStack {
+        //                NavbarView()
+        //            }
+        //        }
+        
+        //==========================================================================================
+        
+        //        ZStack() {
+        //            TicketSubView(pickTeam: "Chicago Bears",
+        //                          pickType: "Moneyline",
+        //                          gameInfo: "Chicago Bears vs. Detroit Lions",
+        //                          publishDate: getCurrentDate(),
+        //                          description: "Chicago Bears are better",
+        //                          sportsbook: "Draft Kings")
+        //            HeaderView2Section(screenName: "Account",
+        //                               date: getCurrentDate(),
+        //                               accountName: "Cadel Saszik",
+        //                               isSubscribed: true,
+        //                               leftSection: "Game TIcket",
+        //                               rightSection: "Arbitrage Ticket",
+        //                               leftSectionActive: true)
+        //            VStack {
+        //                NavbarView()
+        //            }
+        //        }
+        
+        //==========================================================================================
         
         ZStack() {
-            AccountViewBilling(screenName: "Account", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true)
+            ArbitrageTicketSubView(pickTeam: "Chicago Bears",
+                                   pickType: "Moneyline",
+                                   gameInfo: "Chicago Bears vs. Detroit Lions",
+                                   publishDate: getCurrentDate(),
+                                   description: "Chicago Bears are better",
+                                   sportsbook1: "Draft Kings",
+                                   sportsbook2: "Fandual",
+                                   oddsSB1: "-150",
+                                   oddsSB2: "-120")
             HeaderView2Section(screenName: "Account",
                                date: getCurrentDate(),
                                accountName: "Cadel Saszik",
                                isSubscribed: true,
-                               leftSection: "Information",
-                               rightSection: "Billing",
-                               leftSectionActive: true)
+                               leftSection: "Game Ttcket",
+                               rightSection: "Arbitrage Ticket",
+                               leftSectionActive: false)
             VStack {
                 NavbarView()
             }
         }
+        
+        //==========================================================================================
     }
 }
 
