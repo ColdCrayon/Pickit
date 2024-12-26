@@ -73,6 +73,4 @@ struct PicksView: View {
              pickSportsbook: "Fandual",
              pickTeam: "Minnesota Vikings",
              pickType: "Moneyline")
-    
-    NavbarView()
 }

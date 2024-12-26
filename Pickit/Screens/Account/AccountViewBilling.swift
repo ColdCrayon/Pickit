@@ -101,7 +101,7 @@ struct AccountViewBilling: View {
         AccountViewBilling(screenName: "Account", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true)
         HeaderView2Section(screenName: "Account", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, leftSection: "Information", rightSection: "Billing", leftSectionActive: false)
         VStack {
-            NavbarView()
+            NavbarView(selectedTab: .constant(4))
         }
     }
 }

@@ -30,7 +30,7 @@ struct LoadingView: View {
                            rightSection: "Billing",
                            leftSectionActive: true)
         VStack {
-            NavbarView()
+            NavbarView(selectedTab: .constant(5))
         }
     }
 }

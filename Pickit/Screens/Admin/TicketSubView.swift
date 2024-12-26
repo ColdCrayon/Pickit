@@ -9,12 +9,12 @@ import SwiftUI
 
 struct TicketSubView: View {
     
-    @State var pickTeam: String
-    @State var pickType: String
-    @State var gameInfo: String
-    @State var publishDate: String
-    @State var description: String
-    @State var sportsbook: String
+    @Binding var pickTeam: String
+    @Binding var pickType: String
+    @Binding var gameInfo: String
+    @Binding var publishDate: String
+    @Binding var description: String
+    @Binding var sportsbook: String
     
     var body: some View {
         Color(.mainBackground)
@@ -107,7 +107,12 @@ struct TicketSubView: View {
 
 #Preview {
     ZStack {
-        TicketSubView(pickTeam: "Chicago Bears", pickType: "Moneyline", gameInfo: "Chicago Bears vs. Detroit Lions", publishDate: getCurrentDate(), description: "Chicago Bears are better", sportsbook: "Draft Kings")
+        TicketSubView(pickTeam: .constant("Chicago Bears"),
+                      pickType: .constant("Moneyline"),
+                      gameInfo: .constant("Chicago Bears vs. Detroit Lions"),
+                      publishDate: .constant(getCurrentDate()),
+                      description: .constant("Chicago Bears are better"),
+                      sportsbook: .constant("Draft Kings"))
         
         HeaderView2Section(screenName: "Admin",
                            date: getCurrentDate(),
@@ -117,7 +122,7 @@ struct TicketSubView: View {
                            rightSection: "Arbitrage Ticket",
                            leftSectionActive: true)
         VStack {
-            NavbarView()
+            NavbarView(selectedTab: .constant(4))
         }
     }
 }

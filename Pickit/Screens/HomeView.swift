@@ -65,7 +65,7 @@ struct HomeView: View {
                  pickTeam: "Minnesota Vikings",
                  pickType: "Moneyline")
         VStack {
-            NavbarView()
+            NavbarView(selectedTab: .constant(0))
         }
     }
 }

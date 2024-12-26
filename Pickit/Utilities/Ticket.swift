@@ -34,6 +34,18 @@ struct ArbitrageTicket: Decodable, Identifiable {
     let pickType: String
 }
 
+struct Account: Decodable, Identifiable {
+    var id: Int
+    
+    let username: String
+    let email: String
+    let password: String
+    
+    let accountName: String
+    let isSubscribed: Bool
+    let admin: Bool
+}
+
 struct TicketResponse: Decodable {
     let request: [Ticket]
 }

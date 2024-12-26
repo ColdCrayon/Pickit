@@ -9,15 +9,15 @@ import SwiftUI
 
 struct ArbitrageTicketSubView: View {
     
-    @State var pickTeam: String
-    @State var pickType: String
-    @State var gameInfo: String
-    @State var publishDate: String
-    @State var description: String
-    @State var sportsbook1: String
-    @State var sportsbook2: String
-    @State var oddsSB1: String
-    @State var oddsSB2: String
+    @Binding var pickTeam: String
+    @Binding var pickType: String
+    @Binding var gameInfo: String
+    @Binding var publishDate: String
+    @Binding var description: String
+    @Binding var sportsbook1: String
+    @Binding var sportsbook2: String
+    @Binding var oddsSB1: String
+    @Binding var oddsSB2: String
     
     var body: some View {
         Color(.mainBackground)
@@ -146,7 +146,15 @@ struct ArbitrageTicketSubView: View {
 
 #Preview {
     ZStack {
-        ArbitrageTicketSubView(pickTeam: "Chicago Bears", pickType: "Moneyline", gameInfo: "Chicago Bears vs. Detroit Lions", publishDate: getCurrentDate(), description: "Chicago Bears are better", sportsbook1: "Draft Kings", sportsbook2: "Fandual", oddsSB1: "-150", oddsSB2: "-120")
+        ArbitrageTicketSubView(pickTeam: .constant("Chicago Bears"),
+                               pickType: .constant("Moneyline"),
+                               gameInfo: .constant("Chicago Bears vs. Detroit Lions"),
+                               publishDate: .constant(getCurrentDate()),
+                               description: .constant("Chicago Bears are better"),
+                               sportsbook1: .constant("Draft Kings"),
+                               sportsbook2: .constant("Fandual"),
+                               oddsSB1: .constant("-150"),
+                               oddsSB2: .constant("-120"))
         
         HeaderView2Section(screenName: "Admin",
                            date: getCurrentDate(),
@@ -156,7 +164,7 @@ struct ArbitrageTicketSubView: View {
                            rightSection: "Arbitrage Ticket",
                            leftSectionActive: false)
         VStack {
-            NavbarView()
+            NavbarView(selectedTab: .constant(4))
         }
     }
 }

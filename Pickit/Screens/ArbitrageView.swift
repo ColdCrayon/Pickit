@@ -29,11 +29,8 @@ struct ArbitrageView: View {
     
     var body: some View {
         ZStack {
-            HeaderView1Section(screenName: self.screenName,
-                               date: self.currentDate,
-                               accountName: self.accountName,
-                               isSubscribed: self.isSubscribed,
-                               section: self.section)
+            Color.mainBackground
+            
             ArbitrageTicketView(settled: self.settled,
                                 sportsBook1: self.sportsBook1,
                                 sportsBook2: self.sportsBook2,
@@ -46,6 +43,12 @@ struct ArbitrageView: View {
                                 pickDescription: self.pickDescription,
                                 pickSportsbook: self.pickDescription)
             .padding(.top, 100)
+            
+            HeaderView1Section(screenName: self.screenName,
+                               date: self.currentDate,
+                               accountName: self.accountName,
+                               isSubscribed: self.isSubscribed,
+                               section: self.section)
         }
     }
 }
@@ -68,5 +71,5 @@ struct ArbitrageView: View {
                   pickTeam: "Minnesota Vikings",
                   pickType: "Moneyline")
     
-    NavbarView()
+    NavbarView(selectedTab: .constant(2))
 }
