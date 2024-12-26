@@ -2,6 +2,7 @@
 A betting picks app based on thousands of games of data
 
 # Todo
+- #### Git Branching !!!
 - #### View Models
     - Home ViewModel
         - Sync Previous tickets and News
