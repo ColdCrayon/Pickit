@@ -54,22 +54,25 @@ struct ArbitrageView: View {
 }
 
 #Preview {
-    ArbitrageView(screenName: "Arbitrage Picks",
-                  currentDate: "12/8/24",
-                  accountName: "Cadel Saszik",
-                  isSubscribed: true,
-                  section: "Newest Picks",
-                  settled: false,
-                  sportsBook1: "Draftkings",
-                  sportsBook2: "Fandual",
-                  pickGameInfo: "Atlanta Falcons vs. Minnesota Vikings",
-                  pickOddsSB1: "-150",
-                  pickOddsSB2: "+110",
-                  pickPublishDate: "Dec 8, 2024 at 7:58 PM",
-                  pickDescription: "The Minnesota Vikings have been on a tremendous run this year leading to much success on the field. While the falcons have been playing decently withe new QB Kirk Cousins, the Vikings have better players in seemingly every position.",
-                  pickSportsbook: "Fandual",
-                  pickTeam: "Minnesota Vikings",
-                  pickType: "Moneyline")
-    
-    NavbarView(selectedTab: .constant(2))
+    ZStack {
+        ArbitrageView(screenName: "Arbitrage Picks",
+                      currentDate: "12/8/24",
+                      accountName: "Cadel Saszik",
+                      isSubscribed: true,
+                      section: "Newest Picks",
+                      settled: false,
+                      sportsBook1: "Draftkings",
+                      sportsBook2: "Fandual",
+                      pickGameInfo: "Atlanta Falcons vs. Minnesota Vikings",
+                      pickOddsSB1: "-150",
+                      pickOddsSB2: "+110",
+                      pickPublishDate: "Dec 8, 2024 at 7:58 PM",
+                      pickDescription: "The Minnesota Vikings have been on a tremendous run this year leading to much success on the field. While the falcons have been playing decently withe new QB Kirk Cousins, the Vikings have better players in seemingly every position.",
+                      pickSportsbook: "Fandual",
+                      pickTeam: "Minnesota Vikings",
+                      pickType: "Moneyline")
+        VStack {
+            NavbarView(selectedTab: .constant(2))
+        }
+    }
 }
