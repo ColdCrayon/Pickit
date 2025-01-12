@@ -90,9 +90,12 @@ struct AccountViewBilling: View {
                             .shadow(radius: 4, x: -3, y: 4)
                             .padding(.bottom, 20)
                         }
+                        .padding([.leading, .trailing], 8)
                     }
+                    .foregroundStyle(.black)
             }
         }
+        .padding(.top, 100)
     }
 }
 
