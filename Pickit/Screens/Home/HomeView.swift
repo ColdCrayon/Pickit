@@ -17,7 +17,7 @@ struct HomeView: View {
     var isSubscribed: Bool
     var leftSection: String
     var rightSection: String
-    var leftSectionActive: Bool
+    @Binding var leftSectionActive: Bool
     
     var settled: Bool
     var pickGameInfo: String
@@ -80,7 +80,7 @@ struct HomeView: View {
                                isSubscribed: self.isSubscribed,
                                leftSection: self.leftSection,
                                rightSection: self.rightSection,
-                               leftSectionActive: self.leftSectionActive)
+                               leftSectionActive: $leftSectionActive)
         }
     }
 }
@@ -93,7 +93,7 @@ struct HomeView: View {
                  isSubscribed: true,
                  leftSection: "Previous Picks",
                  rightSection: "News",
-                 leftSectionActive: true,
+                 leftSectionActive: .constant(true),
                  settled: true,
                  pickGameInfo: "Atlanta Falcons vs. Minnesota Vikings",
                  pickPublishDate: "Dec 8, 2024 at 7:58 PM",

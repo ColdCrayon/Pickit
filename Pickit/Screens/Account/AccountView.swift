@@ -15,9 +15,10 @@ struct AccountView: View {
     var isSubscribed: Bool
     
     @Binding var information: Bool
+    @Binding var leftSectionActive: Bool
     
     var body: some View {
-        if information {
+        if leftSectionActive {
             ZStack {
                 AccountViewInformation(screenName: self.screenName,
                                        date: self.date,
@@ -30,7 +31,7 @@ struct AccountView: View {
                                    isSubscribed: self.isSubscribed,
                                    leftSection: "Information",
                                    rightSection: "Billing",
-                                   leftSectionActive: true)
+                                   leftSectionActive: $leftSectionActive)
             }
         } else {
             ZStack {
@@ -45,7 +46,7 @@ struct AccountView: View {
                                    isSubscribed: self.isSubscribed,
                                    leftSection: "Information",
                                    rightSection: "Billing",
-                                   leftSectionActive: false)
+                                   leftSectionActive: $leftSectionActive)
             }
         }
     }
@@ -56,7 +57,8 @@ struct AccountView: View {
         AccountView(screenName: "Account",
                     date: getCurrentDate(),
                     accountName: "Cadel Saszik",
-                    isSubscribed: true, information: .constant(true))
+                    isSubscribed: true, information: .constant(true),
+                    leftSectionActive: .constant(true))
         
         VStack {
             NavbarView(selectedTab: .constant(3))

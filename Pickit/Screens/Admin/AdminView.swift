@@ -63,7 +63,7 @@ struct AdminView: View {
                   oddsSB2: .constant("-120"),
                   sportsbook: .constant("Bet 365"))
         
-        HeaderView2Section(screenName: "Admin", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, leftSection: "Game Ticket", rightSection: "Arbitrage Ticket", leftSectionActive: false)
+        HeaderView2Section(screenName: "Admin", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, leftSection: "Game Ticket", rightSection: "Arbitrage Ticket", leftSectionActive: .constant(false))
         
         VStack {
             NavbarView(selectedTab: .constant(5))

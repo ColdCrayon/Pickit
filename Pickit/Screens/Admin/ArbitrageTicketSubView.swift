@@ -162,7 +162,7 @@ struct ArbitrageTicketSubView: View {
                            isSubscribed: true,
                            leftSection: "Game Ticket",
                            rightSection: "Arbitrage Ticket",
-                           leftSectionActive: false)
+                           leftSectionActive: .constant(false))
         VStack {
             NavbarView(selectedTab: .constant(4))
         }

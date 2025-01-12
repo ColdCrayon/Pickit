@@ -27,6 +27,8 @@ struct PickitView: View {
     
     @State var activeView: currentView = currentView.previousTickets
     
+    @State var leftSectionActive: Bool = true
+    
     var body: some View {
         //==========================================================================================
         
@@ -40,7 +42,7 @@ struct PickitView: View {
                                  isSubscribed: true,
                                  leftSection: "Previous Picks",
                                  rightSection: "News",
-                                 leftSectionActive: true,
+                                 leftSectionActive: $leftSectionActive,
                                  settled: true,
                                  pickGameInfo: "Chicago Bears vs. Detroit Lions",
                                  pickPublishDate: "12/17/24",
@@ -49,7 +51,7 @@ struct PickitView: View {
                                  pickTeam: "Chicago Bears",
                                  pickType: "Moneyline")
                         
-                        HeaderView2Section(screenName: "Home", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, leftSection: "Previous Picks", rightSection: "News", leftSectionActive: true)
+                        HeaderView2Section(screenName: "Home", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, leftSection: "Previous Picks", rightSection: "News", leftSectionActive: $leftSectionActive)
                     }
                 }
                 .tag(0)
@@ -101,7 +103,8 @@ struct PickitView: View {
                                     date: getCurrentDate(),
                                     accountName: "Cadel Saszik",
                                     isSubscribed: true,
-                                    information: .constant(true))
+                                    information: .constant(true),
+                                    leftSectionActive: $leftSectionActive)
                     }
                 }
                 .tag(3)

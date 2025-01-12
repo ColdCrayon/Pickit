@@ -120,7 +120,7 @@ struct TicketSubView: View {
                            isSubscribed: true,
                            leftSection: "Game Ticket",
                            rightSection: "Arbitrage Ticket",
-                           leftSectionActive: true)
+                           leftSectionActive: .constant(true))
         VStack {
             NavbarView(selectedTab: .constant(4))
         }

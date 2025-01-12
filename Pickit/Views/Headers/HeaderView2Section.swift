@@ -17,15 +17,10 @@ struct HeaderView2Section: View {
     var leftSection: String
     var rightSection: String
     
-    var leftSectionActive: Bool
+    @Binding var leftSectionActive: Bool
     
     var body: some View {
         ZStack {
-//            Rectangle()
-//                .frame(width: .infinity, height: .infinity, alignment: .center)
-//                .ignoresSafeArea()
-//                .foregroundStyle(.mainBackground)
-            
             VStack() {
                 Rectangle()
                     .ignoresSafeArea(.all)
@@ -73,7 +68,7 @@ struct HeaderView2Section: View {
                             
                             HStack {
                                 Button {
-                                    
+                                    leftSectionActive = true
                                 } label: {
                                     ZStack {
                                         Text(leftSection)
@@ -95,7 +90,7 @@ struct HeaderView2Section: View {
                                 .frame(width: screenWidth / 2)
                                 
                                 Button {
-                                    
+                                    leftSectionActive = false
                                 } label: {
                                     ZStack {
                                         Text(rightSection)
@@ -131,5 +126,5 @@ struct HeaderView2Section: View {
                        isSubscribed: true,
                        leftSection: "Newest Tickets",
                        rightSection: "News",
-                       leftSectionActive: false)
+                       leftSectionActive: .constant(false))
 }

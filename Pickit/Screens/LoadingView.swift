@@ -28,7 +28,7 @@ struct LoadingView: View {
                            isSubscribed: true,
                            leftSection: "Information",
                            rightSection: "Billing",
-                           leftSectionActive: true)
+                           leftSectionActive: .constant(true))
         VStack {
             NavbarView(selectedTab: .constant(5))
         }
