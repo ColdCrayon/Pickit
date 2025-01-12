@@ -72,7 +72,19 @@ struct MockTicket {
                                                        pickTeam: "Buffalo Bills",
                                                        pickType: "Moneyline")
     
+    static let sampleArbitrageTicket2 = ArbitrageTicket(id: 001,
+                                                       settled: false,
+                                                       sportsBook1: "Draftkings",
+                                                       sportsBook2: "Fandual",
+                                                       pickGameInfo: "Buffalo Bills vs. Kansas City Cheifs",
+                                                       pickOddsSB1: "-210",
+                                                       pickOddsSB2: "+180",
+                                                       pickPublishDate: "Dec 10, 2024 at 1:10 PM",
+                                                       pickDescription: "The Buffalo Bills are the better team",
+                                                       pickTeam: "Buffalo Bills",
+                                                       pickType: "Moneylin")
+    
     static let sampleTickets = [sampleTicket, sampleTicket, sampleTicket, sampleTicket]
     
-    static let sampleArbitrageTickets = [sampleArbitrageTicket, sampleArbitrageTicket, sampleArbitrageTicket]
+    static let sampleArbitrageTickets = [sampleArbitrageTicket, sampleArbitrageTicket2, sampleArbitrageTicket, sampleArbitrageTicket2]
 }

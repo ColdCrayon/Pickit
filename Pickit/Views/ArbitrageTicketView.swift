@@ -180,6 +180,7 @@ struct ArbitrageTicketView: View {
                             .position(x: 328, y: 500)
                     }
                 }
+                .padding(.top, 125)
         }
     }
 }
