@@ -1,5 +1,5 @@
 # Pickit!
-A betting picks app based on thousands of games of data
+A betting advice app based on thousands of games of data
 
 # Todo
 - #### Git Branching !!!
