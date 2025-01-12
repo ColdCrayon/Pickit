@@ -20,6 +20,8 @@ struct AccountView: View {
     var body: some View {
         if leftSectionActive {
             ZStack {
+                BackgroundView()
+                
                 AccountViewInformation(screenName: self.screenName,
                                        date: self.date,
                                        accountName: self.accountName,
@@ -35,6 +37,8 @@ struct AccountView: View {
             }
         } else {
             ZStack {
+                LinearGradient(colors: [.billingBGLight, .billingBGDark], startPoint: .topLeading, endPoint: .bottomTrailing)
+                
                 AccountViewBilling(screenName: self.screenName,
                                        date: self.date,
                                        accountName: self.accountName,

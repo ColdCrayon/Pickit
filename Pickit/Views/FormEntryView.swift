@@ -97,7 +97,7 @@ struct FormPasswordView: View {
 
 #Preview {
     ZStack {
-        BackgroundView()
+//        BackgroundView()
         VStack {
             FormEntryView(entryTitle: "Username", entryValue: .constant("Username"))
             
