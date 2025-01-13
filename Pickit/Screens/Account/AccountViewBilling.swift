@@ -100,8 +100,8 @@ struct AccountViewBilling: View {
     ZStack {
         AccountViewBilling(screenName: "Account", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true)
         HeaderView2Section(screenName: "Account", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, leftSection: "Information", rightSection: "Billing", leftSectionActive: .constant(false))
-        VStack {
-            NavbarView(selectedTab: .constant(4))
-        }
+//        VStack {
+//            NavbarView(selectedTab: .constant(4))
+//        }
     }
 }

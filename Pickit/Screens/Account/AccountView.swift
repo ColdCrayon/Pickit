@@ -39,7 +39,8 @@ struct AccountView: View {
             }
         } else {
             ZStack {
-                LinearGradient(colors: [.billingBGLight, .billingBGDark], startPoint: .topLeading, endPoint: .bottomTrailing)
+//                LinearGradient(colors: [.billingBGLight, .billingBGDark], startPoint: .topLeading, endPoint: .bottomTrailing)
+                BackgroundViewBilling()
                 
                 AccountViewBilling(screenName: self.screenName,
                                    date: self.date,
