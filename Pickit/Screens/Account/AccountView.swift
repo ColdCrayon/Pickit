@@ -17,6 +17,8 @@ struct AccountView: View {
     @Binding var information: Bool
     @Binding var leftSectionActive: Bool
     
+    @State var offset = CGSize.zero
+    
     var body: some View {
         if leftSectionActive {
             ZStack {
@@ -40,9 +42,9 @@ struct AccountView: View {
                 LinearGradient(colors: [.billingBGLight, .billingBGDark], startPoint: .topLeading, endPoint: .bottomTrailing)
                 
                 AccountViewBilling(screenName: self.screenName,
-                                       date: self.date,
-                                       accountName: self.accountName,
-                                       isSubscribed: self.isSubscribed)
+                                   date: self.date,
+                                   accountName: self.accountName,
+                                   isSubscribed: self.isSubscribed)
                 
                 HeaderView2Section(screenName: self.screenName,
                                    date: self.date,
@@ -53,6 +55,58 @@ struct AccountView: View {
                                    leftSectionActive: $leftSectionActive)
             }
         }
+        
+        //        ZStack {
+        //            ZStack {
+        //                BackgroundView()
+        //
+        //                AccountViewInformation(screenName: self.screenName,
+        //                                       date: self.date,
+        //                                       accountName: self.accountName,
+        //                                       isSubscribed: self.isSubscribed)
+        //
+        //                HeaderView2Section(screenName: self.screenName,
+        //                                   date: self.date,
+        //                                   accountName: self.accountName,
+        //                                   isSubscribed: self.isSubscribed,
+        //                                   leftSection: "Information",
+        //                                   rightSection: "Billing",
+        //                                   leftSectionActive: $leftSectionActive)
+        //            }
+        //
+        //            ZStack {
+        //                LinearGradient(colors: [.billingBGLight, .billingBGDark], startPoint: .topLeading, endPoint: .bottomTrailing)
+        //
+        //                AccountViewBilling(screenName: self.screenName,
+        //                                   date: self.date,
+        //                                   accountName: self.accountName,
+        //                                   isSubscribed: self.isSubscribed)
+        //
+        //                HeaderView2Section(screenName: self.screenName,
+        //                                   date: self.date,
+        //                                   accountName: self.accountName,
+        //                                   isSubscribed: self.isSubscribed,
+        //                                   leftSection: "Information",
+        //                                   rightSection: "Billing",
+        //                                   leftSectionActive: $leftSectionActive)
+        //            }
+        //            .offset(offset)
+        //            .gesture(
+        //                DragGesture()
+        //                    .onChanged { value in
+        //                        withAnimation(.easeInOut(duration: 0.5)) {
+        //                            offset = value.translation
+        //                        }
+        //                    }
+        //
+        //                    .onEnded { value in
+        //                        withAnimation(.easeInOut(duration: 0.5)) {
+        //                            offset = CGSize(width: screenWidth, height: 0)
+        //                            leftSectionActive.toggle()
+        //                        }
+        //                    }
+        //            )
+        //        }
     }
 }
 
@@ -62,7 +116,7 @@ struct AccountView: View {
                     date: getCurrentDate(),
                     accountName: "Cadel Saszik",
                     isSubscribed: true, information: .constant(true),
-                    leftSectionActive: .constant(true))
+                    leftSectionActive: .constant(false))
         
         VStack {
             NavbarView(selectedTab: .constant(3))

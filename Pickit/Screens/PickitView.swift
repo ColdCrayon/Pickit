@@ -105,6 +105,8 @@ struct PickitView: View {
                                     isSubscribed: true,
                                     information: .constant(true),
                                     leftSectionActive: $leftSectionActive)
+                        
+                        HeaderView2Section(screenName: "Account", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, leftSection: "Information", rightSection: "Billing", leftSectionActive: $leftSectionActive)
                     }
                 }
                 .tag(3)
@@ -235,5 +237,5 @@ struct PickitView: View {
 }
 
 #Preview {
-    PickitView(selectedTab: 0, activeView: currentView.account)
+    PickitView(selectedTab: 3, activeView: currentView.account)
 }

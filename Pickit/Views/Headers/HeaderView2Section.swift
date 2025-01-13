@@ -66,50 +66,64 @@ struct HeaderView2Section: View {
                             
                             Spacer()
                             
-                            HStack {
-                                Button {
-                                    leftSectionActive = true
-                                } label: {
-                                    ZStack {
-                                        Text(leftSection)
-                                            .font(Font.custom("Lexend", size: 16))
-                                            .fontWeight(.bold)
-                                            .foregroundStyle(.lightWhite)
-                                            .padding(.top, 2)
-                                            .padding(.bottom, 2)
-                                        VStack {
-                                            Spacer()
-                                            
-                                            Rectangle()
-                                                .foregroundStyle(.lightBlue)
-                                                .frame(height: 3)
-                                                .opacity(leftSectionActive ? 100 : 0)
+                            ZStack(alignment: .leading) {
+                                HStack(spacing: 0) {
+                                    Button {
+                                        withAnimation(.easeInOut(duration: 0.2)) {
+                                            leftSectionActive = true
+                                        }
+                                    } label: {
+                                        ZStack {
+                                            Text(leftSection)
+                                                .font(Font.custom("Lexend", size: 16))
+                                                .fontWeight(.bold)
+                                                .foregroundStyle(.lightWhite)
+                                                .padding(.top, 2)
+                                                .padding(.bottom, 2)
+                                            VStack {
+                                                Spacer()
+                                                
+                                                Rectangle()
+                                                    .foregroundStyle(.lightBlue)
+                                                    .frame(height: 3)
+                                                    .opacity(leftSectionActive ? 0 : 0)
+                                            }
                                         }
                                     }
-                                }
-                                .frame(width: screenWidth / 2)
-                                
-                                Button {
-                                    leftSectionActive = false
-                                } label: {
-                                    ZStack {
-                                        Text(rightSection)
-                                            .font(Font.custom("Lexend", size: 16))
-                                            .fontWeight(.bold)
-                                            .foregroundStyle(.lightWhite)
-                                            .padding(.top, 2)
-                                            .padding(.bottom, 2)
-                                        VStack {
-                                            Spacer()
-                                            
-                                            Rectangle()
-                                                .foregroundStyle(.lightBlue)
-                                                .frame(height: 3)
-                                                .opacity(leftSectionActive ? 0 : 100)
+                                    .frame(width: screenWidth / 2)
+                                    
+                                    Button {
+                                        withAnimation(.easeInOut(duration: 0.2)) {
+                                            leftSectionActive = false
+                                        }
+                                    } label: {
+                                        ZStack {
+                                            Text(rightSection)
+                                                .font(Font.custom("Lexend", size: 16))
+                                                .fontWeight(.bold)
+                                                .foregroundStyle(.lightWhite)
+                                                .padding(.top, 2)
+                                                .padding(.bottom, 2)
+                                            VStack {
+                                                Spacer()
+                                                
+                                                Rectangle()
+                                                    .foregroundStyle(.lightBlue)
+                                                    .frame(height: 3)
+                                                    .opacity(leftSectionActive ? 0 : 0)
+                                            }
                                         }
                                     }
+                                    .frame(width: screenWidth / 2)
                                 }
-                                .frame(width: screenWidth / 2)
+                                VStack {
+                                    Spacer()
+                                    
+                                    Rectangle()
+                                        .foregroundStyle(.lightBlue)
+                                        .frame(width: screenWidth / 2, height: 3)
+                                        .offset(x: leftSectionActive ? 0 : screenWidth / 2)
+                                }
                             }
                         }
                     }
