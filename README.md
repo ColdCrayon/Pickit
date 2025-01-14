@@ -18,16 +18,16 @@ A betting advice app based on thousands of games of data
             - Sync with firebase
             - Data saving
             - Login
-        [ ] Swipe feature
-            [x] Header Animation 
-            [ ] Screen Swipe (Currently fades)
+        - [ ] Swipe feature
+            - [x] Header Animation 
+            - [ ] Screen Swipe (Currently fades)
 
 - #### Admin
-    [x] Admin Dashboard
+    - [x] Admin Dashboard
         - Designed
-        [ ] Implement
-    [ ] Admin account title
-    [ ] Push to fire base
+        - [ ] Implement
+    - [ ] Admin account title
+    - [ ] Push to fire base
         - Create tickets
         - Arbitrage Tickets
 
