@@ -2,6 +2,10 @@
 A betting advice app based on thousands of games of data
 
 # Todo
+
+- #### ADMIN BUTTON AND VIEW SCREEN
+- #### TOS AND PRIVACY POLICY MODALS
+
 - #### Git Branching !!!
 - #### View Models
     - Home ViewModel
@@ -14,12 +18,16 @@ A betting advice app based on thousands of games of data
             - Sync with firebase
             - Data saving
             - Login
-        - Swipe feature
+        [ ] Swipe feature
+            [x] Header Animation 
+            [ ] Screen Swipe (Currently fades)
 
 - #### Admin
-    - Admin Dashboard
-    - Admin account title
-    - Push to fire base
+    [x] Admin Dashboard
+        - Designed
+        [ ] Implement
+    [ ] Admin account title
+    [ ] Push to fire base
         - Create tickets
         - Arbitrage Tickets
 
@@ -28,4 +36,9 @@ A betting advice app based on thousands of games of data
         - Pull data from multiple sportsbooks
         - Proxies, VPNS?
         - API?
+    - ACTION BETTING SITE
+        - Contains many sportsbooks
+        - Possibly easier to scrape (less security)
+        - Possible API
+            - JSON
 
