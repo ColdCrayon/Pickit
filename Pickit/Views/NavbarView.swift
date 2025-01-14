@@ -17,7 +17,7 @@ struct NavbarView: View {
         ZStack {
             Color(.darkBlue)
                 .ignoresSafeArea(.all)
-                .frame(width: screenWidth, height: 94)
+                .frame(width: screenWidth, height: 84)
                 .shadow(color: .black, radius: 10, x: 0, y: 5)
             
             HStack(spacing: 24) {
@@ -53,7 +53,9 @@ struct NavbarView: View {
                 .frame(width: 72, height: 78)
                 .ignoresSafeArea(.all)
             }
+            .ignoresSafeArea(.all)
         }
+        .ignoresSafeArea(.all)
     }
 }
 

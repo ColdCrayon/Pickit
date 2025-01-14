@@ -18,6 +18,9 @@ struct AccountViewInformation: View {
     @State private var password = ""
     @State private var email = ""
     
+    @State private var subButtonOffset = CGSize.zero
+    @State private var hasPressed = false
+    
     var body: some View {
         ZStack {
             BackgroundView()
@@ -43,30 +46,80 @@ struct AccountViewInformation: View {
                     .foregroundStyle(.lightWhite)
                     .padding(.top, -18)
                 
-                VStack() {
-                    FormEntryView(entryTitle: "Username", entryValue: $username)
-                    FormPasswordView(entryTitle: "Password", entryValue: $password)
-                    FormEntryView(entryTitle: "Email", entryValue: $email)
-                        .padding(.bottom, 15)
+                VStack {
+                    ScrollView() {
+                        FormEntryView(entryTitle: "Username", entryValue: $username)
+                            .padding(.top, 6)
+                        FormPasswordView(entryTitle: "Password", entryValue: $password)
+                        FormEntryView(entryTitle: "Email", entryValue: $email)
+                            .padding(.bottom, 15)
+                        
+                        Button {
+//                            withAnimation(.spring(duration: 0.1)) {
+//                                subButtonOffset = CGSize(width: 0, height: 9)
+//                            }
+                        } label: {
+                            ZStack{
+                                Rectangle()
+                                    .frame(width: 250, height: 50)
+                                    .foregroundStyle(.ticketSubButtonDark)
+                                    .cornerRadius(20)
+                                    .offset(y: 9)
+                                Rectangle()
+                                    .frame(width: 250, height: 50)
+                                    .foregroundStyle(.ticketSubButtonLight)
+                                    .cornerRadius(20)
+                                    .offset(subButtonOffset)
+                                Text("SUBSCRIBE")
+                                    .font(Font.custom("Lexend", size: 24))
+                                    .fontWeight(.bold)
+                                    .foregroundStyle(.white)
+                                    .offset(subButtonOffset)
+                            }
+                        }
+                        .onLongPressGesture(minimumDuration: 0.001, pressing: { pressing in
+                            self.hasPressed = pressing
+                            if pressing { subButtonOffset = CGSize(width: 0, height: 9)}
+                            if !pressing { subButtonOffset = CGSize.zero}
+                        }, perform: {})
+                        .padding(.bottom, 30)
+                    }
+                    .foregroundStyle(.lightWhite)
+                    .padding([.leading, .trailing], 8)
+                    .padding(.top, 5)
+//                    .padding(.bottom, 40)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20, style: .continuous)
+                            .fill(
+                                .shadow(.inner(color: Color.black.opacity(0.8), radius: 10, x: 0, y: 0))
+                            )
+                            .foregroundStyle(.mainBackground)
+                    )
                     
                     HStack {
-                        Text("Terms and Conditions")
-                            .font(Font.custom("Lexend", size: 12).bold())
-                            .foregroundStyle(.lightBlue)
-                            .frame(width: UIScreen.main.bounds.width / 2)
+                        Button {
+                            
+                        } label: {
+                            Text("Terms and Conditions")
+                                .font(Font.custom("Lexend", size: 12).bold())
+                                .foregroundStyle(.lightBlue)
+                                .frame(width: UIScreen.main.bounds.width / 2)
+                        }
+                        .frame(width: screenWidth / 2, height: 24)
                         
-                        Text("Privacy Policy")
-                            .font(Font.custom("Lexend", size: 12).bold())
-                            .foregroundStyle(.lightBlue)
-                            .frame(width: UIScreen.main.bounds.width / 2)
+                        Button {
+                            
+                        } label: {
+                            Text("Privacy Policy")
+                                .font(Font.custom("Lexend", size: 12).bold())
+                                .foregroundStyle(.lightBlue)
+                                .frame(width: UIScreen.main.bounds.width / 2)
+                        }
+                        .frame(width: screenWidth / 2, height: 24)
                     }
+                    .padding(.top, 3)
+                    .padding(.bottom, 15)
                 }
-                .foregroundStyle(.lightWhite)
-                //                .background(.mainBackground)
-                //                .scrollContentBackground(.hidden)
-                .padding(.top, 5)
-                .padding(.bottom, 40)
-                //                .contentMargins(.bottom, -20)
             }
             .padding(.top, 20)
         }
