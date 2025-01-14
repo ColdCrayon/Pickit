@@ -24,7 +24,7 @@ A betting advice app based on thousands of games of data
 
 - #### Admin
     - [x] Admin Dashboard
-        - Designed
+        - [x] Design 
         - [ ] Implement
     - [ ] Admin account title
     - [ ] Push to fire base
