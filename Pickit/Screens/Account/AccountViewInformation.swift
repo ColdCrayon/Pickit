@@ -18,8 +18,22 @@ struct AccountViewInformation: View {
     @State private var password = ""
     @State private var email = ""
     
-    @State private var subButtonOffset = CGSize.zero
+    @State private var subButtonOffset = 9
     @State private var hasPressed = false
+    
+    var buttonPress: some Gesture {
+        DragGesture(minimumDistance: 0)
+            .onChanged({ value in
+                withAnimation(.smooth(duration: 0.15)) {
+                    hasPressed = true
+                }
+            })
+            .onEnded({ value in
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    hasPressed = false
+                }
+            })
+    }
     
     var body: some View {
         ZStack {
@@ -55,9 +69,7 @@ struct AccountViewInformation: View {
                             .padding(.bottom, 15)
                         
                         Button {
-//                            withAnimation(.spring(duration: 0.1)) {
-//                                subButtonOffset = CGSize(width: 0, height: 9)
-//                            }
+                            
                         } label: {
                             ZStack{
                                 Rectangle()
@@ -69,25 +81,22 @@ struct AccountViewInformation: View {
                                     .frame(width: 250, height: 50)
                                     .foregroundStyle(.ticketSubButtonLight)
                                     .cornerRadius(20)
-                                    .offset(subButtonOffset)
+                                    .offset(y: CGFloat(hasPressed ? subButtonOffset : 0))
+                                    .gesture(buttonPress)
                                 Text("SUBSCRIBE")
                                     .font(Font.custom("Lexend", size: 24))
                                     .fontWeight(.bold)
                                     .foregroundStyle(.white)
-                                    .offset(subButtonOffset)
+                                    .offset(y: CGFloat(hasPressed ? subButtonOffset : 0))
+                                    .gesture(buttonPress)
                             }
                         }
-                        .onLongPressGesture(minimumDuration: 0.001, pressing: { pressing in
-                            self.hasPressed = pressing
-                            if pressing { subButtonOffset = CGSize(width: 0, height: 9)}
-                            if !pressing { subButtonOffset = CGSize.zero}
-                        }, perform: {})
                         .padding(.bottom, 30)
                     }
                     .foregroundStyle(.lightWhite)
                     .padding([.leading, .trailing], 8)
                     .padding(.top, 5)
-//                    .padding(.bottom, 40)
+                    //                    .padding(.bottom, 40)
                     .background(
                         RoundedRectangle(cornerRadius: 20, style: .continuous)
                             .fill(
@@ -131,8 +140,8 @@ struct AccountViewInformation: View {
     ZStack {
         AccountViewInformation(screenName: "Account", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true)
         HeaderView2Section(screenName: "Account", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, leftSection: "Information", rightSection: "Billing", leftSectionActive: .constant(true))
-//        VStack {
-//            NavbarView(selectedTab: .constant(4))
-//        }
+        //        VStack {
+        //            NavbarView(selectedTab: .constant(4))
+        //        }
     }
 }
