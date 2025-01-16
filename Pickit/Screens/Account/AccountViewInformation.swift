@@ -18,23 +18,6 @@ struct AccountViewInformation: View {
     @State private var password = ""
     @State private var email = ""
     
-    @State private var subButtonOffset = 9
-    @State private var hasPressed = false
-    
-    var buttonPress: some Gesture {
-        DragGesture(minimumDistance: 0)
-            .onChanged({ value in
-                withAnimation(.smooth(duration: 0.15)) {
-                    hasPressed = true
-                }
-            })
-            .onEnded({ value in
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    hasPressed = false
-                }
-            })
-    }
-    
     var body: some View {
         ZStack {
             BackgroundView()
@@ -68,30 +51,8 @@ struct AccountViewInformation: View {
                         FormEntryView(entryTitle: "Email", entryValue: $email)
                             .padding(.bottom, 15)
                         
-                        Button {
-                            
-                        } label: {
-                            ZStack{
-                                Rectangle()
-                                    .frame(width: 250, height: 50)
-                                    .foregroundStyle(.ticketSubButtonDark)
-                                    .cornerRadius(20)
-                                    .offset(y: 9)
-                                Rectangle()
-                                    .frame(width: 250, height: 50)
-                                    .foregroundStyle(.ticketSubButtonLight)
-                                    .cornerRadius(20)
-                                    .offset(y: CGFloat(hasPressed ? subButtonOffset : 0))
-                                    .gesture(buttonPress)
-                                Text("SUBSCRIBE")
-                                    .font(Font.custom("Lexend", size: 24))
-                                    .fontWeight(.bold)
-                                    .foregroundStyle(.white)
-                                    .offset(y: CGFloat(hasPressed ? subButtonOffset : 0))
-                                    .gesture(buttonPress)
-                            }
-                        }
-                        .padding(.bottom, 30)
+                        SubscribeButtonAdmin()
+                            .padding(.bottom, 30)
                     }
                     .foregroundStyle(.lightWhite)
                     .padding([.leading, .trailing], 8)
