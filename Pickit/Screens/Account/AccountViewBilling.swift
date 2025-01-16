@@ -65,27 +65,8 @@ struct AccountViewBilling: View {
                         
                         Spacer()
                         
-                        Button {
-                            
-                        } label: {
-                            ZStack{
-                                Rectangle()
-                                    .frame(width: 250, height: 50)
-                                    .foregroundStyle(.billingSubDarker)
-                                    .cornerRadius(20)
-                                    .offset(y: 9)
-                                Rectangle()
-                                    .frame(width: 250, height: 50)
-                                    .foregroundStyle(.billingBGDark)
-                                    .cornerRadius(20)
-                                Text("SUBSCRIBE")
-                                    .font(Font.custom("Lexend", size: 24))
-                                    .fontWeight(.bold)
-                                    .foregroundStyle(.white)
-                            }
-                        }
-                        .shadow(radius: 4, x: -3, y: 4)
-                        .padding(.bottom, 20)
+                        SubscribeButtonBilling()
+                            .padding(.bottom, 20)
                     }
                     .padding([.leading, .trailing], 8)
                 }
@@ -100,8 +81,8 @@ struct AccountViewBilling: View {
     ZStack {
         AccountViewBilling(screenName: "Account", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true)
         HeaderView2Section(screenName: "Account", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, leftSection: "Information", rightSection: "Billing", leftSectionActive: .constant(false))
-//        VStack {
-//            NavbarView(selectedTab: .constant(4))
-//        }
+        //        VStack {
+        //            NavbarView(selectedTab: .constant(4))
+        //        }
     }
 }
