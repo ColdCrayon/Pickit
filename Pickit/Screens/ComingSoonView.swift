@@ -10,13 +10,18 @@ import SwiftUI
 struct ComingSoonView: View {
     
     var screenName: String
+    var date: String
+    var accountName: String
+    var isSubscribed: Bool
     
     var body: some View {
         ZStack {
+            BackgroundView()
+            
             HeaderView1Section(screenName: screenName,
-                               date: "12/8/24",
-                               accountName: "Cadel Saszik",
-                               isSubscribed: true,
+                               date: date,
+                               accountName: accountName,
+                               isSubscribed: isSubscribed,
                                section: "Coming Soon")
             
             VStack(spacing: 20) {
@@ -35,5 +40,5 @@ struct ComingSoonView: View {
 }
 
 #Preview {
-    ComingSoonView(screenName: "Arbitrage Picks")
+    ComingSoonView(screenName: "Arbitrage Picks", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true)
 }
