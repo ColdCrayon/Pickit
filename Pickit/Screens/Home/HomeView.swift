@@ -19,7 +19,7 @@ struct HomeView: View {
     var rightSection: String
     @Binding var leftSectionActive: Bool
     
-    @State var offset: CGFloat = screenWidth + 20
+    @State var offset: CGFloat = UIScreen.self.main.bounds.width + 20
     
     var drag: some Gesture {
         DragGesture(minimumDistance: screenWidth / 4)

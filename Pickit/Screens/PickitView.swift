@@ -27,7 +27,8 @@ struct PickitView: View {
     
     @State var activeView: currentView = currentView.previousTickets
     
-    @State var leftSectionActive: Bool = true
+    @State var leftSectionActiveHome: Bool = true
+    @State var leftSectionActiveAccount: Bool = true
     
     var body: some View {
         //==========================================================================================
@@ -42,9 +43,9 @@ struct PickitView: View {
                                  isSubscribed: true,
                                  leftSection: "Previous Picks",
                                  rightSection: "News",
-                                 leftSectionActive: $leftSectionActive)
+                                 leftSectionActive: $leftSectionActiveHome)
                         
-                        HeaderView2Section(screenName: "Home", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, leftSection: "Previous Picks", rightSection: "News", leftSectionActive: $leftSectionActive)
+                        HeaderView2Section(screenName: "Home", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, leftSection: "Previous Picks", rightSection: "News", leftSectionActive: $leftSectionActiveHome)
                     }
                 }
                 .tag(0)
@@ -97,9 +98,9 @@ struct PickitView: View {
                                     accountName: "Cadel Saszik",
                                     isSubscribed: true,
                                     information: .constant(true),
-                                    leftSectionActive: $leftSectionActive)
+                                    leftSectionActive: $leftSectionActiveAccount)
                         
-                        HeaderView2Section(screenName: "Account", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, leftSection: "Information", rightSection: "Billing", leftSectionActive: $leftSectionActive)
+                        HeaderView2Section(screenName: "Account", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, leftSection: "Information", rightSection: "Billing", leftSectionActive: $leftSectionActiveAccount)
                     }
                 }
                 .tag(3)
