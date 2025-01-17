@@ -19,13 +19,20 @@ struct HomeView: View {
     var rightSection: String
     @Binding var leftSectionActive: Bool
     
-    var settled: Bool
-    var pickGameInfo: String
-    var pickPublishDate: String
-    var pickDescription: String
-    var pickSportsbook: String
-    var pickTeam: String
-    var pickType: String
+    @State var offset: CGFloat = screenWidth + 20
+    
+    var drag: some Gesture {
+        DragGesture(minimumDistance: screenWidth / 4)
+            .onChanged({ value in
+                if offset > 0 { offset = screenWidth + value.translation.width }
+            })
+            .onEnded({ value in
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    leftSectionActive.toggle()
+                    if offset > 0 { offset = 0 } else if offset == 0 { offset = screenWidth + 20}
+                }
+            })
+    }
     
     var body: some View {
         // ===========================================================================================
@@ -56,23 +63,38 @@ struct HomeView: View {
         // SAMPLE TICKETS LIST
         
         ZStack {
+//            ScrollView(.vertical) {
+//                LazyVStack(spacing: 0) {
+//                    ForEach(viewModel.tickets) { ticket in
+//                        TicketView(settled: ticket.settled,
+//                                   pickTeam: ticket.pickTeam,
+//                                   pickType: ticket.pickType,
+//                                   pickGameInfo: ticket.pickGameInfo,
+//                                   pickPublishDate: ticket.pickPublishDate,
+//                                   pickDescription: ticket.pickDescription,
+//                                   pickSportsbook: ticket.pickSportsbook)
+//                    }
+//                }
+//            }
+//            .scrollIndicators(.hidden)
+//            .scrollTargetBehavior(.paging)
             BackgroundView()
             
-            ScrollView(.vertical) {
-                LazyVStack(spacing: 0) {
-                    ForEach(viewModel.tickets) { ticket in
-                        TicketView(settled: ticket.settled,
-                                   pickTeam: ticket.pickTeam,
-                                   pickType: ticket.pickType,
-                                   pickGameInfo: ticket.pickGameInfo,
-                                   pickPublishDate: ticket.pickPublishDate,
-                                   pickDescription: ticket.pickDescription,
-                                   pickSportsbook: ticket.pickSportsbook)
-                    }
-                }
+            ZStack {
+                PreviousPicksView(screenName: screenName,
+                                  currentDate: getCurrentDate(),
+                                  accountName: accountName,
+                                  isSubscribed: isSubscribed,
+                                  leftSectionActive: $leftSectionActive)
+                .gesture(drag)
+                
+                ComingSoonView(screenName: screenName,
+                               date: getCurrentDate(),
+                               accountName: accountName,
+                               isSubscribed: isSubscribed)
+                .gesture(drag)
+                .offset(x: offset)
             }
-            .scrollIndicators(.hidden)
-            .scrollTargetBehavior(.paging)
             
             HeaderView2Section(screenName: screenName,
                                date: self.currentDate,
@@ -93,13 +115,6 @@ struct HomeView: View {
                  isSubscribed: true,
                  leftSection: "Previous Picks",
                  rightSection: "News",
-                 leftSectionActive: .constant(true),
-                 settled: true,
-                 pickGameInfo: "Atlanta Falcons vs. Minnesota Vikings",
-                 pickPublishDate: "Dec 8, 2024 at 7:58 PM",
-                 pickDescription: "The Minnesota Vikings have been on a tremendous run this year leading to much success on the field. While the falcons have been playing decently withe new QB Kirk Cousins, the Vikings have better players in seemingly every position.",
-                 pickSportsbook: "Fandual",
-                 pickTeam: "Minnesota Vikings",
-                 pickType: "Moneyline")
+                 leftSectionActive: .constant(true))
     }
 }

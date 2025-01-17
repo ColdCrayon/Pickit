@@ -42,14 +42,7 @@ struct PickitView: View {
                                  isSubscribed: true,
                                  leftSection: "Previous Picks",
                                  rightSection: "News",
-                                 leftSectionActive: $leftSectionActive,
-                                 settled: true,
-                                 pickGameInfo: "Chicago Bears vs. Detroit Lions",
-                                 pickPublishDate: "12/17/24",
-                                 pickDescription: "The bears are better",
-                                 pickSportsbook: "Draft Kings",
-                                 pickTeam: "Chicago Bears",
-                                 pickType: "Moneyline")
+                                 leftSectionActive: $leftSectionActive)
                         
                         HeaderView2Section(screenName: "Home", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, leftSection: "Previous Picks", rightSection: "News", leftSectionActive: $leftSectionActive)
                     }
@@ -237,5 +230,5 @@ struct PickitView: View {
 }
 
 #Preview {
-    PickitView(selectedTab: 3, activeView: currentView.account)
+    PickitView(selectedTab: 0, activeView: currentView.account)
 }
