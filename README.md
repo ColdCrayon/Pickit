@@ -6,7 +6,7 @@ A betting advice app based on thousands of games of data
 - #### ACCOUNT INFORMATION ADDITION
     - [ ] Left align pfp
     - [ ] add username, pswd, email, information to right side (view only)
-    - form can be emptied now and information viewed
+        - form can be emptied now and information viewed
     - [x]  add upgrade button next to subscribe
         - [ ] standard account creation vs premium
 
