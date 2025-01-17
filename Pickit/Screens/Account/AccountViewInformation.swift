@@ -47,17 +47,26 @@ struct AccountViewInformation: View {
                     ScrollView() {
                         FormEntryView(entryTitle: "Username", entryValue: $username)
                             .padding(.top, 6)
+                        FormEntryView(entryTitle: "Full Name", entryValue: $username)
                         FormPasswordView(entryTitle: "Password", entryValue: $password)
                         FormEntryView(entryTitle: "Email", entryValue: $email)
                             .padding(.bottom, 15)
                         
-                        SubscribeButtonAdmin()
-                            .padding(.bottom, 30)
+                        HStack {
+                            CreateAccountButton()
+                                .padding(.leading, 20)
+                            
+                            Spacer()
+                            
+                            UpgradeAccountButton()
+                                .padding(.trailing, 20)
+                        }
+                        .padding(.bottom, 30)
                     }
+                    .frame(width: screenWidth * 0.9)
                     .foregroundStyle(.lightWhite)
-                    .padding([.leading, .trailing], 8)
+                    .padding([.leading, .trailing], 10)
                     .padding(.top, 5)
-                    //                    .padding(.bottom, 40)
                     .background(
                         RoundedRectangle(cornerRadius: 20, style: .continuous)
                             .fill(
