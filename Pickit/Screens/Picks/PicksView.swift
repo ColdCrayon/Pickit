@@ -30,14 +30,6 @@ struct PicksView: View {
             
             ScrollView(.vertical) {
                 LazyVStack(spacing: 0) {
-//                    TicketView(settled: self.settled,
-//                               pickTeam: self.pickTeam,
-//                               pickType: self.pickType,
-//                               pickGameInfo: self.pickGameInfo,
-//                               pickPublishDate: self.pickPublishDate,
-//                               pickDescription: self.pickDescription,
-//                               pickSportsbook: self.pickSportsbook)
-                    
                     ForEach(viewModel.tickets) { ticket in
                         TicketView(settled: ticket.settled,
                                    pickTeam: ticket.pickTeam,

@@ -17,47 +17,23 @@ struct AccountView: View {
     @Binding var information: Bool
     @Binding var leftSectionActive: Bool
     
-    @State var offset = CGSize.zero
+    @State var offset: CGFloat = screenWidth + 20
+    
+    var drag: some Gesture {
+        DragGesture(minimumDistance: screenWidth / 4)
+            .onChanged({ value in
+                if offset > 0 { offset = screenWidth + value.translation.width }
+            })
+            .onEnded({ value in
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    leftSectionActive.toggle()
+                    if offset > 0 { offset = 0 } else if offset == 0 { offset = screenWidth + 20}
+                }
+            })
+    }
     
     var body: some View {
-        if leftSectionActive {
-            ZStack {
-                BackgroundView()
-                
-                AccountViewInformation(screenName: self.screenName,
-                                       date: self.date,
-                                       accountName: self.accountName,
-                                       isSubscribed: self.isSubscribed)
-                
-                HeaderView2Section(screenName: self.screenName,
-                                   date: self.date,
-                                   accountName: self.accountName,
-                                   isSubscribed: self.isSubscribed,
-                                   leftSection: "Information",
-                                   rightSection: "Billing",
-                                   leftSectionActive: $leftSectionActive)
-            }
-        } else {
-            ZStack {
-//                LinearGradient(colors: [.billingBGLight, .billingBGDark], startPoint: .topLeading, endPoint: .bottomTrailing)
-                BackgroundViewBilling()
-                
-                AccountViewBilling(screenName: self.screenName,
-                                   date: self.date,
-                                   accountName: self.accountName,
-                                   isSubscribed: self.isSubscribed)
-                
-                HeaderView2Section(screenName: self.screenName,
-                                   date: self.date,
-                                   accountName: self.accountName,
-                                   isSubscribed: self.isSubscribed,
-                                   leftSection: "Information",
-                                   rightSection: "Billing",
-                                   leftSectionActive: $leftSectionActive)
-            }
-        }
-        
-        //        ZStack {
+        //        if leftSectionActive {
         //            ZStack {
         //                BackgroundView()
         //
@@ -74,9 +50,9 @@ struct AccountView: View {
         //                                   rightSection: "Billing",
         //                                   leftSectionActive: $leftSectionActive)
         //            }
-        //
+        //        } else {
         //            ZStack {
-        //                LinearGradient(colors: [.billingBGLight, .billingBGDark], startPoint: .topLeading, endPoint: .bottomTrailing)
+        //                BackgroundViewBilling()
         //
         //                AccountViewBilling(screenName: self.screenName,
         //                                   date: self.date,
@@ -91,23 +67,40 @@ struct AccountView: View {
         //                                   rightSection: "Billing",
         //                                   leftSectionActive: $leftSectionActive)
         //            }
-        //            .offset(offset)
-        //            .gesture(
-        //                DragGesture()
-        //                    .onChanged { value in
-        //                        withAnimation(.easeInOut(duration: 0.5)) {
-        //                            offset = value.translation
-        //                        }
-        //                    }
-        //
-        //                    .onEnded { value in
-        //                        withAnimation(.easeInOut(duration: 0.5)) {
-        //                            offset = CGSize(width: screenWidth, height: 0)
-        //                            leftSectionActive.toggle()
-        //                        }
-        //                    }
-        //            )
         //        }
+        
+        ZStack {
+            ZStack {
+                ZStack {
+                    BackgroundView()
+                    
+                    AccountViewInformation(screenName: self.screenName,
+                                           date: self.date,
+                                           accountName: self.accountName,
+                                           isSubscribed: self.isSubscribed)
+                }
+                .gesture(drag)
+                
+                ZStack{
+                    BackgroundViewBilling()
+                    
+                    AccountViewBilling(screenName: self.screenName,
+                                       date: self.date,
+                                       accountName: self.accountName,
+                                       isSubscribed: self.isSubscribed)
+                }
+                .gesture(drag)
+                .offset(x: offset)
+            }
+            
+            HeaderView2Section(screenName: self.screenName,
+                               date: self.date,
+                               accountName: self.accountName,
+                               isSubscribed: self.isSubscribed,
+                               leftSection: "Information",
+                               rightSection: "Billing",
+                               leftSectionActive: $leftSectionActive)
+        }
     }
 }
 
@@ -117,7 +110,7 @@ struct AccountView: View {
                     date: getCurrentDate(),
                     accountName: "Cadel Saszik",
                     isSubscribed: true, information: .constant(true),
-                    leftSectionActive: .constant(false))
+                    leftSectionActive: .constant(true))
         
         VStack {
             NavbarView(selectedTab: .constant(3))
