@@ -22,26 +22,54 @@ struct AccountViewInformation: View {
         ZStack {
             BackgroundView()
             
-            VStack {
+            VStack(alignment: .leading) {
                 //                Spacer()
-                
-                Image(.accountIcon)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 160, height: 160)
-                    .background(.midBlue)
-                    .clipShape(.circle)
-                
-                Text(accountName)
-                    .font(Font.custom("Lexend", size: 24))
-                    .fontWeight(.bold)
-                    .foregroundStyle(LinearGradient(colors: [.billingBGLight, .billingBGDark], startPoint: .topLeading, endPoint: .bottomTrailing))
-                    .padding(.top, 5)
-                Text(isSubscribed ? "PREMIUM ACCOUNT" : "STANDARD ACCOUNT")
-                    .font(Font.custom("Lexend", size: 12))
-                    .fontWeight(.bold)
-                    .foregroundStyle(.lightWhite)
-                    .padding(.top, -18)
+                HStack() {
+                    VStack {
+                        Image(.accountIcon)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 160, height: 160)
+                            .background(.midBlue)
+                            .clipShape(.circle)
+                        
+                        Text(accountName)
+                            .font(Font.custom("Lexend", size: 24))
+                            .fontWeight(.bold)
+                            .foregroundStyle(LinearGradient(colors: [.billingBGLight, .billingBGDark], startPoint: .topLeading, endPoint: .bottomTrailing))
+                            .padding(.top, 5)
+                        Text(isSubscribed ? "PREMIUM ACCOUNT" : "STANDARD ACCOUNT")
+                            .font(Font.custom("Lexend", size: 12))
+                            .fontWeight(.bold)
+                            .foregroundStyle(.lightWhite)
+                            .padding(.top, -18)
+                    }
+                    
+                    VStack(alignment: .leading , spacing: 20) {
+                        VStack{
+                            Text("Username:")
+                                .font(Font.custom("Lexend", size: 16))
+                                .fontWeight(.bold)
+                                .foregroundStyle(.lightWhite)
+                            Text(username)
+                        }
+                        Text("Full Name:")
+                            .font(Font.custom("Lexend", size: 16))
+                            .fontWeight(.bold)
+                            .foregroundStyle(.lightWhite)
+                        Text("Password:")
+                            .font(Font.custom("Lexend", size: 16))
+                            .fontWeight(.bold)
+                            .foregroundStyle(.lightWhite)
+                        Text("Username:")
+                            .font(Font.custom("Lexend", size: 16))
+                            .fontWeight(.bold)
+                            .foregroundStyle(.lightWhite)
+                    }
+                    .padding(.leading, 30)
+                    
+                }
+                .padding([.leading, .trailing], 30)
                 
                 VStack {
                     ScrollView() {
