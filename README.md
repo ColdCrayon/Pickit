@@ -4,9 +4,12 @@ A betting advice app based on thousands of games of data
 # Todo
 
 - #### ACCOUNT INFORMATION ADDITION
-    - [ ] Left align pfp
+    - [x] Left align pfp
     - [ ] add username, pswd, email, information to right side (view only)
+        - Added headers
+        - Watch account video with firebase for info on keeping track of account information and properly displaying
         - form can be emptied now and information viewed
+        - REFACTOR
     - [x]  add upgrade button next to subscribe
         - [ ] standard account creation vs premium
 
