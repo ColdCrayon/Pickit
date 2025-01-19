@@ -126,7 +126,7 @@ struct PickitView: View {
             }
             
             VStack {
-                NavbarView(selectedTab: self.$selectedTab)
+                NavbarView(selectedTab: self.$selectedTab )
             }
         }
         
