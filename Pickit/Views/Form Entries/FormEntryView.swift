@@ -7,12 +7,6 @@
 
 import SwiftUI
 
-enum formEntryType {
-    case username
-    case password
-    case email
-}
-
 struct FormEntryView: View {
     
     var entryTitle: String

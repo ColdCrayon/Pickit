@@ -9,7 +9,10 @@ import SwiftUI
 
 struct AdminView: View {
     
-    @Binding var arbitrage: Bool
+    var screenName: String
+    var date: String
+    var accountName: String
+    var isSubscribed: Bool
     
     @Binding var pickTeam: String
     @Binding var pickType: String
@@ -20,38 +23,64 @@ struct AdminView: View {
     @Binding var sportsbook2: String
     @Binding var oddsSB1: String
     @Binding var oddsSB2: String
-    
     @Binding var sportsbook: String
     
+    @Binding var leftSectionActive: Bool
+    @Binding var selectedTab: Int
+    
+    @State var offset: CGFloat = screenWidth + 20
+    
+    var drag: some Gesture {
+        DragGesture(minimumDistance: screenWidth / 4)
+            .onChanged({ value in
+                if offset > 0 { offset = screenWidth + value.translation.width }
+            })
+            .onEnded({ value in
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    leftSectionActive.toggle()
+                    if offset > 0 { offset = 0 } else if offset == 0 { offset = screenWidth + 20}
+                }
+            })
+    }
+    
     var body: some View {
-        if arbitrage {
+        ZStack {
             ZStack {
-                ArbitrageTicketSubView(pickTeam: self.$pickTeam,
-                                       pickType: self.$pickType,
-                                       gameInfo: self.$gameInfo,
-                                       publishDate: self.$publishDate,
-                                       description: self.$description,
-                                       sportsbook1: self.$sportsbook1,
-                                       sportsbook2: self.$sportsbook2,
-                                       oddsSB1: self.$oddsSB1,
-                                       oddsSB2: self.$oddsSB2)
+                ZStack {
+                    BackgroundView()
+                    
+                    ArbitrageTicketSubView(pickTeam: "", pickType: "", gameInfo: "", publishDate: "", description: "", sportsbook1: "", sportsbook2: "", oddsSB1: "", oddsSB2: "")
+                    .padding(.top, 100)
+                }
+                .gesture(drag)
+                
+                ZStack{
+                    BackgroundView()
+                    
+                    TicketSubView(pickTeam: "", pickType: "", gameInfo: "", publishDate: "", description: "", sportsbook: "")
+                    .padding(.top, 100)
+                }
+                .gesture(drag)
+                .offset(x: offset)
             }
-        } else {
-            ZStack {
-                TicketSubView(pickTeam: self.$pickTeam,
-                              pickType: self.$pickType,
-                              gameInfo: self.$gameInfo,
-                              publishDate: self.$publishDate,
-                              description: self.$description,
-                              sportsbook: self.$sportsbook)
-            }
+            
+            HeaderView2Section(screenName: self.screenName,
+                               date: self.date,
+                               accountName: self.accountName,
+                               isSubscribed: self.isSubscribed,
+                               leftSection: "Arbitrage Ticket",
+                               rightSection: "Game Ticket",
+                               leftSectionActive: $leftSectionActive)
         }
     }
 }
 
 #Preview {
     ZStack {
-        AdminView(arbitrage: .constant(true),
+        AdminView(screenName: "Admin",
+                  date: getCurrentDate(),
+                  accountName: "Cadel Saszik",
+                  isSubscribed: true,
                   pickTeam: .constant("Chicago Bears"),
                   pickType: .constant(""),
                   gameInfo: .constant("Chicago Bears vs. Minnesota Vikings"),
@@ -61,9 +90,11 @@ struct AdminView: View {
                   sportsbook2: .constant("Fan Dual"),
                   oddsSB1: .constant("-120"),
                   oddsSB2: .constant("-120"),
-                  sportsbook: .constant("Bet 365"))
+                  sportsbook: .constant("Bet 365"),
+                  leftSectionActive: .constant(true),
+                  selectedTab: .constant(4))
         
-        HeaderView2Section(screenName: "Admin", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, leftSection: "Game Ticket", rightSection: "Arbitrage Ticket", leftSectionActive: .constant(false))
+//        HeaderView2Section(screenName: "Admin", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, leftSection: "Game Ticket", rightSection: "Arbitrage Ticket", leftSectionActive: .constant(false))
         
         VStack {
             NavbarView(selectedTab: .constant(5))

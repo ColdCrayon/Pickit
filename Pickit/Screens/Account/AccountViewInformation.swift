@@ -16,6 +16,8 @@ struct AccountViewInformation: View {
     var accountName: String
     var isSubscribed: Bool
     
+    @Binding var selectedTab: Int
+    
     @State private var username = ""
     @State private var password = ""
     @State private var email = ""
@@ -24,7 +26,7 @@ struct AccountViewInformation: View {
         ZStack {
             BackgroundView()
             
-            VStack(alignment: .leading) {
+            VStack() {
                 //                Spacer()
                 HStack() {
                     VStack {
@@ -45,30 +47,39 @@ struct AccountViewInformation: View {
                             .fontWeight(.bold)
                             .foregroundStyle(.lightWhite)
                             .padding(.top, -18)
+                        Button {
+                            selectedTab = 4
+                        } label: {
+                            Text("Admin")
+                                .font(Font.custom("Lexend", size: 12).bold())
+                                .foregroundStyle(.lightBlue)
+                                .frame(width: UIScreen.main.bounds.width / 2)
+                        }
+                        .frame(width: screenWidth / 2, height: 24)
                     }
                     
-                    VStack(alignment: .leading , spacing: 20) {
-                        VStack{
-                            Text("Username:")
-                                .font(Font.custom("Lexend", size: 16))
-                                .fontWeight(.bold)
-                                .foregroundStyle(.lightWhite)
-                            Text(username)
-                        }
-                        Text("Full Name:")
-                            .font(Font.custom("Lexend", size: 16))
-                            .fontWeight(.bold)
-                            .foregroundStyle(.lightWhite)
-                        Text("Password:")
-                            .font(Font.custom("Lexend", size: 16))
-                            .fontWeight(.bold)
-                            .foregroundStyle(.lightWhite)
-                        Text("Username:")
-                            .font(Font.custom("Lexend", size: 16))
-                            .fontWeight(.bold)
-                            .foregroundStyle(.lightWhite)
-                    }
-                    .padding(.leading, 30)
+//                    VStack(alignment: .leading , spacing: 20) {
+//                        VStack{
+//                            Text("Username:")
+//                                .font(Font.custom("Lexend", size: 16))
+//                                .fontWeight(.bold)
+//                                .foregroundStyle(.lightWhite)
+//                            Text(username)
+//                        }
+//                        Text("Full Name:")
+//                            .font(Font.custom("Lexend", size: 16))
+//                            .fontWeight(.bold)
+//                            .foregroundStyle(.lightWhite)
+//                        Text("Password:")
+//                            .font(Font.custom("Lexend", size: 16))
+//                            .fontWeight(.bold)
+//                            .foregroundStyle(.lightWhite)
+//                        Text("Username:")
+//                            .font(Font.custom("Lexend", size: 16))
+//                            .fontWeight(.bold)
+//                            .foregroundStyle(.lightWhite)
+//                    }
+//                    .padding(.leading, 30)
                     
                 }
                 .padding([.leading, .trailing], 30)
@@ -99,7 +110,7 @@ struct AccountViewInformation: View {
                                                  topColor: .gold,
                                                  bottomColor: .midGold,
                                            width: 150) {
-                                viewModel.upgrade()
+                                viewModel.login()
                             }
                                 .padding(.trailing, 20)
                         }
@@ -150,7 +161,7 @@ struct AccountViewInformation: View {
 
 #Preview {
     ZStack {
-        AccountViewInformation(screenName: "Account", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true)
+        AccountViewInformation(screenName: "Account", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, selectedTab: .constant(3))
         HeaderView2Section(screenName: "Account", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, leftSection: "Information", rightSection: "Billing", leftSectionActive: .constant(true))
         //        VStack {
         //            NavbarView(selectedTab: .constant(4))

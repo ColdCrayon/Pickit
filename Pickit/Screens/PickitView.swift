@@ -23,12 +23,15 @@ let screenHeight = screenSize.height
 
 struct PickitView: View {
     
-    @State var selectedTab = 0
+    @State var selectedTab = 5
     
     @State var activeView: currentView = currentView.previousTickets
     
+    @State var accountName: String = "Cadel Saszik"
+    
     @State var leftSectionActiveHome: Bool = true
     @State var leftSectionActiveAccount: Bool = true
+    @State var leftSectionActiveAdmin: Bool = true
     
     var body: some View {
         //==========================================================================================
@@ -45,7 +48,7 @@ struct PickitView: View {
                                  rightSection: "News",
                                  leftSectionActive: $leftSectionActiveHome)
                         
-                        HeaderView2Section(screenName: "Home", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, leftSection: "Previous Picks", rightSection: "News", leftSectionActive: $leftSectionActiveHome)
+                        HeaderView2Section(screenName: "Home", date: getCurrentDate(), accountName: accountName, isSubscribed: true, leftSection: "Previous Picks", rightSection: "News", leftSectionActive: $leftSectionActiveHome)
                     }
                 }
                 .tag(0)
@@ -98,19 +101,23 @@ struct PickitView: View {
                                     accountName: "Cadel Saszik",
                                     isSubscribed: true,
                                     information: .constant(true),
-                                    leftSectionActive: $leftSectionActiveAccount)
+                                    leftSectionActive: $leftSectionActiveAccount,
+                                    selectedTab: $selectedTab)
                         
                         HeaderView2Section(screenName: "Account", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, leftSection: "Information", rightSection: "Billing", leftSectionActive: $leftSectionActiveAccount)
                     }
                 }
                 .tag(3)
                 
-                //======================================================================================
+                //==================================================================================
                 // ADD STATE VARIBALE TO PARENT PICKIT VIEW
                 
                 TabView {
                     ZStack {
-                        AdminView(arbitrage: .constant(true),
+                        AdminView(screenName: "Admin",
+                                  date: getCurrentDate(),
+                                  accountName: "Cadel Saszik",
+                                  isSubscribed: true,
                                   pickTeam: .constant("Chicago Bears"),
                                   pickType: .constant(""),
                                   gameInfo: .constant("Chicago Bears vs. Minnesota Vikings"),
@@ -120,9 +127,23 @@ struct PickitView: View {
                                   sportsbook2: .constant("Fan Dual"),
                                   oddsSB1: .constant("-120"),
                                   oddsSB2: .constant("-120"),
-                                  sportsbook: .constant("Bet 365"))
+                                  sportsbook: .constant("Bet 365"),
+                                  leftSectionActive: $leftSectionActiveAdmin,
+                                  selectedTab: $selectedTab)
                     }
                 }
+                .tag(4)
+                
+//                TabView {
+//                    ZStack {
+//                        SignInView(screenName: "Sign In",
+//                                   date: getCurrentDate(),
+//                                   accountName: "",
+//                                   isSubscribed: false)
+//                    }
+////                        .toolbarVisibility(.hidden, for: .bottomBar)
+//                }
+//                .tag(5)
             }
             
             VStack {

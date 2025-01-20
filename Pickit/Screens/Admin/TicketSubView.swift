@@ -9,25 +9,23 @@ import SwiftUI
 
 struct TicketSubView: View {
     
-    @Binding var pickTeam: String
-    @Binding var pickType: String
-    @Binding var gameInfo: String
-    @Binding var publishDate: String
-    @Binding var description: String
-    @Binding var sportsbook: String
+    @State var pickTeam: String
+    @State var pickType: String
+    @State var gameInfo: String
+    @State var publishDate: String
+    @State var description: String
+    @State var sportsbook: String
     
     var body: some View {
-        Color(.mainBackground)
-        
         VStack(spacing: 0) {
-            Button {
-                
-            } label: {
-                Text("Return to Account")
-                    .font(Font.custom("Lexend", size: 12).bold())
-                    .foregroundStyle(.lightBlue)
-            }
-            .frame(width: UIScreen.main.bounds.width / 2, height: 40)
+//            Button {
+//                
+//            } label: {
+//                Text("Return to Account")
+//                    .font(Font.custom("Lexend", size: 12).bold())
+//                    .foregroundStyle(.lightBlue)
+//            }
+//            .frame(width: UIScreen.main.bounds.width / 2, height: 40)
             
             Text("Ticket Submission")
                 .font(Font.custom("Lexend", size: 32))
@@ -36,30 +34,12 @@ struct TicketSubView: View {
             
             Form {
                 Section {
-                    TextField("Pick Team", text: $pickTeam)
-                        .font(Font.custom("Lexend", size: 16))
-                        .fontWeight(.bold)
-                        .opacity(0.6)
-                    TextField("Pick Type", text: $pickType)
-                        .font(Font.custom("Lexend", size: 16))
-                        .fontWeight(.bold)
-                        .opacity(0.6)
-                    TextField("Game Info", text: $gameInfo)
-                        .font(Font.custom("Lexend", size: 16))
-                        .fontWeight(.bold)
-                        .opacity(0.6)
-                    TextField("Publish Date", text: $publishDate)
-                        .font(Font.custom("Lexend", size: 16))
-                        .fontWeight(.bold)
-                        .opacity(0.6)
-                    TextField("Description", text: $description)
-                        .font(Font.custom("Lexend", size: 16))
-                        .fontWeight(.bold)
-                        .opacity(0.6)
-                    TextField("Sportsbook", text: $sportsbook)
-                        .font(Font.custom("Lexend", size: 16))
-                        .fontWeight(.bold)
-                        .opacity(0.6)
+                    TicketEntryView(entryTitle: "Pick Team", entryValue: $pickTeam)
+                    TicketEntryView(entryTitle: "Pick Type", entryValue: $pickType)
+                    TicketEntryView(entryTitle: "Game Info", entryValue: $gameInfo)
+                    TicketEntryView(entryTitle: "Publish Date", entryValue: $publishDate)
+                    TicketEntryView(entryTitle: "Description", entryValue: $description)
+                    TicketEntryView(entryTitle: "Sportsbook", entryValue: $sportsbook)
                 } header: {
                     Text("Pick Info")
                         .font(Font.custom("Lexend", size: 18))
@@ -81,24 +61,8 @@ struct TicketSubView: View {
 //            .padding([.leading, .trailing], 50)
             .padding(.top, 10)
             
-            Button {
-                
-            } label: {
-                ZStack{
-                    Rectangle()
-                        .frame(width: 330, height: 50)
-                        .foregroundStyle(.ticketSubButtonDark)
-                        .cornerRadius(20)
-                        .offset(y: 9)
-                    Rectangle()
-                        .frame(width: 330, height: 50)
-                        .foregroundStyle(.ticketSubButtonLight)
-                        .cornerRadius(20)
-                    Text("SUBSCRIBE")
-                        .font(Font.custom("Lexend", size: 24))
-                        .fontWeight(.bold)
-                        .foregroundStyle(.white)
-                }
+            AnimatedButton(title: "Submit", topColor: .ticketSubButtonLight, bottomColor: .ticketSubButtonDark, width: 330) {
+                // Submit Ticket
             }
             .padding(.top, 35)
         }
@@ -107,12 +71,7 @@ struct TicketSubView: View {
 
 #Preview {
     ZStack {
-        TicketSubView(pickTeam: .constant("Chicago Bears"),
-                      pickType: .constant("Moneyline"),
-                      gameInfo: .constant("Chicago Bears vs. Detroit Lions"),
-                      publishDate: .constant(getCurrentDate()),
-                      description: .constant("Chicago Bears are better"),
-                      sportsbook: .constant("Draft Kings"))
+        TicketSubView(pickTeam: "", pickType: "", gameInfo: "", publishDate: "", description: "", sportsbook: "")
         
         HeaderView2Section(screenName: "Admin",
                            date: getCurrentDate(),

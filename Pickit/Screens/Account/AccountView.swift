@@ -16,6 +16,7 @@ struct AccountView: View {
     
     @Binding var information: Bool
     @Binding var leftSectionActive: Bool
+    @Binding var selectedTab: Int
     
     @State var offset: CGFloat = screenWidth + 20
     
@@ -77,7 +78,8 @@ struct AccountView: View {
                     AccountViewInformation(screenName: self.screenName,
                                            date: self.date,
                                            accountName: self.accountName,
-                                           isSubscribed: self.isSubscribed)
+                                           isSubscribed: self.isSubscribed,
+                                           selectedTab: $selectedTab)
                 }
                 .gesture(drag)
                 
@@ -110,7 +112,8 @@ struct AccountView: View {
                     date: getCurrentDate(),
                     accountName: "Cadel Saszik",
                     isSubscribed: true, information: .constant(true),
-                    leftSectionActive: .constant(true))
+                    leftSectionActive: .constant(true),
+                    selectedTab: .constant(3))
         
         VStack {
             NavbarView(selectedTab: .constant(3))
