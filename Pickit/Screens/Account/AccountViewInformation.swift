@@ -81,12 +81,20 @@ struct AccountViewInformation: View {
                             .padding(.bottom, 15)
                         
                         HStack {
-                            CreateAccountButton()
+//                            CreateAccountButton()
+                            AnimatedButton(title: "Create",
+                                                 topColor: .ticketSubButtonLight,
+                                                 bottomColor: .ticketSubButtonDark,
+                                                 width: 150)
                                 .padding(.leading, 20)
                             
                             Spacer()
                             
-                            UpgradeAccountButton()
+//                            UpgradeAccountButton()
+                            AnimatedButton(title: "Upgrade",
+                                                 topColor: .gold,
+                                                 bottomColor: .midGold,
+                                                 width: 150)
                                 .padding(.trailing, 20)
                         }
                         .padding(.bottom, 30)

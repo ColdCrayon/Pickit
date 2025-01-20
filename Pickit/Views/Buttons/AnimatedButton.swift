@@ -7,7 +7,12 @@
 
 import SwiftUI
 
-struct SubscribeButtonAdmin: View {
+struct AnimatedButton: View {
+    
+    let title: String
+    let topColor: Color
+    let bottomColor: Color
+    let width: CGFloat
     
     @State private var subButtonOffset = 9
     @State private var hasPressed = false
@@ -32,17 +37,17 @@ struct SubscribeButtonAdmin: View {
         } label: {
             ZStack{
                 Rectangle()
-                    .frame(width: 250, height: 50)
-                    .foregroundStyle(.ticketSubButtonDark)
+                    .frame(width: width, height: 50)
+                    .foregroundStyle(bottomColor)
                     .cornerRadius(20)
                     .offset(y: 9)
                 Rectangle()
-                    .frame(width: 250, height: 50)
-                    .foregroundStyle(.ticketSubButtonLight)
+                    .frame(width: width, height: 50)
+                    .foregroundStyle(topColor)
                     .cornerRadius(20)
                     .offset(y: CGFloat(hasPressed ? subButtonOffset : 0))
                     .gesture(buttonPress)
-                Text("SUBSCRIBE")
+                Text(title)
                     .font(Font.custom("Lexend", size: 24))
                     .fontWeight(.bold)
                     .foregroundStyle(.white)
@@ -54,5 +59,5 @@ struct SubscribeButtonAdmin: View {
 }
 
 #Preview {
-    SubscribeButtonAdmin()
+    AnimatedButton(title: "Title", topColor: .midBlue, bottomColor: .darkBlue, width: 200)
 }

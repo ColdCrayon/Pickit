@@ -65,7 +65,11 @@ struct AccountViewBilling: View {
                         
                         Spacer()
                         
-                        SubscribeButtonBilling()
+//                        SubscribeButtonBilling()
+                        AnimatedButton(title: "SUBSCRIBE",
+                                             topColor: .billingBGDark,
+                                             bottomColor: .billingSubDarker,
+                                             width: 250)
                             .padding(.bottom, 20)
                     }
                     .padding([.leading, .trailing], 8)
