@@ -18,11 +18,11 @@ struct ComingSoonView: View {
         ZStack {
             BackgroundView()
             
-            HeaderView1Section(screenName: screenName,
-                               date: date,
-                               accountName: accountName,
-                               isSubscribed: isSubscribed,
-                               section: "Coming Soon")
+//            HeaderView1Section(screenName: screenName,
+//                               date: date,
+//                               accountName: accountName,
+//                               isSubscribed: isSubscribed,
+//                               section: "Coming Soon")
             
             VStack(spacing: 20) {
                 Image(.logo)

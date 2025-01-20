@@ -23,7 +23,7 @@ let screenHeight = screenSize.height
 
 struct PickitView: View {
     
-    @State var selectedTab = 5
+    @State var selectedTab: Int = 5
     
     @State var activeView: currentView = currentView.previousTickets
     
@@ -47,8 +47,6 @@ struct PickitView: View {
                                  leftSection: "Previous Picks",
                                  rightSection: "News",
                                  leftSectionActive: $leftSectionActiveHome)
-                        
-                        HeaderView2Section(screenName: "Home", date: getCurrentDate(), accountName: accountName, isSubscribed: true, leftSection: "Previous Picks", rightSection: "News", leftSectionActive: $leftSectionActiveHome)
                     }
                 }
                 .tag(0)
@@ -66,8 +64,6 @@ struct PickitView: View {
                                   pickSportsbook: "Fandual",
                                   pickTeam: "Minnesota Vikings",
                                   pickType: "Moneyline")
-                        
-                        HeaderView1Section(screenName: "Picks", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, section: "Newest Picks")
                     }
                 }
                 .tag(1)
@@ -103,8 +99,6 @@ struct PickitView: View {
                                     information: .constant(true),
                                     leftSectionActive: $leftSectionActiveAccount,
                                     selectedTab: $selectedTab)
-                        
-                        HeaderView2Section(screenName: "Account", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, leftSection: "Information", rightSection: "Billing", leftSectionActive: $leftSectionActiveAccount)
                     }
                 }
                 .tag(3)
@@ -134,20 +128,21 @@ struct PickitView: View {
                 }
                 .tag(4)
                 
-//                TabView {
-//                    ZStack {
-//                        SignInView(screenName: "Sign In",
-//                                   date: getCurrentDate(),
-//                                   accountName: "",
-//                                   isSubscribed: false)
-//                    }
-////                        .toolbarVisibility(.hidden, for: .bottomBar)
-//                }
-//                .tag(5)
+                TabView {
+                    ZStack {
+                        SignInView(screenName: "Sign In",
+                                   date: getCurrentDate(),
+                                   accountName: "",
+                                   isSubscribed: false)
+                    }
+                }
+                .tag(5)
             }
             
-            VStack {
-                NavbarView(selectedTab: self.$selectedTab )
+            if selectedTab != 5 {
+                VStack {
+                    NavbarView(selectedTab: self.$selectedTab)
+                }
             }
         }
         
