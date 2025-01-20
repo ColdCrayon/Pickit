@@ -8,15 +8,6 @@
 import SwiftUI
 import UIKit
 
-enum currentView {
-    case previousTickets
-    case news
-    case newestTickets
-    case newestArbitrageTickets
-    case account
-    case billing
-}
-
 let screenSize = UIScreen.main.bounds
 let screenWidth = screenSize.width
 let screenHeight = screenSize.height
@@ -25,7 +16,7 @@ struct PickitView: View {
     
     @State var selectedTab: Int = 5
     
-    @State var activeView: currentView = currentView.previousTickets
+    @State var isSignedIn: Bool = false
     
     @State var accountName: String = "Cadel Saszik"
     
@@ -37,6 +28,8 @@ struct PickitView: View {
         //==========================================================================================
         
         ZStack {
+            BackgroundView()
+            
             TabView(selection: $selectedTab) {
                 TabView {
                     ZStack {
@@ -127,21 +120,20 @@ struct PickitView: View {
                     }
                 }
                 .tag(4)
-                
-                TabView {
-                    ZStack {
-                        SignInView(screenName: "Sign In",
-                                   date: getCurrentDate(),
-                                   accountName: "",
-                                   isSubscribed: false)
-                    }
-                }
-                .tag(5)
             }
             
-            if selectedTab != 5 {
-                VStack {
-                    NavbarView(selectedTab: self.$selectedTab)
+            
+            
+            VStack {
+                NavbarView(selectedTab: self.$selectedTab)
+            }
+            
+            if !isSignedIn {
+                ZStack {
+                    SignInView(screenName: "Sign In",
+                               date: getCurrentDate(),
+                               accountName: "",
+                               isSubscribed: false)
                 }
             }
         }
@@ -247,5 +239,5 @@ struct PickitView: View {
 }
 
 #Preview {
-    PickitView(selectedTab: 0, activeView: currentView.account)
+    PickitView(selectedTab: 0)
 }
