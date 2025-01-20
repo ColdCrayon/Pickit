@@ -11,10 +11,13 @@ A betting advice app based on thousands of games of data
         - form can be emptied now and information viewed
         - REFACTOR
     - [x]  add upgrade button next to subscribe
-        - [ ] standard account creation vs premium
+        - [x] standard account creation vs premium
 
-- #### ADMIN BUTTON AND VIEW SCREEN
+- [x] Admin Button and View Screen for Arb and Game Tickets
+
 - #### TOS AND PRIVACY POLICY MODALS
+    - [ ] Design sheets
+    - [ ] Implement into AccountViewInformation
 
 - #### Git Branching !!!
 
