@@ -9,6 +9,8 @@ import SwiftUI
 
 struct AccountViewBilling: View {
     
+    @StateObject var viewModel = AccountViewBillingViewModel()
+    
     var screenName: String
     var date: String
     var accountName: String
@@ -69,7 +71,9 @@ struct AccountViewBilling: View {
                         AnimatedButton(title: "SUBSCRIBE",
                                              topColor: .billingBGDark,
                                              bottomColor: .billingSubDarker,
-                                             width: 250)
+                                       width: 250) {
+                            viewModel.upgrade()
+                        }
                             .padding(.bottom, 20)
                     }
                     .padding([.leading, .trailing], 8)

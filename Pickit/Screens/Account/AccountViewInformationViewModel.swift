@@ -9,7 +9,7 @@ import FirebaseAuth
 import FirebaseFirestore
 import SwiftUI
 
-final class AccountViewModel: ObservableObject {
+final class AccountViewInformationViewModel: ObservableObject {
     @Published var username: String = ""
     @Published var fullName: String = ""
     @Published var password: String = ""

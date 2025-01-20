@@ -9,6 +9,8 @@ import SwiftUI
 
 struct AccountViewInformation: View {
     
+    @StateObject var viewModel = AccountViewInformationViewModel()
+    
     var screenName: String
     var date: String
     var accountName: String
@@ -85,7 +87,9 @@ struct AccountViewInformation: View {
                             AnimatedButton(title: "Create",
                                                  topColor: .ticketSubButtonLight,
                                                  bottomColor: .ticketSubButtonDark,
-                                                 width: 150)
+                                           width: 150) {
+                                viewModel.register()
+                            }
                                 .padding(.leading, 20)
                             
                             Spacer()
@@ -94,7 +98,9 @@ struct AccountViewInformation: View {
                             AnimatedButton(title: "Upgrade",
                                                  topColor: .gold,
                                                  bottomColor: .midGold,
-                                                 width: 150)
+                                           width: 150) {
+                                viewModel.upgrade()
+                            }
                                 .padding(.trailing, 20)
                         }
                         .padding(.bottom, 30)

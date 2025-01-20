@@ -14,6 +14,8 @@ struct AnimatedButton: View {
     let bottomColor: Color
     let width: CGFloat
     
+    let action: () -> Void
+    
     @State private var subButtonOffset = 9
     @State private var hasPressed = false
     
@@ -33,7 +35,7 @@ struct AnimatedButton: View {
     
     var body: some View {
         Button {
-            
+            action()
         } label: {
             ZStack{
                 Rectangle()
@@ -59,5 +61,7 @@ struct AnimatedButton: View {
 }
 
 #Preview {
-    AnimatedButton(title: "Title", topColor: .midBlue, bottomColor: .darkBlue, width: 200)
+    AnimatedButton(title: "Title", topColor: .midBlue, bottomColor: .darkBlue, width: 200) {
+        
+    }
 }
