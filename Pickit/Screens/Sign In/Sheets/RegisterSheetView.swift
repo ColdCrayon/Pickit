@@ -14,6 +14,8 @@ struct RegisterSheetView: View {
     @State var password: String = ""
     @State var email: String = ""
     
+    @Binding var isSignedIn: Bool
+    
     var body: some View {
         ZStack {
             BackgroundViewBilling()
@@ -33,11 +35,11 @@ struct RegisterSheetView: View {
                     FormEntryView(entryTitle: "Full Name", entryValue: $fullName)
                     FormEntryView(entryTitle: "Username", entryValue: $username)
                         .padding(.bottom, 15)
-                    AnimatedButton(title: "Login",
+                    AnimatedButton(title: "Create Account",
                                    topColor: .midBlue,
                                    bottomColor: .darkBlue,
                                    width: 300) {
-                        
+                        isSignedIn = true
                     }
                                    .padding(.bottom, 30)
                 }
@@ -58,6 +60,6 @@ struct RegisterSheetView: View {
 }
 
 #Preview {
-    RegisterSheetView()
+    RegisterSheetView(isSignedIn: .constant(false))
 }
 

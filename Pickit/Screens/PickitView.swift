@@ -133,7 +133,8 @@ struct PickitView: View {
                     SignInView(screenName: "Sign In",
                                date: getCurrentDate(),
                                accountName: "",
-                               isSubscribed: false)
+                               isSubscribed: false,
+                               isSignedIn: $isSignedIn)
                 }
             }
         }

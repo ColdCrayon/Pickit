@@ -35,7 +35,6 @@ struct AnimatedButton: View {
     
     var body: some View {
         Button {
-            print("Clicked")
             action()
         } label: {
             ZStack{

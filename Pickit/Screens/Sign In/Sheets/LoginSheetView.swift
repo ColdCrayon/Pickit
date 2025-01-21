@@ -12,6 +12,8 @@ struct LoginSheetView: View {
     @State var password: String = ""
     @State var email: String = ""
     
+    @Binding var isSignedIn: Bool
+    
     var body: some View {
         ZStack {
             BackgroundViewBilling()
@@ -33,7 +35,7 @@ struct LoginSheetView: View {
                                    topColor: .midBlue,
                                    bottomColor: .darkBlue,
                                    width: 300) {
-                        
+                        isSignedIn = true
                     }
                                    .padding(.bottom, 30)
                 }
@@ -54,5 +56,5 @@ struct LoginSheetView: View {
 }
 
 #Preview {
-    LoginSheetView()
+    LoginSheetView(isSignedIn: .constant(false))
 }

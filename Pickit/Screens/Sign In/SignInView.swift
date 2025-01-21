@@ -17,6 +17,8 @@ struct SignInView: View {
     @State var isShowingLogin: Bool = false
     @State var isShowingRegister: Bool = false
     
+    @Binding var isSignedIn: Bool
+    
     var body: some View {
         ZStack {
             BackgroundView()
@@ -43,7 +45,7 @@ struct SignInView: View {
 //                    isShowingLogin.toggle()
 //                }
                                .sheet(isPresented: $isShowingLogin) {
-                                   LoginSheetView()
+                                   LoginSheetView(isSignedIn: $isSignedIn)
                                        .presentationDetents([.medium])
                                }
                 
@@ -54,7 +56,7 @@ struct SignInView: View {
                     isShowingRegister.toggle()
                 }
                                .sheet(isPresented: $isShowingRegister) {
-                                   RegisterSheetView()
+                                   RegisterSheetView(isSignedIn: $isSignedIn)
                                        .presentationDetents([.fraction(0.8)])
                                }
                 
@@ -64,6 +66,6 @@ struct SignInView: View {
 }
 
 #Preview {
-    SignInView(screenName: "Sign in", date: getCurrentDate(), accountName: "", isSubscribed: false)
+    SignInView(screenName: "Sign in", date: getCurrentDate(), accountName: "", isSubscribed: false, isSignedIn: .constant(false))
 }
 
