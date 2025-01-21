@@ -1,5 +1,5 @@
 # Ignore all .xcodeproj
-*Pickit.xcodeproj/
+Pickit.xcodeproj/
 
 # Ignore .DS_Store
 .DS_Store
