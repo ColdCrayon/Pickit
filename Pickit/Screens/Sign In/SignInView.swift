@@ -38,10 +38,13 @@ struct SignInView: View {
                                bottomColor: .ticketSubButtonDark,
                                width: 300) {
                     isShowingLogin.toggle()
-                    print("Clicked")
                 }
+//                Button("Login") {
+//                    isShowingLogin.toggle()
+//                }
                                .sheet(isPresented: $isShowingLogin) {
                                    LoginSheetView()
+                                       .presentationDetents([.medium])
                                }
                 
                 AnimatedButton(title: "Register",
@@ -51,7 +54,8 @@ struct SignInView: View {
                     isShowingRegister.toggle()
                 }
                                .sheet(isPresented: $isShowingRegister) {
-                                   LoginSheetView()
+                                   RegisterSheetView()
+                                       .presentationDetents([.fraction(0.8)])
                                }
                 
             }

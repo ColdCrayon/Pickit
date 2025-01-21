@@ -35,6 +35,7 @@ struct AnimatedButton: View {
     
     var body: some View {
         Button {
+            print("Clicked")
             action()
         } label: {
             ZStack{
@@ -48,13 +49,13 @@ struct AnimatedButton: View {
                     .foregroundStyle(topColor)
                     .cornerRadius(20)
                     .offset(y: CGFloat(hasPressed ? subButtonOffset : 0))
-                    .gesture(buttonPress)
+                    .simultaneousGesture(buttonPress)
                 Text(title)
                     .font(Font.custom("Lexend", size: 24))
                     .fontWeight(.bold)
                     .foregroundStyle(.white)
                     .offset(y: CGFloat(hasPressed ? subButtonOffset : 0))
-                    .gesture(buttonPress)
+                    .simultaneousGesture(buttonPress)
             }
         }
     }

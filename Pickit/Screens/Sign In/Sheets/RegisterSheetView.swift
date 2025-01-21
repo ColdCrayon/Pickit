@@ -7,8 +7,10 @@
 
 import SwiftUI
 
-struct LoginSheetView: View {
+struct RegisterSheetView: View {
     
+    @State var username: String = ""
+    @State var fullName: String = ""
     @State var password: String = ""
     @State var email: String = ""
     
@@ -17,7 +19,7 @@ struct LoginSheetView: View {
             BackgroundViewBilling()
             
             VStack {
-                Text("Enter your Email and Password")
+                Text("Create Your Account")
                     .frame(width: screenWidth * 0.8)
                     .font(Font.custom("Lexend", size: 24))
                     .foregroundStyle(.lightWhite)
@@ -28,6 +30,8 @@ struct LoginSheetView: View {
                 VStack {
                     FormEntryView(entryTitle: "Email", entryValue: $email)
                     FormPasswordView(entryTitle: "Password", entryValue: $password)
+                    FormEntryView(entryTitle: "Full Name", entryValue: $fullName)
+                    FormEntryView(entryTitle: "Username", entryValue: $username)
                         .padding(.bottom, 15)
                     AnimatedButton(title: "Login",
                                    topColor: .midBlue,
@@ -54,5 +58,6 @@ struct LoginSheetView: View {
 }
 
 #Preview {
-    LoginSheetView()
+    RegisterSheetView()
 }
+
