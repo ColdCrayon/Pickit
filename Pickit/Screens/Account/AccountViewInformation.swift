@@ -58,63 +58,60 @@ struct AccountViewInformation: View {
                         .frame(width: screenWidth / 2, height: 24)
                     }
                     
-//                    VStack(alignment: .leading , spacing: 20) {
-//                        VStack{
-//                            Text("Username:")
-//                                .font(Font.custom("Lexend", size: 16))
-//                                .fontWeight(.bold)
-//                                .foregroundStyle(.lightWhite)
-//                            Text(username)
-//                        }
-//                        Text("Full Name:")
-//                            .font(Font.custom("Lexend", size: 16))
-//                            .fontWeight(.bold)
-//                            .foregroundStyle(.lightWhite)
-//                        Text("Password:")
-//                            .font(Font.custom("Lexend", size: 16))
-//                            .fontWeight(.bold)
-//                            .foregroundStyle(.lightWhite)
-//                        Text("Username:")
-//                            .font(Font.custom("Lexend", size: 16))
-//                            .fontWeight(.bold)
-//                            .foregroundStyle(.lightWhite)
-//                    }
-//                    .padding(.leading, 30)
+                    //                    VStack(alignment: .leading , spacing: 20) {
+                    //                        VStack{
+                    //                            Text("Username:")
+                    //                                .font(Font.custom("Lexend", size: 16))
+                    //                                .fontWeight(.bold)
+                    //                                .foregroundStyle(.lightWhite)
+                    //                            Text(username)
+                    //                        }
+                    //                        Text("Full Name:")
+                    //                            .font(Font.custom("Lexend", size: 16))
+                    //                            .fontWeight(.bold)
+                    //                            .foregroundStyle(.lightWhite)
+                    //                        Text("Password:")
+                    //                            .font(Font.custom("Lexend", size: 16))
+                    //                            .fontWeight(.bold)
+                    //                            .foregroundStyle(.lightWhite)
+                    //                        Text("Username:")
+                    //                            .font(Font.custom("Lexend", size: 16))
+                    //                            .fontWeight(.bold)
+                    //                            .foregroundStyle(.lightWhite)
+                    //                    }
+                    //                    .padding(.leading, 30)
                     
                 }
                 .padding([.leading, .trailing], 30)
                 
                 VStack {
                     ScrollView() {
-                        FormEntryView(entryTitle: "Username", entryValue: $username)
+                        FormDisplayView(entryTitle: "Username", entryValue: $username)
                             .padding(.top, 6)
-                        FormEntryView(entryTitle: "Full Name", entryValue: $username)
-                        FormPasswordView(entryTitle: "Password", entryValue: $password)
-                        FormEntryView(entryTitle: "Email", entryValue: $email)
+                        FormDisplayView(entryTitle: "Full Name", entryValue: $username)
+                        //                        FormPasswordView(entryTitle: "Password", entryValue: $password)
+                        FormDisplayView(entryTitle: "Email", entryValue: $email)
                             .padding(.bottom, 15)
                         
-                        HStack {
-//                            CreateAccountButton()
-                            AnimatedButton(title: "Create",
-                                                 topColor: .ticketSubButtonLight,
-                                                 bottomColor: .ticketSubButtonDark,
-                                           width: 150) {
-                                viewModel.register()
-                            }
-                                .padding(.leading, 20)
+                        Button {
                             
-                            Spacer()
-                            
-//                            UpgradeAccountButton()
-                            AnimatedButton(title: "Upgrade",
-                                                 topColor: .gold,
-                                                 bottomColor: .midGold,
-                                           width: 150) {
-                                viewModel.login()
-                            }
-                                .padding(.trailing, 20)
+                        } label: {
+                            Text("Forgot Password?")
+                                .font(Font.custom("Lexend", size: 14).bold())
+                                .padding([.top, .bottom], 6)
+                                .foregroundStyle(.lightBlue)
+                                .frame(width: UIScreen.main.bounds.width / 2)
                         }
-                        .padding(.bottom, 30)
+                        
+                        HStack {
+                            AnimatedButton(title: "Sign Out",
+                                           topColor: .ticketSubButtonLight,
+                                           bottomColor: .ticketSubButtonDark,
+                                           width: 300) {
+                                //                                viewModel.register()
+                            }
+                                           .padding(.bottom, 30)
+                        }
                     }
                     .frame(width: screenWidth * 0.9)
                     .foregroundStyle(.lightWhite)
