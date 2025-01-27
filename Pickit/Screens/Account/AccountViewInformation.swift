@@ -108,7 +108,8 @@ struct AccountViewInformation: View {
                                            topColor: .ticketSubButtonLight,
                                            bottomColor: .ticketSubButtonDark,
                                            width: 300) {
-                                //                                viewModel.register()
+                                // Attempt Sign out
+                                
                             }
                                            .padding(.bottom, 30)
                         }

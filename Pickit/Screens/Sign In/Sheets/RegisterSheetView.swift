@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RegisterSheetView: View {
     
-    @StateObject var viewModel = AccountViewInformationViewModel()
+    @StateObject var viewModel = SignInViewViewModel()
     
     @State var username: String = ""
     @State var fullName: String = ""
@@ -42,7 +42,7 @@ struct RegisterSheetView: View {
                                    bottomColor: .darkBlue,
                                    width: 300) {
                         viewModel.register()
-                        isSignedIn = true
+//                        isSignedIn = true
                     }
                                    .padding(.bottom, 30)
                 }

@@ -14,11 +14,13 @@ let screenHeight = screenSize.height
 
 struct PickitView: View {
     
+    @StateObject var viewModel = PickitViewViewModel()
+    
     @State var selectedTab: Int = 5
     
-    @State var isSignedIn: Bool = false
-    
     @State var accountName: String = "Cadel Saszik"
+    
+    @State var isSignedIn: Bool = false
     
     @State var leftSectionActiveHome: Bool = true
     @State var leftSectionActiveAccount: Bool = true
@@ -128,7 +130,7 @@ struct PickitView: View {
                 NavbarView(selectedTab: self.$selectedTab)
             }
             
-            if !isSignedIn {
+            if !viewModel.isSignedIn, viewModel.currentUserId.isEmpty{
                 ZStack {
                     SignInView(screenName: "Sign In",
                                date: getCurrentDate(),

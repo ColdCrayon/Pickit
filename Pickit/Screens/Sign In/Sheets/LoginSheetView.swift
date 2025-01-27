@@ -9,6 +9,8 @@ import SwiftUI
 
 struct LoginSheetView: View {
     
+    @StateObject var viewModel = SignInViewViewModel()
+    
     @State var password: String = ""
     @State var email: String = ""
     
@@ -35,7 +37,8 @@ struct LoginSheetView: View {
                                    topColor: .midBlue,
                                    bottomColor: .darkBlue,
                                    width: 300) {
-                        isSignedIn = true
+                        
+//                        isSignedIn = true
                     }
                                    .padding(.bottom, 30)
                 }
