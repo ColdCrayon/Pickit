@@ -31,16 +31,24 @@ struct RegisterSheetView: View {
                     .multilineTextAlignment(.center)
                     .shadow(radius: 4, x: 2, y: 2)
                 
+                if !viewModel.errorMessageRegister.isEmpty {
+                    Text(viewModel.errorMessageRegister)
+                        .foregroundStyle(.red)
+                        .font(Font.custom("Lexend", size: 12))
+                        .fontWeight(.bold)
+                }
+                
                 VStack {
-                    FormEntryView(entryTitle: "Email", entryValue: $email)
-                    FormPasswordView(entryTitle: "Password", entryValue: $password)
-                    FormEntryView(entryTitle: "Full Name", entryValue: $fullName)
-                    FormEntryView(entryTitle: "Username", entryValue: $username)
+                    FormEntryView(entryTitle: "Email", entryValue: $viewModel.email)
+                    FormPasswordView(entryTitle: "Password", entryValue: $viewModel.password)
+                    FormEntryView(entryTitle: "Full Name", entryValue: $viewModel.fullName)
+                    FormEntryView(entryTitle: "Username", entryValue: $viewModel.username)
                         .padding(.bottom, 15)
                     AnimatedButton(title: "Create Account",
                                    topColor: .midBlue,
                                    bottomColor: .darkBlue,
                                    width: 300) {
+                        print("Clicked")
                         viewModel.register()
 //                        isSignedIn = true
                     }

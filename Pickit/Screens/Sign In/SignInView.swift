@@ -9,6 +9,8 @@ import SwiftUI
 
 struct SignInView: View {
     
+//    @StateObject var viewModel = SignInViewViewModel()
+    
     var screenName: String
     var date: String
     var accountName: String
