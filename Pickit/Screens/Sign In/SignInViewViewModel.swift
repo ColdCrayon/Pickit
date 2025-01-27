@@ -40,6 +40,7 @@ final class SignInViewViewModel: ObservableObject {
     private func insertUserRecord(id: String) {
         let newUser = User(id: id,
                            name: fullName,
+                           username: username,
                            email: email,
                            joined: Date().timeIntervalSince1970)
         

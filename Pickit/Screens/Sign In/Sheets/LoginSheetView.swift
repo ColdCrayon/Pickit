@@ -30,14 +30,14 @@ struct LoginSheetView: View {
                     .shadow(radius: 4, x: 2, y: 2)
                 
                 VStack {
-                    FormEntryView(entryTitle: "Email", entryValue: $email)
-                    FormPasswordView(entryTitle: "Password", entryValue: $password)
+                    FormEntryView(entryTitle: "Email", entryValue: $viewModel.email)
+                    FormPasswordView(entryTitle: "Password", entryValue: $viewModel.password)
                         .padding(.bottom, 15)
                     AnimatedButton(title: "Login",
                                    topColor: .midBlue,
                                    bottomColor: .darkBlue,
                                    width: 300) {
-                        
+                        viewModel.login()
 //                        isSignedIn = true
                     }
                                    .padding(.bottom, 30)
