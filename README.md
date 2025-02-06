@@ -1,7 +1,12 @@
 # Pickit!
-A betting advice app based on thousands of games of data
+The ultimate edge for sports bettors. Our subscription service delivers expert arbitrage 
+opportunities and AI-powered picks, built on tens of thousands of games worth of data. 
+No gut feelings—just sharp, data-driven insights to help you bet smarter and win more. 
+Stop guessing, start profiting—Pickit!
 
 # Todo
+
+- Git push script
 
 - ### GIT BRANCHING !!!
 
