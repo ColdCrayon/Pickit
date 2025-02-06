@@ -64,12 +64,12 @@ struct TicketSubView: View {
             AnimatedButton(title: "Submit", topColor: .ticketSubButtonLight, bottomColor: .ticketSubButtonDark, width: 330) {
                 // Submit Ticket
                 viewModel.submitTicket()
-                viewModel.pickTeam = ""
-                viewModel.pickType = ""
-                viewModel.gameInfo = ""
-                viewModel.publishDate = ""
-                viewModel.description = ""
-                viewModel.sportsbook = ""
+//                viewModel.pickTeam = ""
+//                viewModel.pickType = ""
+//                viewModel.gameInfo = ""
+//                viewModel.publishDate = ""
+//                viewModel.description = ""
+//                viewModel.sportsbook = ""
             }
             .padding(.top, 35)
         }
