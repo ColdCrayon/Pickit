@@ -3,7 +3,9 @@ A betting advice app based on thousands of games of data
 
 # Todo
 
-- #### ACCOUNT INFORMATION ADDITION
+- #### Git Branching !!!
+
+- #### ACCOUNT INFORMATION 
     - [x] Left align pfp
     - [ ] add username, pswd, email, information to right side (view only)
         - Added headers
@@ -18,32 +20,24 @@ A betting advice app based on thousands of games of data
 - #### TOS AND PRIVACY POLICY MODALS
     - [ ] Design sheets
     - [ ] Implement into AccountViewInformation
-
-- #### Git Branching !!!
+    - [ ] Start website outline and basic text docs
 
 - #### View Models
     - Home ViewModel
         - Sync Previous tickets and News
         - Add loading
         - Swipe feature between screens
-    - Account ViewModel
-        - Form verification
-            - valid email?
-            - Sync with firebase
-            - Data saving
-            - Login
-        - [ ] Swipe feature
-            - [x] Header Animation 
-            - [ ] Screen Swipe (Currently fades)
-
+    - Game Ticket Sub View Model
+        - [ ] Ticket Creation
+        - [ ] Push to firebase
+    - Picks ViewModel
+        - [ ] Pull tickets into swipe
+    
 - #### Admin
-    - [x] Admin Dashboard
-        - [x] Design 
-        - [ ] Implement
-    - [ ] Admin account title
+    - [ ] ### Admin account title
     - [ ] Push to fire base
-        - Create tickets
-        - Arbitrage Tickets
+        - [ ] Create game tickets
+        - [x] Arbitrage Tickets
 
 - #### Arbitrage
     - Webscraping
