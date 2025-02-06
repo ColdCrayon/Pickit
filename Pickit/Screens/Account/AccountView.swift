@@ -13,6 +13,7 @@ struct AccountView: View {
     var date: String
     var accountName: String
     var isSubscribed: Bool
+    var isAdmin: Bool
     
     @Binding var information: Bool
     @Binding var leftSectionActive: Bool
@@ -79,6 +80,7 @@ struct AccountView: View {
                                            date: self.date,
                                            accountName: self.accountName,
                                            isSubscribed: self.isSubscribed,
+                                           isAdmin: self.isAdmin,
                                            selectedTab: $selectedTab)
                 }
                 .gesture(drag)
@@ -111,7 +113,9 @@ struct AccountView: View {
         AccountView(screenName: "Account",
                     date: getCurrentDate(),
                     accountName: "Cadel Saszik",
-                    isSubscribed: true, information: .constant(true),
+                    isSubscribed: true,
+                    isAdmin: true,
+                    information: .constant(true),
                     leftSectionActive: .constant(true),
                     selectedTab: .constant(3))
         

@@ -15,6 +15,7 @@ final class PickitViewViewModel: ObservableObject {
     @Published var currentUserId: String = ""
     @Published var username: String = ""
     @Published var isPremium: Bool = false
+    @Published var isAdmin: Bool = false
     
     let db = Firestore.firestore()
     
@@ -37,6 +38,7 @@ final class PickitViewViewModel: ObservableObject {
                             let data = document.data()
                             self?.username = data?["username"] as? String ?? ""
                             self?.isPremium = data?["isPremium"] as? Bool ?? false
+                            self?.isAdmin = data?["isAdmin"] as? Bool ?? false
                             
                             print("Document does not exist")
                             

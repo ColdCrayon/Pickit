@@ -88,7 +88,8 @@ struct PickitView: View {
                         AccountView(screenName: "Account",
                                     date: getCurrentDate(),
                                     accountName: viewModel.username,
-                                    isSubscribed: true,
+                                    isSubscribed: viewModel.isPremium,
+                                    isAdmin: viewModel.isAdmin,
                                     information: .constant(true),
                                     leftSectionActive: $leftSectionActiveAccount,
                                     selectedTab: $selectedTab)

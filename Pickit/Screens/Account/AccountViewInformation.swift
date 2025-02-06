@@ -15,6 +15,7 @@ struct AccountViewInformation: View {
     var date: String
     var accountName: String
     var isSubscribed: Bool
+    var isAdmin: Bool
     
     @Binding var selectedTab: Int
     
@@ -47,15 +48,18 @@ struct AccountViewInformation: View {
                             .fontWeight(.bold)
                             .foregroundStyle(.lightWhite)
                             .padding(.top, -18)
-                        Button {
-                            selectedTab = 4
-                        } label: {
-                            Text("Admin")
-                                .font(Font.custom("Lexend", size: 12).bold())
-                                .foregroundStyle(.lightBlue)
-                                .frame(width: UIScreen.main.bounds.width / 2)
+                        
+                        if(isAdmin) {
+                            Button {
+                                selectedTab = 4
+                            } label: {
+                                Text("Admin")
+                                    .font(Font.custom("Lexend", size: 12).bold())
+                                    .foregroundStyle(.lightBlue)
+                                    .frame(width: UIScreen.main.bounds.width / 2)
+                            }
+                            .frame(width: screenWidth / 2, height: 24)
                         }
-                        .frame(width: screenWidth / 2, height: 24)
                     }
                     
                     //                    VStack(alignment: .leading , spacing: 20) {
@@ -159,7 +163,7 @@ struct AccountViewInformation: View {
 
 #Preview {
     ZStack {
-        AccountViewInformation(screenName: "Account", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, selectedTab: .constant(3))
+        AccountViewInformation(screenName: "Account", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, isAdmin: true, selectedTab: .constant(3))
         HeaderView2Section(screenName: "Account", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, leftSection: "Information", rightSection: "Billing", leftSectionActive: .constant(true))
         //        VStack {
         //            NavbarView(selectedTab: .constant(4))
