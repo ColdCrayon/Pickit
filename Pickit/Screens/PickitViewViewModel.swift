@@ -25,22 +25,24 @@ final class PickitViewViewModel: ObservableObject {
             DispatchQueue.main.async {
                 self?.currentUserId = user?.uid ?? ""
                 
-                let docUser = self?.db.collection("users").document(self?.currentUserId ?? "")
-                
-                Task {
-                    do {
-                        guard let document = try await docUser?.getDocument() else {
-                            print("Error getting document")
-                            return
+                if(Auth.auth().currentUser != nil ) {
+                    guard let docUser = self?.db.collection("users").document(self?.currentUserId ?? "") else {
+                        print("No user id found")
+                        return
+                    }
+                    
+                    Task {
+                        do {
+                            let document = try await docUser.getDocument()
+                            let data = document.data()
+                            self?.username = data?["username"] as? String ?? ""
+                            self?.isPremium = data?["isPremium"] as? Bool ?? false
+                            
+                            print("Document does not exist")
+                            
+                        } catch {
+                            print("Error getting document: \(error)")
                         }
-                        let data = document.data()
-                        self?.username = data?["username"] as? String ?? ""
-                        self?.isPremium = data?["isPremium"] as? Bool ?? false
-                        
-                        print("Document does not exist")
-                        
-                    } catch {
-                        print("Error getting document: \(error)")
                     }
                 }
             }

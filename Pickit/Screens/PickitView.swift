@@ -36,7 +36,7 @@ struct PickitView: View {
                         HomeView(screenName: "Home",
                                  currentDate: getCurrentDate(),
                                  accountName: viewModel.username,
-                                 isSubscribed: true,
+                                 isSubscribed: viewModel.isPremium,
                                  leftSection: "Previous Picks",
                                  rightSection: "News",
                                  leftSectionActive: $leftSectionActiveHome)
@@ -48,7 +48,7 @@ struct PickitView: View {
                     ZStack {
                         PicksView(screenName: "Previous Picks",
                                   currentDate: getCurrentDate(),
-                                  accountName: "Cadel Saszik",
+                                  accountName: viewModel.username,
                                   isSubscribed: true,
                                   settled: false,
                                   pickGameInfo: "Atlanta Falcons vs. Minnesota Vikings",
@@ -65,7 +65,7 @@ struct PickitView: View {
                     ZStack {
                         ArbitrageView(screenName: "Arbitrage Picks",
                                       currentDate: getCurrentDate(),
-                                      accountName: "Cadel Saszik",
+                                      accountName: viewModel.username,
                                       isSubscribed: true,
                                       section: "Newest Picks",
                                       settled: false,
@@ -87,7 +87,7 @@ struct PickitView: View {
                     ZStack {
                         AccountView(screenName: "Account",
                                     date: getCurrentDate(),
-                                    accountName: "Cadel Saszik",
+                                    accountName: viewModel.username,
                                     isSubscribed: true,
                                     information: .constant(true),
                                     leftSectionActive: $leftSectionActiveAccount,
@@ -103,7 +103,7 @@ struct PickitView: View {
                     ZStack {
                         AdminView(screenName: "Admin",
                                   date: getCurrentDate(),
-                                  accountName: "Cadel Saszik",
+                                  accountName: viewModel.username,
                                   isSubscribed: true,
                                   pickTeam: .constant("Chicago Bears"),
                                   pickType: .constant(""),
