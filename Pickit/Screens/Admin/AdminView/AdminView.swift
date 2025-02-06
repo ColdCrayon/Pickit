@@ -49,7 +49,15 @@ struct AdminView: View {
                 ZStack {
                     BackgroundView()
                     
-                    ArbitrageTicketSubView(pickTeam: "", pickType: "", gameInfo: "", publishDate: "", description: "", sportsbook1: "", sportsbook2: "", oddsSB1: "", oddsSB2: "")
+                    ArbitrageTicketSubView(pickTeam: "",
+                                           pickType: "",
+                                           gameInfo: "",
+                                           publishDate: "",
+                                           description: "",
+                                           sportsbook1: "",
+                                           sportsbook2: "",
+                                           oddsSB1: "",
+                                           oddsSB2: "")
                     .padding(.top, 100)
                 }
                 .gesture(drag)

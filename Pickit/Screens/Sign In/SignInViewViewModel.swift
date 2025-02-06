@@ -42,6 +42,8 @@ final class SignInViewViewModel: ObservableObject {
                            name: fullName,
                            username: username,
                            email: email,
+                           isPremium: false,
+                           isAdmin: false,
                            joined: Date().timeIntervalSince1970)
         
         let db = Firestore.firestore()

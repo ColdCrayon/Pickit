@@ -6,7 +6,8 @@
 //
 
 import FirebaseAuth
-import Foundation
+import FirebaseCore
+import SwiftUI
 
 final class PickitViewViewModel: ObservableObject {
     @Published var currentUserId: String = ""
@@ -22,6 +23,12 @@ final class PickitViewViewModel: ObservableObject {
     }
     
     public var isSignedIn: Bool {
-        return Auth.auth().currentUser != nil
+        withAnimation(.easeInOut(duration: 0.3)) {
+            return Auth.auth().currentUser != nil
+        }
+    }
+    
+    public var username: String {
+        Auth.auth().currentUser?.uid ?? ""
     }
 }

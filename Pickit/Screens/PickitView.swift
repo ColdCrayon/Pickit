@@ -5,6 +5,7 @@
 //  Created by Cadel Saszik on 12/3/24.
 //
 
+import FirebaseAuth
 import SwiftUI
 import UIKit
 
@@ -18,8 +19,6 @@ struct PickitView: View {
     
     @State var selectedTab: Int = 5
     
-    @State var accountName: String = "Cadel Saszik"
-    
     @State var isSignedIn: Bool = false
     
     @State var leftSectionActiveHome: Bool = true
@@ -28,7 +27,6 @@ struct PickitView: View {
     
     var body: some View {
         //==========================================================================================
-        
         ZStack {
             BackgroundView()
             
@@ -37,7 +35,7 @@ struct PickitView: View {
                     ZStack {
                         HomeView(screenName: "Home",
                                  currentDate: getCurrentDate(),
-                                 accountName: "Cadel Saszik",
+                                 accountName: viewModel.username,
                                  isSubscribed: true,
                                  leftSection: "Previous Picks",
                                  rightSection: "News",
@@ -130,7 +128,7 @@ struct PickitView: View {
                 NavbarView(selectedTab: self.$selectedTab)
             }
             
-            if !viewModel.isSignedIn, viewModel.currentUserId.isEmpty{
+            if !viewModel.isSignedIn, viewModel.currentUserId.isEmpty {
                 ZStack {
                     SignInView(screenName: "Sign In",
                                date: getCurrentDate(),

@@ -9,6 +9,57 @@
 /* Begin PBXBuildFile section */
 		0349917B2D3CAEBE004FDDAC /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 0349917A2D3CAEBE004FDDAC /* FirebaseAuth */; };
 		0349917D2D3CAEBE004FDDAC /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 0349917C2D3CAEBE004FDDAC /* FirebaseFirestore */; };
+		0349943B2D547EF8004FDDAC /* Lexend-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 034993F52D547EF8004FDDAC /* Lexend-VariableFont_wght.ttf */; };
+		0349943C2D547EF8004FDDAC /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 034993F72D547EF8004FDDAC /* Preview Assets.xcassets */; };
+		0349943D2D547EF8004FDDAC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 034994362D547EF8004FDDAC /* Assets.xcassets */; };
+		0349943E2D547EF8004FDDAC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 034994372D547EF8004FDDAC /* GoogleService-Info.plist */; };
+		034994402D547EF8004FDDAC /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034993F92D547EF8004FDDAC /* AccountView.swift */; };
+		034994412D547EF8004FDDAC /* AccountViewBilling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034993FA2D547EF8004FDDAC /* AccountViewBilling.swift */; };
+		034994422D547EF8004FDDAC /* AccountViewBillingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034993FB2D547EF8004FDDAC /* AccountViewBillingViewModel.swift */; };
+		034994432D547EF8004FDDAC /* AccountViewInformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034993FC2D547EF8004FDDAC /* AccountViewInformation.swift */; };
+		034994442D547EF8004FDDAC /* AccountViewInformationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034993FD2D547EF8004FDDAC /* AccountViewInformationViewModel.swift */; };
+		034994452D547EF8004FDDAC /* AdminView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034993FF2D547EF8004FDDAC /* AdminView.swift */; };
+		034994462D547EF8004FDDAC /* ArbitrageTicketSubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034994002D547EF8004FDDAC /* ArbitrageTicketSubView.swift */; };
+		034994472D547EF8004FDDAC /* TicketSubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034994012D547EF8004FDDAC /* TicketSubView.swift */; };
+		034994482D547EF8004FDDAC /* ArbitrageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034994032D547EF8004FDDAC /* ArbitrageView.swift */; };
+		034994492D547EF8004FDDAC /* ArbitrageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034994042D547EF8004FDDAC /* ArbitrageViewModel.swift */; };
+		0349944A2D547EF8004FDDAC /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034994062D547EF8004FDDAC /* HomeView.swift */; };
+		0349944B2D547EF8004FDDAC /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034994072D547EF8004FDDAC /* HomeViewModel.swift */; };
+		0349944C2D547EF8004FDDAC /* NewsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034994082D547EF8004FDDAC /* NewsView.swift */; };
+		0349944D2D547EF8004FDDAC /* PreviousPicksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034994092D547EF8004FDDAC /* PreviousPicksView.swift */; };
+		0349944E2D547EF8004FDDAC /* ComingSoonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0349940B2D547EF8004FDDAC /* ComingSoonView.swift */; };
+		0349944F2D547EF8004FDDAC /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0349940C2D547EF8004FDDAC /* LoadingView.swift */; };
+		034994502D547EF8004FDDAC /* PicksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0349940E2D547EF8004FDDAC /* PicksView.swift */; };
+		034994512D547EF8004FDDAC /* PicksViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0349940F2D547EF8004FDDAC /* PicksViewModel.swift */; };
+		034994522D547EF8004FDDAC /* LoginSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034994112D547EF8004FDDAC /* LoginSheetView.swift */; };
+		034994532D547EF8004FDDAC /* RegisterSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034994122D547EF8004FDDAC /* RegisterSheetView.swift */; };
+		034994542D547EF8004FDDAC /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034994142D547EF8004FDDAC /* SignInView.swift */; };
+		034994552D547EF8004FDDAC /* SignInViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034994152D547EF8004FDDAC /* SignInViewViewModel.swift */; };
+		034994562D547EF8004FDDAC /* PickitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034994172D547EF8004FDDAC /* PickitView.swift */; };
+		034994572D547EF8004FDDAC /* PickitViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034994182D547EF8004FDDAC /* PickitViewViewModel.swift */; };
+		034994582D547EF8004FDDAC /* EXTDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0349941A2D547EF8004FDDAC /* EXTDictionary.swift */; };
+		034994592D547EF8004FDDAC /* EXTPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0349941B2D547EF8004FDDAC /* EXTPlaceholder.swift */; };
+		0349945A2D547EF8004FDDAC /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0349941D2D547EF8004FDDAC /* Alert.swift */; };
+		0349945B2D547EF8004FDDAC /* PickitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0349941E2D547EF8004FDDAC /* PickitError.swift */; };
+		0349945C2D547EF8004FDDAC /* Ticket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0349941F2D547EF8004FDDAC /* Ticket.swift */; };
+		0349945D2D547EF8004FDDAC /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034994202D547EF8004FDDAC /* User.swift */; };
+		0349945E2D547EF8004FDDAC /* BackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034994222D547EF8004FDDAC /* BackgroundView.swift */; };
+		0349945F2D547EF8004FDDAC /* BackgroundViewBilling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034994232D547EF8004FDDAC /* BackgroundViewBilling.swift */; };
+		034994602D547EF8004FDDAC /* AnimatedButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034994252D547EF8004FDDAC /* AnimatedButton.swift */; };
+		034994612D547EF8004FDDAC /* NavButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034994262D547EF8004FDDAC /* NavButton.swift */; };
+		034994622D547EF8004FDDAC /* FormDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034994282D547EF8004FDDAC /* FormDisplayView.swift */; };
+		034994632D547EF8004FDDAC /* FormEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034994292D547EF8004FDDAC /* FormEntryView.swift */; };
+		034994642D547EF8004FDDAC /* TicketEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0349942A2D547EF8004FDDAC /* TicketEntryView.swift */; };
+		034994652D547EF8004FDDAC /* HeaderView1Section.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0349942C2D547EF8004FDDAC /* HeaderView1Section.swift */; };
+		034994662D547EF8004FDDAC /* HeaderView2Section.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0349942D2D547EF8004FDDAC /* HeaderView2Section.swift */; };
+		034994672D547EF8004FDDAC /* ArbitrageTicketView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0349942F2D547EF8004FDDAC /* ArbitrageTicketView.swift */; };
+		034994682D547EF8004FDDAC /* TicketView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034994302D547EF8004FDDAC /* TicketView.swift */; };
+		034994692D547EF8004FDDAC /* DatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034994322D547EF8004FDDAC /* DatePicker.swift */; };
+		0349946A2D547EF8004FDDAC /* NavbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034994342D547EF8004FDDAC /* NavbarView.swift */; };
+		0349946B2D547EF8004FDDAC /* PickitApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034994392D547EF8004FDDAC /* PickitApp.swift */; };
+		0349946D2D54823E004FDDAC /* AdminViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0349946C2D54823E004FDDAC /* AdminViewViewModel.swift */; };
+		0349946F2D548252004FDDAC /* ArbitrageTicketSubViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0349946E2D548252004FDDAC /* ArbitrageTicketSubViewViewModel.swift */; };
+		039C81E72D5488570038E3E6 /* IdGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039C81E62D5488570038E3E6 /* IdGenerator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,30 +80,64 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		034993F52D547EF8004FDDAC /* Lexend-VariableFont_wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Lexend-VariableFont_wght.ttf"; sourceTree = "<group>"; };
+		034993F72D547EF8004FDDAC /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		034993F92D547EF8004FDDAC /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
+		034993FA2D547EF8004FDDAC /* AccountViewBilling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewBilling.swift; sourceTree = "<group>"; };
+		034993FB2D547EF8004FDDAC /* AccountViewBillingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewBillingViewModel.swift; sourceTree = "<group>"; };
+		034993FC2D547EF8004FDDAC /* AccountViewInformation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewInformation.swift; sourceTree = "<group>"; };
+		034993FD2D547EF8004FDDAC /* AccountViewInformationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewInformationViewModel.swift; sourceTree = "<group>"; };
+		034993FF2D547EF8004FDDAC /* AdminView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminView.swift; sourceTree = "<group>"; };
+		034994002D547EF8004FDDAC /* ArbitrageTicketSubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArbitrageTicketSubView.swift; sourceTree = "<group>"; };
+		034994012D547EF8004FDDAC /* TicketSubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicketSubView.swift; sourceTree = "<group>"; };
+		034994032D547EF8004FDDAC /* ArbitrageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArbitrageView.swift; sourceTree = "<group>"; };
+		034994042D547EF8004FDDAC /* ArbitrageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArbitrageViewModel.swift; sourceTree = "<group>"; };
+		034994062D547EF8004FDDAC /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		034994072D547EF8004FDDAC /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
+		034994082D547EF8004FDDAC /* NewsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsView.swift; sourceTree = "<group>"; };
+		034994092D547EF8004FDDAC /* PreviousPicksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviousPicksView.swift; sourceTree = "<group>"; };
+		0349940B2D547EF8004FDDAC /* ComingSoonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComingSoonView.swift; sourceTree = "<group>"; };
+		0349940C2D547EF8004FDDAC /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
+		0349940E2D547EF8004FDDAC /* PicksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PicksView.swift; sourceTree = "<group>"; };
+		0349940F2D547EF8004FDDAC /* PicksViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PicksViewModel.swift; sourceTree = "<group>"; };
+		034994112D547EF8004FDDAC /* LoginSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSheetView.swift; sourceTree = "<group>"; };
+		034994122D547EF8004FDDAC /* RegisterSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterSheetView.swift; sourceTree = "<group>"; };
+		034994142D547EF8004FDDAC /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
+		034994152D547EF8004FDDAC /* SignInViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewViewModel.swift; sourceTree = "<group>"; };
+		034994172D547EF8004FDDAC /* PickitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickitView.swift; sourceTree = "<group>"; };
+		034994182D547EF8004FDDAC /* PickitViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickitViewViewModel.swift; sourceTree = "<group>"; };
+		0349941A2D547EF8004FDDAC /* EXTDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXTDictionary.swift; sourceTree = "<group>"; };
+		0349941B2D547EF8004FDDAC /* EXTPlaceholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXTPlaceholder.swift; sourceTree = "<group>"; };
+		0349941D2D547EF8004FDDAC /* Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
+		0349941E2D547EF8004FDDAC /* PickitError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickitError.swift; sourceTree = "<group>"; };
+		0349941F2D547EF8004FDDAC /* Ticket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ticket.swift; sourceTree = "<group>"; };
+		034994202D547EF8004FDDAC /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		034994222D547EF8004FDDAC /* BackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundView.swift; sourceTree = "<group>"; };
+		034994232D547EF8004FDDAC /* BackgroundViewBilling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundViewBilling.swift; sourceTree = "<group>"; };
+		034994252D547EF8004FDDAC /* AnimatedButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedButton.swift; sourceTree = "<group>"; };
+		034994262D547EF8004FDDAC /* NavButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavButton.swift; sourceTree = "<group>"; };
+		034994282D547EF8004FDDAC /* FormDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormDisplayView.swift; sourceTree = "<group>"; };
+		034994292D547EF8004FDDAC /* FormEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormEntryView.swift; sourceTree = "<group>"; };
+		0349942A2D547EF8004FDDAC /* TicketEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicketEntryView.swift; sourceTree = "<group>"; };
+		0349942C2D547EF8004FDDAC /* HeaderView1Section.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderView1Section.swift; sourceTree = "<group>"; };
+		0349942D2D547EF8004FDDAC /* HeaderView2Section.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderView2Section.swift; sourceTree = "<group>"; };
+		0349942F2D547EF8004FDDAC /* ArbitrageTicketView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArbitrageTicketView.swift; sourceTree = "<group>"; };
+		034994302D547EF8004FDDAC /* TicketView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicketView.swift; sourceTree = "<group>"; };
+		034994322D547EF8004FDDAC /* DatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePicker.swift; sourceTree = "<group>"; };
+		034994342D547EF8004FDDAC /* NavbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavbarView.swift; sourceTree = "<group>"; };
+		034994362D547EF8004FDDAC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		034994372D547EF8004FDDAC /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		034994382D547EF8004FDDAC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		034994392D547EF8004FDDAC /* PickitApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickitApp.swift; sourceTree = "<group>"; };
+		0349946C2D54823E004FDDAC /* AdminViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminViewViewModel.swift; sourceTree = "<group>"; };
+		0349946E2D548252004FDDAC /* ArbitrageTicketSubViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArbitrageTicketSubViewViewModel.swift; sourceTree = "<group>"; };
+		039C81E62D5488570038E3E6 /* IdGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdGenerator.swift; sourceTree = "<group>"; };
 		03C697D62CFF95A20010E0EE /* Pickit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pickit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		03C697E62CFF95A30010E0EE /* PickitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PickitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		03C697F02CFF95A30010E0EE /* PickitUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PickitUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		03C698A02CFFF14C0010E0EE /* Exceptions for "Pickit" folder in "Pickit" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = 03C697D52CFF95A20010E0EE /* Pickit */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		03C697D82CFF95A20010E0EE /* Pickit */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				03C698A02CFFF14C0010E0EE /* Exceptions for "Pickit" folder in "Pickit" target */,
-			);
-			path = Pickit;
-			sourceTree = "<group>";
-		};
 		03C697E92CFF95A30010E0EE /* PickitTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = PickitTests;
@@ -92,10 +177,245 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		034993F62D547EF8004FDDAC /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				034993F52D547EF8004FDDAC /* Lexend-VariableFont_wght.ttf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+		034993F82D547EF8004FDDAC /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				034993F72D547EF8004FDDAC /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		034993FE2D547EF8004FDDAC /* Account */ = {
+			isa = PBXGroup;
+			children = (
+				034993F92D547EF8004FDDAC /* AccountView.swift */,
+				034993FA2D547EF8004FDDAC /* AccountViewBilling.swift */,
+				034993FB2D547EF8004FDDAC /* AccountViewBillingViewModel.swift */,
+				034993FC2D547EF8004FDDAC /* AccountViewInformation.swift */,
+				034993FD2D547EF8004FDDAC /* AccountViewInformationViewModel.swift */,
+			);
+			path = Account;
+			sourceTree = "<group>";
+		};
+		034994022D547EF8004FDDAC /* Admin */ = {
+			isa = PBXGroup;
+			children = (
+				034994712D54827D004FDDAC /* AdminView */,
+				034994702D548259004FDDAC /* ArbTicketSubmit */,
+				034994012D547EF8004FDDAC /* TicketSubView.swift */,
+			);
+			path = Admin;
+			sourceTree = "<group>";
+		};
+		034994052D547EF8004FDDAC /* Arbitrage */ = {
+			isa = PBXGroup;
+			children = (
+				034994032D547EF8004FDDAC /* ArbitrageView.swift */,
+				034994042D547EF8004FDDAC /* ArbitrageViewModel.swift */,
+			);
+			path = Arbitrage;
+			sourceTree = "<group>";
+		};
+		0349940A2D547EF8004FDDAC /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				034994062D547EF8004FDDAC /* HomeView.swift */,
+				034994072D547EF8004FDDAC /* HomeViewModel.swift */,
+				034994082D547EF8004FDDAC /* NewsView.swift */,
+				034994092D547EF8004FDDAC /* PreviousPicksView.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		0349940D2D547EF8004FDDAC /* Other */ = {
+			isa = PBXGroup;
+			children = (
+				0349940B2D547EF8004FDDAC /* ComingSoonView.swift */,
+				0349940C2D547EF8004FDDAC /* LoadingView.swift */,
+			);
+			path = Other;
+			sourceTree = "<group>";
+		};
+		034994102D547EF8004FDDAC /* Picks */ = {
+			isa = PBXGroup;
+			children = (
+				0349940E2D547EF8004FDDAC /* PicksView.swift */,
+				0349940F2D547EF8004FDDAC /* PicksViewModel.swift */,
+			);
+			path = Picks;
+			sourceTree = "<group>";
+		};
+		034994132D547EF8004FDDAC /* Sheets */ = {
+			isa = PBXGroup;
+			children = (
+				034994112D547EF8004FDDAC /* LoginSheetView.swift */,
+				034994122D547EF8004FDDAC /* RegisterSheetView.swift */,
+			);
+			path = Sheets;
+			sourceTree = "<group>";
+		};
+		034994162D547EF8004FDDAC /* Sign In */ = {
+			isa = PBXGroup;
+			children = (
+				034994132D547EF8004FDDAC /* Sheets */,
+				034994142D547EF8004FDDAC /* SignInView.swift */,
+				034994152D547EF8004FDDAC /* SignInViewViewModel.swift */,
+			);
+			path = "Sign In";
+			sourceTree = "<group>";
+		};
+		034994192D547EF8004FDDAC /* Screens */ = {
+			isa = PBXGroup;
+			children = (
+				034993FE2D547EF8004FDDAC /* Account */,
+				034994022D547EF8004FDDAC /* Admin */,
+				034994052D547EF8004FDDAC /* Arbitrage */,
+				0349940A2D547EF8004FDDAC /* Home */,
+				0349940D2D547EF8004FDDAC /* Other */,
+				034994102D547EF8004FDDAC /* Picks */,
+				034994162D547EF8004FDDAC /* Sign In */,
+				034994172D547EF8004FDDAC /* PickitView.swift */,
+				034994182D547EF8004FDDAC /* PickitViewViewModel.swift */,
+			);
+			path = Screens;
+			sourceTree = "<group>";
+		};
+		0349941C2D547EF8004FDDAC /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				0349941A2D547EF8004FDDAC /* EXTDictionary.swift */,
+				0349941B2D547EF8004FDDAC /* EXTPlaceholder.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		034994212D547EF8004FDDAC /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				0349941C2D547EF8004FDDAC /* Extensions */,
+				0349941D2D547EF8004FDDAC /* Alert.swift */,
+				0349941E2D547EF8004FDDAC /* PickitError.swift */,
+				0349941F2D547EF8004FDDAC /* Ticket.swift */,
+				034994202D547EF8004FDDAC /* User.swift */,
+				034994322D547EF8004FDDAC /* DatePicker.swift */,
+				039C81E62D5488570038E3E6 /* IdGenerator.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		034994242D547EF8004FDDAC /* Backgrounds */ = {
+			isa = PBXGroup;
+			children = (
+				034994222D547EF8004FDDAC /* BackgroundView.swift */,
+				034994232D547EF8004FDDAC /* BackgroundViewBilling.swift */,
+			);
+			path = Backgrounds;
+			sourceTree = "<group>";
+		};
+		034994272D547EF8004FDDAC /* Buttons */ = {
+			isa = PBXGroup;
+			children = (
+				034994252D547EF8004FDDAC /* AnimatedButton.swift */,
+				034994262D547EF8004FDDAC /* NavButton.swift */,
+			);
+			path = Buttons;
+			sourceTree = "<group>";
+		};
+		0349942B2D547EF8004FDDAC /* Form Entries */ = {
+			isa = PBXGroup;
+			children = (
+				034994282D547EF8004FDDAC /* FormDisplayView.swift */,
+				034994292D547EF8004FDDAC /* FormEntryView.swift */,
+				0349942A2D547EF8004FDDAC /* TicketEntryView.swift */,
+			);
+			path = "Form Entries";
+			sourceTree = "<group>";
+		};
+		0349942E2D547EF8004FDDAC /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				0349942C2D547EF8004FDDAC /* HeaderView1Section.swift */,
+				0349942D2D547EF8004FDDAC /* HeaderView2Section.swift */,
+			);
+			path = Headers;
+			sourceTree = "<group>";
+		};
+		034994312D547EF8004FDDAC /* Tickets */ = {
+			isa = PBXGroup;
+			children = (
+				0349942F2D547EF8004FDDAC /* ArbitrageTicketView.swift */,
+				034994302D547EF8004FDDAC /* TicketView.swift */,
+			);
+			path = Tickets;
+			sourceTree = "<group>";
+		};
+		034994332D547EF8004FDDAC /* UIKitComponents */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = UIKitComponents;
+			sourceTree = "<group>";
+		};
+		034994352D547EF8004FDDAC /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				034994242D547EF8004FDDAC /* Backgrounds */,
+				034994272D547EF8004FDDAC /* Buttons */,
+				0349942B2D547EF8004FDDAC /* Form Entries */,
+				0349942E2D547EF8004FDDAC /* Headers */,
+				034994312D547EF8004FDDAC /* Tickets */,
+				034994332D547EF8004FDDAC /* UIKitComponents */,
+				034994342D547EF8004FDDAC /* NavbarView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		0349943A2D547EF8004FDDAC /* Pickit */ = {
+			isa = PBXGroup;
+			children = (
+				034993F62D547EF8004FDDAC /* Fonts */,
+				034993F82D547EF8004FDDAC /* Preview Content */,
+				034994192D547EF8004FDDAC /* Screens */,
+				034994212D547EF8004FDDAC /* Utilities */,
+				034994352D547EF8004FDDAC /* Views */,
+				034994362D547EF8004FDDAC /* Assets.xcassets */,
+				034994372D547EF8004FDDAC /* GoogleService-Info.plist */,
+				034994382D547EF8004FDDAC /* Info.plist */,
+				034994392D547EF8004FDDAC /* PickitApp.swift */,
+			);
+			path = Pickit;
+			sourceTree = "<group>";
+		};
+		034994702D548259004FDDAC /* ArbTicketSubmit */ = {
+			isa = PBXGroup;
+			children = (
+				034994002D547EF8004FDDAC /* ArbitrageTicketSubView.swift */,
+				0349946E2D548252004FDDAC /* ArbitrageTicketSubViewViewModel.swift */,
+			);
+			path = ArbTicketSubmit;
+			sourceTree = "<group>";
+		};
+		034994712D54827D004FDDAC /* AdminView */ = {
+			isa = PBXGroup;
+			children = (
+				034993FF2D547EF8004FDDAC /* AdminView.swift */,
+				0349946C2D54823E004FDDAC /* AdminViewViewModel.swift */,
+			);
+			path = AdminView;
+			sourceTree = "<group>";
+		};
 		03C697CD2CFF95A20010E0EE = {
 			isa = PBXGroup;
 			children = (
-				03C697D82CFF95A20010E0EE /* Pickit */,
+				0349943A2D547EF8004FDDAC /* Pickit */,
 				03C697E92CFF95A30010E0EE /* PickitTests */,
 				03C697F32CFF95A30010E0EE /* PickitUITests */,
 				03C697D72CFF95A20010E0EE /* Products */,
@@ -126,9 +446,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				03C697D82CFF95A20010E0EE /* Pickit */,
 			);
 			name = Pickit;
 			packageProductDependencies = (
@@ -237,6 +554,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0349943B2D547EF8004FDDAC /* Lexend-VariableFont_wght.ttf in Resources */,
+				0349943C2D547EF8004FDDAC /* Preview Assets.xcassets in Resources */,
+				0349943D2D547EF8004FDDAC /* Assets.xcassets in Resources */,
+				0349943E2D547EF8004FDDAC /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -261,6 +582,53 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0349946F2D548252004FDDAC /* ArbitrageTicketSubViewViewModel.swift in Sources */,
+				034994402D547EF8004FDDAC /* AccountView.swift in Sources */,
+				034994412D547EF8004FDDAC /* AccountViewBilling.swift in Sources */,
+				034994422D547EF8004FDDAC /* AccountViewBillingViewModel.swift in Sources */,
+				034994432D547EF8004FDDAC /* AccountViewInformation.swift in Sources */,
+				034994442D547EF8004FDDAC /* AccountViewInformationViewModel.swift in Sources */,
+				034994452D547EF8004FDDAC /* AdminView.swift in Sources */,
+				0349946D2D54823E004FDDAC /* AdminViewViewModel.swift in Sources */,
+				034994462D547EF8004FDDAC /* ArbitrageTicketSubView.swift in Sources */,
+				034994472D547EF8004FDDAC /* TicketSubView.swift in Sources */,
+				034994482D547EF8004FDDAC /* ArbitrageView.swift in Sources */,
+				034994492D547EF8004FDDAC /* ArbitrageViewModel.swift in Sources */,
+				0349944A2D547EF8004FDDAC /* HomeView.swift in Sources */,
+				0349944B2D547EF8004FDDAC /* HomeViewModel.swift in Sources */,
+				0349944C2D547EF8004FDDAC /* NewsView.swift in Sources */,
+				0349944D2D547EF8004FDDAC /* PreviousPicksView.swift in Sources */,
+				0349944E2D547EF8004FDDAC /* ComingSoonView.swift in Sources */,
+				0349944F2D547EF8004FDDAC /* LoadingView.swift in Sources */,
+				034994502D547EF8004FDDAC /* PicksView.swift in Sources */,
+				034994512D547EF8004FDDAC /* PicksViewModel.swift in Sources */,
+				034994522D547EF8004FDDAC /* LoginSheetView.swift in Sources */,
+				034994532D547EF8004FDDAC /* RegisterSheetView.swift in Sources */,
+				034994542D547EF8004FDDAC /* SignInView.swift in Sources */,
+				034994552D547EF8004FDDAC /* SignInViewViewModel.swift in Sources */,
+				034994562D547EF8004FDDAC /* PickitView.swift in Sources */,
+				034994572D547EF8004FDDAC /* PickitViewViewModel.swift in Sources */,
+				034994582D547EF8004FDDAC /* EXTDictionary.swift in Sources */,
+				034994592D547EF8004FDDAC /* EXTPlaceholder.swift in Sources */,
+				0349945A2D547EF8004FDDAC /* Alert.swift in Sources */,
+				0349945B2D547EF8004FDDAC /* PickitError.swift in Sources */,
+				0349945C2D547EF8004FDDAC /* Ticket.swift in Sources */,
+				0349945D2D547EF8004FDDAC /* User.swift in Sources */,
+				0349945E2D547EF8004FDDAC /* BackgroundView.swift in Sources */,
+				0349945F2D547EF8004FDDAC /* BackgroundViewBilling.swift in Sources */,
+				034994602D547EF8004FDDAC /* AnimatedButton.swift in Sources */,
+				039C81E72D5488570038E3E6 /* IdGenerator.swift in Sources */,
+				034994612D547EF8004FDDAC /* NavButton.swift in Sources */,
+				034994622D547EF8004FDDAC /* FormDisplayView.swift in Sources */,
+				034994632D547EF8004FDDAC /* FormEntryView.swift in Sources */,
+				034994642D547EF8004FDDAC /* TicketEntryView.swift in Sources */,
+				034994652D547EF8004FDDAC /* HeaderView1Section.swift in Sources */,
+				034994662D547EF8004FDDAC /* HeaderView2Section.swift in Sources */,
+				034994672D547EF8004FDDAC /* ArbitrageTicketView.swift in Sources */,
+				034994682D547EF8004FDDAC /* TicketView.swift in Sources */,
+				034994692D547EF8004FDDAC /* DatePicker.swift in Sources */,
+				0349946A2D547EF8004FDDAC /* NavbarView.swift in Sources */,
+				0349946B2D547EF8004FDDAC /* PickitApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

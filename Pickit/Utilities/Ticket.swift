@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct Ticket: Decodable, Identifiable {
-    var id: Int
+struct Ticket: Codable, Identifiable {
+    var id: String
     
     let settled: Bool
     let pickGameInfo: String
@@ -19,8 +19,8 @@ struct Ticket: Decodable, Identifiable {
     let pickType: String
 }
 
-struct ArbitrageTicket: Decodable, Identifiable {
-    var id: Int
+struct ArbitrageTicket: Codable, Identifiable {
+    var id: String
     
     let settled: Bool
     let sportsBook1: String
@@ -51,7 +51,7 @@ struct TicketResponse: Decodable {
 }
 
 struct MockTicket {
-    static let sampleTicket = Ticket(id: 0001,
+    static let sampleTicket = Ticket(id: "",
                                      settled: true,
                                      pickGameInfo: "Atlanta Falcons vs. Minnesota Vikings",
                                      pickPublishDate: "Dec 8, 2024 at 7:58 PM",
@@ -60,7 +60,7 @@ struct MockTicket {
                                      pickTeam: "Minnesota Vikings",
                                      pickType: "Moneyline")
     
-    static let sampleArbitrageTicket = ArbitrageTicket(id: 001,
+    static let sampleArbitrageTicket = ArbitrageTicket(id: "",
                                                        settled: false,
                                                        sportsBook1: "Draftkings",
                                                        sportsBook2: "Fandual",
@@ -72,7 +72,7 @@ struct MockTicket {
                                                        pickTeam: "Buffalo Bills",
                                                        pickType: "Moneyline")
     
-    static let sampleArbitrageTicket2 = ArbitrageTicket(id: 001,
+    static let sampleArbitrageTicket2 = ArbitrageTicket(id: "",
                                                        settled: false,
                                                        sportsBook1: "Draftkings",
                                                        sportsBook2: "Fandual",

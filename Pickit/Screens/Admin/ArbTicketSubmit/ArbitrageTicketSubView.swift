@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ArbitrageTicketSubView: View {
     
+    @StateObject var viewModel = ArbitrageTicketSubViewViewModel()
+    
     @State var pickTeam: String
     @State var pickType: String
     @State var gameInfo: String
@@ -23,15 +25,6 @@ struct ArbitrageTicketSubView: View {
         Color(.mainBackground)
         
         VStack(spacing: 0) {
-            //            Button {
-            //
-            //            } label: {
-            //                Text("Return to Account")
-            //                    .font(Font.custom("Lexend", size: 12).bold())
-            //                    .foregroundStyle(.lightBlue)
-            //            }
-            //            .frame(width: UIScreen.main.bounds.width / 2, height: 40)
-            
             Text("Arbitrage Ticket Submission")
                 .font(Font.custom("Lexend", size: 32))
                 .fontWeight(.bold)
@@ -40,11 +33,11 @@ struct ArbitrageTicketSubView: View {
             
             Form {
                 Section {
-                    TicketEntryView(entryTitle: "Pick Team", entryValue: $pickTeam)
-                    TicketEntryView(entryTitle: "Pick Type", entryValue: $pickType)
-                    TicketEntryView(entryTitle: "Game Info", entryValue: $gameInfo)
-                    TicketEntryView(entryTitle: "Publish Date", entryValue: $publishDate)
-                    TicketEntryView(entryTitle: "Description", entryValue: $description)
+                    TicketEntryView(entryTitle: "Pick Team", entryValue: $viewModel.pickTeam)
+                    TicketEntryView(entryTitle: "Pick Type", entryValue: $viewModel.pickType)
+                    TicketEntryView(entryTitle: "Game Info", entryValue: $viewModel.gameInfo)
+                    TicketEntryView(entryTitle: "Publish Date", entryValue: $viewModel.publishDate)
+                    TicketEntryView(entryTitle: "Description", entryValue: $viewModel.description)
                 } header: {
                     Text("Pick Info")
                         .font(Font.custom("Lexend", size: 18))
@@ -55,8 +48,8 @@ struct ArbitrageTicketSubView: View {
                 
                 Section {
                     Section {
-                        TicketEntryView(entryTitle: "Sportsbook 1", entryValue: $sportsbook1)
-                        TicketEntryView(entryTitle: "First Odds", entryValue: $oddsSB1)
+                        TicketEntryView(entryTitle: "Sportsbook 1", entryValue: $viewModel.sportsbook1)
+                        TicketEntryView(entryTitle: "First Odds", entryValue: $viewModel.oddsSB1)
                     } header: {
                         Text("Sportsbook One")
                             .font(Font.custom("Lexend", size: 16))
@@ -64,8 +57,8 @@ struct ArbitrageTicketSubView: View {
                     }
                     
                     Section {
-                        TicketEntryView(entryTitle: "Sportsbook 2", entryValue: $sportsbook2)
-                        TicketEntryView(entryTitle: "Second Odds", entryValue: $oddsSB2)
+                        TicketEntryView(entryTitle: "Sportsbook 2", entryValue: $viewModel.sportsbook2)
+                        TicketEntryView(entryTitle: "Second Odds", entryValue: $viewModel.oddsSB2)
                     } header: {
                         Text("Sportsbook Two")
                             .font(Font.custom("Lexend", size: 16))
@@ -95,6 +88,7 @@ struct ArbitrageTicketSubView: View {
             
             AnimatedButton(title: "Submit", topColor: .ticketSubButtonLight, bottomColor: .ticketSubButtonDark, width: 330) {
                 // Submit Arb Ticket
+                viewModel.createTicket(id: <#T##String#>)
             }
             .padding(.top, 35)
         }
