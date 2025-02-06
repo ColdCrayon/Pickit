@@ -26,7 +26,7 @@ struct PickitView: View {
     @State var leftSectionActiveAdmin: Bool = true
     
     var body: some View {
-        //==========================================================================================
+        //=======================================================================================
         ZStack {
             BackgroundView()
             

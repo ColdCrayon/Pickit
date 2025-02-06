@@ -7,10 +7,16 @@
 
 import FirebaseAuth
 import FirebaseCore
+import FirebaseFirestore
+
 import SwiftUI
 
 final class PickitViewViewModel: ObservableObject {
     @Published var currentUserId: String = ""
+    @Published var username: String = ""
+    @Published var isPremium: Bool = false
+    
+    let db = Firestore.firestore()
     
     private var handler: AuthStateDidChangeListenerHandle?
     
@@ -18,6 +24,25 @@ final class PickitViewViewModel: ObservableObject {
         self.handler = Auth.auth().addStateDidChangeListener { [weak self] _, user in
             DispatchQueue.main.async {
                 self?.currentUserId = user?.uid ?? ""
+                
+                let docUser = self?.db.collection("users").document(self?.currentUserId ?? "")
+                
+                Task {
+                    do {
+                        guard let document = try await docUser?.getDocument() else {
+                            print("Error getting document")
+                            return
+                        }
+                        let data = document.data()
+                        self?.username = data?["username"] as? String ?? ""
+                        self?.isPremium = data?["isPremium"] as? Bool ?? false
+                        
+                        print("Document does not exist")
+                        
+                    } catch {
+                        print("Error getting document: \(error)")
+                    }
+                }
             }
         }
     }
@@ -28,7 +53,8 @@ final class PickitViewViewModel: ObservableObject {
         }
     }
     
-    public var username: String {
-        Auth.auth().currentUser?.uid ?? ""
+    
+    public func getUser() {
+        
     }
 }
