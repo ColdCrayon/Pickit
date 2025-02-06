@@ -3,7 +3,7 @@ A betting advice app based on thousands of games of data
 
 # Todo
 
-- #### Git Branching !!!
+- ### GIT BRANCHING !!!
 
 - #### ACCOUNT INFORMATION 
     - [x] Left align pfp
@@ -34,7 +34,7 @@ A betting advice app based on thousands of games of data
         - [ ] Pull tickets into swipe
     
 - #### Admin
-    - [ ] ### Admin account title
+    - ### Admin account title
     - [ ] Push to fire base
         - [ ] Create game tickets
         - [x] Arbitrage Tickets
@@ -44,6 +44,9 @@ A betting advice app based on thousands of games of data
         - Pull data from multiple sportsbooks
         - Proxies, VPNS?
         - API?
+        - ACTION betting site
+            - Less security?
+            - Multiple sportsbook info
     - ACTION BETTING SITE
         - Contains many sportsbooks
         - Possibly easier to scrape (less security)
