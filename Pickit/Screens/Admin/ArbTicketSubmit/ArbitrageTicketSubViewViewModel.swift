@@ -44,7 +44,7 @@ final class ArbitrageTicketSubViewViewModel: ObservableObject {
     
     func submitTicket() {
         guard validateTicket() else {
-            errorMessage = "Unable to Validate Ticket"
+//            errorMessage = "Unable to Validate Ticket"
             return
         }
         
@@ -63,6 +63,16 @@ final class ArbitrageTicketSubViewViewModel: ObservableObject {
                                         pickDescription: description,
                                         pickTeam: pickTeam,
                                         pickType: pickType)
+        
+        pickTeam = ""
+        pickType = ""
+        gameInfo = ""
+        publishDate = ""
+        description = ""
+        sportsbook1 = ""
+        sportsbook2 = ""
+        oddsSB1 = ""
+        oddsSB2 = ""
         
         let db = Firestore.firestore()
         

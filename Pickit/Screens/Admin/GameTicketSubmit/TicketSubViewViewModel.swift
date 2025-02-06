@@ -55,7 +55,6 @@ final class TicketSubViewViewModel: ObservableObject {
                                pickTeam: pickTeam,
                                pickType: pickType)
         
-        settled = false
         gameInfo = ""
         publishDate = ""
         description = ""
