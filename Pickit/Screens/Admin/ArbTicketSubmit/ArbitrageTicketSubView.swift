@@ -88,7 +88,7 @@ struct ArbitrageTicketSubView: View {
             
             AnimatedButton(title: "Submit", topColor: .ticketSubButtonLight, bottomColor: .ticketSubButtonDark, width: 330) {
                 // Submit Arb Ticket
-                viewModel.createTicket(id: <#T##String#>)
+                viewModel.createTicket(id: generateTicketId())
             }
             .padding(.top, 35)
         }

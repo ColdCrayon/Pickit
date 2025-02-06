@@ -22,8 +22,8 @@ final class ArbitrageTicketSubViewViewModel: ObservableObject {
     
     init() {}
     
-    private func createTicket(id: String) {
-        let newTicket = ArbitrageTicket(id: getCurrentDate(),
+    func createTicket(id: String) {
+        let newTicket = ArbitrageTicket(id: id,
                                         settled: settled,
                                         sportsBook1: sportsbook1,
                                         sportsBook2: sportsbook2,
