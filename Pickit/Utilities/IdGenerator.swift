@@ -22,7 +22,7 @@ func generateTicketId() -> String {
     let idInfo = idData(year: components.year ?? 0,
                         month: Date.now.formatted(.dateTime.month(.twoDigits)),
                         day: Date.now.formatted(.dateTime.day(.twoDigits)),
-                        hour: Date.now.formatted(.dateTime.hour(.twoDigits(amPM: .wide))),
+                        hour: Date.now.formatted(.dateTime.hour(.twoDigits(amPM: .omitted))),
                         minute: Date.now.formatted(.dateTime.minute(.twoDigits)),
                         second: Date.now.formatted(.dateTime.second(.twoDigits)))
     let idString = "\(idInfo.year)\(idInfo.month)\(idInfo.day)\(idInfo.hour)\(idInfo.minute)\(idInfo.second)"
