@@ -29,6 +29,13 @@ struct LoginSheetView: View {
                     .multilineTextAlignment(.center)
                     .shadow(radius: 4, x: 2, y: 2)
                 
+                if !viewModel.errorMessageRegister.isEmpty {
+                    Text(viewModel.errorMessageRegister)
+                        .foregroundStyle(.red)
+                        .font(Font.custom("Lexend", size: 12))
+                        .fontWeight(.bold)
+                }
+                
                 VStack {
                     FormEntryView(entryTitle: "Email", entryValue: $viewModel.email)
                     FormPasswordView(entryTitle: "Password", entryValue: $viewModel.password)
