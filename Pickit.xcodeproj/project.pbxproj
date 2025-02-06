@@ -60,6 +60,7 @@
 		0349946D2D54823E004FDDAC /* AdminViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0349946C2D54823E004FDDAC /* AdminViewViewModel.swift */; };
 		0349946F2D548252004FDDAC /* ArbitrageTicketSubViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0349946E2D548252004FDDAC /* ArbitrageTicketSubViewViewModel.swift */; };
 		039C81E72D5488570038E3E6 /* IdGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039C81E62D5488570038E3E6 /* IdGenerator.swift */; };
+		039C81EA2D551E5A0038E3E6 /* TicketSubViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039C81E92D551E5A0038E3E6 /* TicketSubViewViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -132,6 +133,7 @@
 		0349946C2D54823E004FDDAC /* AdminViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminViewViewModel.swift; sourceTree = "<group>"; };
 		0349946E2D548252004FDDAC /* ArbitrageTicketSubViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArbitrageTicketSubViewViewModel.swift; sourceTree = "<group>"; };
 		039C81E62D5488570038E3E6 /* IdGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdGenerator.swift; sourceTree = "<group>"; };
+		039C81E92D551E5A0038E3E6 /* TicketSubViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicketSubViewViewModel.swift; sourceTree = "<group>"; };
 		03C697D62CFF95A20010E0EE /* Pickit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pickit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		03C697E62CFF95A30010E0EE /* PickitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PickitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		03C697F02CFF95A30010E0EE /* PickitUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PickitUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -208,9 +210,9 @@
 		034994022D547EF8004FDDAC /* Admin */ = {
 			isa = PBXGroup;
 			children = (
+				039C81E82D551E430038E3E6 /* GameTicketSubmit */,
 				034994712D54827D004FDDAC /* AdminView */,
 				034994702D548259004FDDAC /* ArbTicketSubmit */,
-				034994012D547EF8004FDDAC /* TicketSubView.swift */,
 			);
 			path = Admin;
 			sourceTree = "<group>";
@@ -412,6 +414,15 @@
 			path = AdminView;
 			sourceTree = "<group>";
 		};
+		039C81E82D551E430038E3E6 /* GameTicketSubmit */ = {
+			isa = PBXGroup;
+			children = (
+				034994012D547EF8004FDDAC /* TicketSubView.swift */,
+				039C81E92D551E5A0038E3E6 /* TicketSubViewViewModel.swift */,
+			);
+			path = GameTicketSubmit;
+			sourceTree = "<group>";
+		};
 		03C697CD2CFF95A20010E0EE = {
 			isa = PBXGroup;
 			children = (
@@ -594,6 +605,7 @@
 				034994472D547EF8004FDDAC /* TicketSubView.swift in Sources */,
 				034994482D547EF8004FDDAC /* ArbitrageView.swift in Sources */,
 				034994492D547EF8004FDDAC /* ArbitrageViewModel.swift in Sources */,
+				039C81EA2D551E5A0038E3E6 /* TicketSubViewViewModel.swift in Sources */,
 				0349944A2D547EF8004FDDAC /* HomeView.swift in Sources */,
 				0349944B2D547EF8004FDDAC /* HomeViewModel.swift in Sources */,
 				0349944C2D547EF8004FDDAC /* NewsView.swift in Sources */,

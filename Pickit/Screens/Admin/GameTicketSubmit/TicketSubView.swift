@@ -9,6 +9,8 @@ import SwiftUI
 
 struct TicketSubView: View {
     
+    @StateObject var viewModel = TicketSubViewViewModel()
+    
     @State var pickTeam: String
     @State var pickType: String
     @State var gameInfo: String
@@ -18,28 +20,26 @@ struct TicketSubView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-//            Button {
-//                
-//            } label: {
-//                Text("Return to Account")
-//                    .font(Font.custom("Lexend", size: 12).bold())
-//                    .foregroundStyle(.lightBlue)
-//            }
-//            .frame(width: UIScreen.main.bounds.width / 2, height: 40)
-            
             Text("Ticket Submission")
                 .font(Font.custom("Lexend", size: 32))
                 .fontWeight(.bold)
                 .foregroundStyle(.white)
             
+            if !viewModel.errorMessage.isEmpty {
+                Text(viewModel.errorMessage)
+                    .foregroundStyle(.red)
+                    .font(Font.custom("Lexend", size: 12))
+                    .fontWeight(.bold)
+            }
+            
             Form {
                 Section {
-                    TicketEntryView(entryTitle: "Pick Team", entryValue: $pickTeam)
-                    TicketEntryView(entryTitle: "Pick Type", entryValue: $pickType)
-                    TicketEntryView(entryTitle: "Game Info", entryValue: $gameInfo)
-                    TicketEntryView(entryTitle: "Publish Date", entryValue: $publishDate)
-                    TicketEntryView(entryTitle: "Description", entryValue: $description)
-                    TicketEntryView(entryTitle: "Sportsbook", entryValue: $sportsbook)
+                    TicketEntryView(entryTitle: "Pick Team", entryValue: $viewModel.pickTeam)
+                    TicketEntryView(entryTitle: "Pick Type", entryValue: $viewModel.pickType)
+                    TicketEntryView(entryTitle: "Game Info", entryValue: $viewModel.gameInfo)
+                    TicketEntryView(entryTitle: "Publish Date", entryValue: $viewModel.publishDate)
+                    TicketEntryView(entryTitle: "Description", entryValue: $viewModel.description)
+                    TicketEntryView(entryTitle: "Sportsbook", entryValue: $viewModel.sportsbook)
                 } header: {
                     Text("Pick Info")
                         .font(Font.custom("Lexend", size: 18))
@@ -63,6 +63,13 @@ struct TicketSubView: View {
             
             AnimatedButton(title: "Submit", topColor: .ticketSubButtonLight, bottomColor: .ticketSubButtonDark, width: 330) {
                 // Submit Ticket
+                viewModel.submitTicket()
+                viewModel.pickTeam = ""
+                viewModel.pickType = ""
+                viewModel.gameInfo = ""
+                viewModel.publishDate = ""
+                viewModel.description = ""
+                viewModel.sportsbook = ""
             }
             .padding(.top, 35)
         }
