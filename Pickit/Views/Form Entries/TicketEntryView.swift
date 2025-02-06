@@ -21,6 +21,7 @@ struct TicketEntryView: View {
             .fontWeight(.bold)
             .opacity(0.6)
             .keyboardType(.default)
+            .autocorrectionDisabled()
     }
 }
 

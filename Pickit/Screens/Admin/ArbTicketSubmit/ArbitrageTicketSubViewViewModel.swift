@@ -20,9 +20,38 @@ final class ArbitrageTicketSubViewViewModel: ObservableObject {
     @Published var oddsSB1: String = ""
     @Published var oddsSB2: String = ""
     
+    @Published var errorMessage: String = ""
+    
     init() {}
     
-    func createTicket(id: String) {
+    func validateTicket() -> Bool {
+        guard !pickTeam.trimmingCharacters(in: .whitespaces).isEmpty,
+              !pickType.trimmingCharacters(in: .whitespaces).isEmpty,
+              !gameInfo.trimmingCharacters(in: .whitespaces).isEmpty,
+              !description.trimmingCharacters(in: .whitespaces).isEmpty,
+              !publishDate.trimmingCharacters(in: .whitespaces).isEmpty,
+              !description.trimmingCharacters(in: .whitespaces).isEmpty,
+              !sportsbook1.trimmingCharacters(in: .whitespaces).isEmpty,
+              !oddsSB1.trimmingCharacters(in: .whitespaces).isEmpty,
+              !sportsbook2.trimmingCharacters(in: .whitespaces).isEmpty,
+              !oddsSB2.trimmingCharacters(in: .whitespaces).isEmpty else {
+            errorMessage = "Please Fill Out All Fields"
+            return false
+        }
+        
+        return true
+    }
+    
+    func submitTicket() {
+        guard validateTicket() else {
+            errorMessage = "Unable to Validate Ticket"
+            return
+        }
+        
+        insertTicketRecord(id: generateTicketId())
+    }
+    
+    private func insertTicketRecord(id: String) {
         let newTicket = ArbitrageTicket(id: id,
                                         settled: settled,
                                         sportsBook1: sportsbook1,

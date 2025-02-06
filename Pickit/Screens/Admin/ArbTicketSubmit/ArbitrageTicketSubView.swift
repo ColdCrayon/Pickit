@@ -88,7 +88,16 @@ struct ArbitrageTicketSubView: View {
             
             AnimatedButton(title: "Submit", topColor: .ticketSubButtonLight, bottomColor: .ticketSubButtonDark, width: 330) {
                 // Submit Arb Ticket
-                viewModel.createTicket(id: generateTicketId())
+                viewModel.submitTicket()
+                viewModel.pickTeam = ""
+                viewModel.pickType = ""
+                viewModel.gameInfo = ""
+                viewModel.publishDate = ""
+                viewModel.description = ""
+                viewModel.sportsbook1 = ""
+                viewModel.oddsSB1 = ""
+                viewModel.sportsbook2 = ""
+                viewModel.oddsSB2 = ""
             }
             .padding(.top, 35)
         }
