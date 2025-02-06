@@ -31,6 +31,13 @@ struct ArbitrageTicketSubView: View {
                 .foregroundStyle(.white)
                 .multilineTextAlignment(.center)
             
+            if !viewModel.errorMessage.isEmpty {
+                Text(viewModel.errorMessage)
+                    .foregroundStyle(.red)
+                    .font(Font.custom("Lexend", size: 12))
+                    .fontWeight(.bold)
+            }
+            
             Form {
                 Section {
                     TicketEntryView(entryTitle: "Pick Team", entryValue: $viewModel.pickTeam)
