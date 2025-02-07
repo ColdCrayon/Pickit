@@ -10,6 +10,7 @@ Stop guessing, start profiting—Pickit!
 
 - ### GIT BRANCHING !!!
 
+- #### Header button click animates with no change
 - #### ACCOUNT INFORMATION 
     - [x] Left align pfp
     - [ ] add username, pswd, email, information to right side (view only)
