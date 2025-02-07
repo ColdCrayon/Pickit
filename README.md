@@ -19,8 +19,8 @@ Stop guessing, start profiting—Pickit!
     - [x] add username, pswd, email, information to right side (view only)
     - [ ]  add upgrade button next to subscribe
         - [ ] standard account creation vs premium
-
-- [x] Admin Button and View Screen for Arb and Game Tickets
+    - [ ] Condition screens for premium vs. standard
+    - [ ] Admin button conditionality 
 
 - #### TOS AND PRIVACY POLICY MODALS
     - [ ] Design sheets
