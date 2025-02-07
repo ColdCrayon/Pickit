@@ -20,7 +20,6 @@ struct TicketView: View {
     var pickSportsbook = ""
     
     var body: some View {
-//        GeometryReader { geometry in
             ZStack {
                 Rectangle()
                     .subtracting(TicketSubtraction())
@@ -126,10 +125,10 @@ struct TicketView: View {
                                 .position(x: 328, y: 500)
                         }
                     }
+                    // THIS SIZING DOES NOT WORK ACROSS DEVICES
                     .frame(alignment: .bottom)
                     .padding(.top, 135)
                     .padding(.bottom, 85)
-//            }
         }
     }
 }
