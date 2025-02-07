@@ -17,7 +17,7 @@ struct idData {
 }
 
 func generateTicketId() -> String {
-    let components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: Date.now)
+    let components = Calendar.current.dateComponents([.year], from: Date.now)
     
     let idInfo = idData(year: components.year ?? 0,
                         month: Date.now.formatted(.dateTime.month(.twoDigits)),

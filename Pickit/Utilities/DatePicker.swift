@@ -13,6 +13,10 @@ struct CurrentDate {
     let year: Int
 }
 
+struct TicketDate {
+    let date: String
+}
+
 func getCurrentDate() -> String {
     let components = Calendar.current.dateComponents([.month, .day, .year], from: Date.now)
     
@@ -20,4 +24,11 @@ func getCurrentDate() -> String {
     let DateString = "\(DateInfo.month)/\(DateInfo.day)/\(DateInfo.year)"
     
     return DateString
+}
+
+func getTicketDate() -> String {
+    let TicketInfo = TicketDate(date: Date.now.formatted(date: .abbreviated, time: .shortened))
+    let TicketString = "\(TicketInfo.date)"
+    
+    return TicketString
 }
