@@ -20,124 +20,134 @@ struct TicketView: View {
     var pickSportsbook = ""
     
     var body: some View {
-        ZStack {
-            Rectangle()
-                .subtracting(TicketSubtraction())
-                .foregroundStyle(settled ? LinearGradient(colors: [.gold, .lightGold], startPoint: .topLeading, endPoint: .bottomTrailing) : LinearGradient(colors: [.lightWhite, .lightWhite], startPoint: .topLeading, endPoint: .bottomTrailing))
-                .frame(width: 360, height: 530)
-                .cornerRadius(24)
-                .shadow(radius: 6, x: 0, y: 5)
-                .overlay(alignment: .topLeading) {
-                    Circle()
-                        .frame(width: 53)
-                        .foregroundStyle(settled ? .mainBackground : .gold)
-                        .position(CGPoint(x: 320, y: 40))
-                    
-                    Image(.logo)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 45)
-                        .position(x: 320, y: 40)
-                    
-                    VStack(alignment: .leading, spacing: 5) {
-                        Rectangle()
-                            .frame(width: 360, height: 2.5)
-                            .padding(.top, 120)
-                            .foregroundStyle(settled ? .darkGold : .ticketSecondary)
-//                            .position(x: 185.5, y: 110)
+//        GeometryReader { geometry in
+            ZStack {
+                Rectangle()
+                    .subtracting(TicketSubtraction())
+                    .foregroundStyle(settled ? LinearGradient(colors: [.gold, .lightGold], startPoint: .topLeading, endPoint: .bottomTrailing) : LinearGradient(colors: [.lightWhite, .lightWhite], startPoint: .topLeading, endPoint: .bottomTrailing))
+                    .frame(width: 360, height: screenHeight * 0.6)
+                    .cornerRadius(24)
+                    .shadow(radius: 6, x: 0, y: 5)
+                    .overlay(alignment: .topLeading) {
+                        Circle()
+                            .frame(width: 53)
+                            .foregroundStyle(settled ? .mainBackground : .gold)
+                            .position(CGPoint(x: 320, y: 40))
                         
-                        Text("Pick Published on \(pickPublishDate)")
-                            .fontWeight(.regular)
-                            .font(Font.custom("Lexend", size: 15))
-//                            .frame(width: 129, height: 21, alignment: .topLeading)
-//                            .background(.ticketSecondary)
-                            .foregroundStyle(settled ? .darkGold : .gray)
-                            .padding(.top, 8)
-                            .padding(.leading, 20)
-//                            .position(CGPoint(x: 90.5, y: 180.5))
-                    
-                        Text(pickTeam)
-                            .fontWeight(.medium)
-                            .font(Font.custom("Lexend", size: 18))
-//                            .frame(width: 212, height: 21, alignment: .topLeading)
-//                            .background(.ticketSecondary)
-                            .foregroundStyle(settled ? .darkestGold : .black)
-                            .padding(.leading, 20)
-                            .padding(.bottom, -5)
-//                            .position(CGPoint(x: 106, y: 10.5))
-//                            .offset(CGSize(width: 26, height: 136))
-                        
-                        Text(pickType)
-                            .fontWeight(.regular)
-                            .font(Font.custom("Lexend", size: 15))
-//                            .frame(width: 129, height: 21, alignment: .topLeading)
-//                            .background(.ticketSecondary)
-                            .foregroundStyle(settled ? .darkGold : .gray)
-                            .padding(.top, 0)
-                            .padding(.leading, 20)
-//                            .position(CGPoint(x: 90.5, y: 180.5))
-                        
-                        Text(pickGameInfo)
-                            .fontWeight(.regular)
-                            .font(Font.custom("Lexend", size: 15))
-//                            .frame(width: 129, height: 21, alignment: .topLeading)
-//                            .background(.ticketSecondary)
-                            .foregroundStyle(settled ? .darkGold : .gray)
-                            .padding(.top, 5)
-                            .padding(.leading, 20)
-//                            .position(CGPoint(x: 90.5, y: 180.5))
-                        
-                        Text(pickDescription)
-                            .fontWeight(.regular)
-                            .font(Font.custom("Lexend", size: 15))
-//                            .frame(width: 129, height: 21, alignment: .topLeading)
-//                            .background(.ticketSecondary)
-                            .foregroundStyle(settled ? .darkGold : .mainBackground)
-                            .padding(.top, 20)
-                            .padding([.leading, .trailing], 20)
-//                            .position(CGPoint(x: 90.5, y: 180.5))
-                        
-                        Spacer()
-                        
-                        Text("\(pickSportsbook) Sportsbook")
-                            .fontWeight(.regular)
-                            .font(Font.custom("Lexend", size: 15))
-//                            .frame(width: 129, height: 21, alignment: .topLeading)
-//                            .background(.ticketSecondary)
-                            .foregroundStyle(settled ? .darkGold : .gray)
-                            .padding(.bottom, 5)
-                            .padding(.leading, 20)
-//                            .position(CGPoint(x: 90.5, y: 180.5))
-                        
-                        Rectangle()
-                            .frame(width: 360, height: 2.5)
-                            .foregroundStyle(settled ? .darkGold : .ticketSecondary)
-                            .padding(.bottom, 60)
-//                            .position(x: 185.5, y: 110)
-                    }
-                    
-                    if settled {
-                        Image(systemName: "checkmark.circle")
+                        Image(.logo)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(width: 35)
-                            .foregroundStyle(.darkGold)
-                            .position(x: 328, y: 500)
+                            .frame(width: 45)
+                            .position(x: 320, y: 40)
+                        
+                        VStack(alignment: .leading, spacing: 5) {
+                            Rectangle()
+                                .frame(width: 360, height: 2.5)
+                                .padding(.top, 120)
+                                .foregroundStyle(settled ? .darkGold : .ticketSecondary)
+                            //                            .position(x: 185.5, y: 110)
+                            
+                            Text("Pick Published on \(pickPublishDate)")
+                                .fontWeight(.regular)
+                                .font(Font.custom("Lexend", size: 15))
+                            //                            .frame(width: 129, height: 21, alignment: .topLeading)
+                            //                            .background(.ticketSecondary)
+                                .foregroundStyle(settled ? .darkGold : .gray)
+                                .padding(.top, 8)
+                                .padding(.leading, 20)
+                            //                            .position(CGPoint(x: 90.5, y: 180.5))
+                            
+                            Text(pickTeam)
+                                .fontWeight(.medium)
+                                .font(Font.custom("Lexend", size: 18))
+                            //                            .frame(width: 212, height: 21, alignment: .topLeading)
+                            //                            .background(.ticketSecondary)
+                                .foregroundStyle(settled ? .darkestGold : .black)
+                                .padding(.leading, 20)
+                                .padding(.bottom, -5)
+                            //                            .position(CGPoint(x: 106, y: 10.5))
+                            //                            .offset(CGSize(width: 26, height: 136))
+                            
+                            Text(pickType)
+                                .fontWeight(.regular)
+                                .font(Font.custom("Lexend", size: 15))
+                            //                            .frame(width: 129, height: 21, alignment: .topLeading)
+                            //                            .background(.ticketSecondary)
+                                .foregroundStyle(settled ? .darkGold : .gray)
+                                .padding(.top, 0)
+                                .padding(.leading, 20)
+                            //                            .position(CGPoint(x: 90.5, y: 180.5))
+                            
+                            Text(pickGameInfo)
+                                .fontWeight(.regular)
+                                .font(Font.custom("Lexend", size: 15))
+                            //                            .frame(width: 129, height: 21, alignment: .topLeading)
+                            //                            .background(.ticketSecondary)
+                                .foregroundStyle(settled ? .darkGold : .gray)
+                                .padding(.top, 5)
+                                .padding(.leading, 20)
+                            //                            .position(CGPoint(x: 90.5, y: 180.5))
+                            
+                            Text(pickDescription)
+                                .fontWeight(.regular)
+                                .font(Font.custom("Lexend", size: 15))
+                            //                            .frame(width: 129, height: 21, alignment: .topLeading)
+                            //                            .background(.ticketSecondary)
+                                .foregroundStyle(settled ? .darkGold : .mainBackground)
+                                .padding(.top, 20)
+                                .padding([.leading, .trailing], 20)
+                            //                            .position(CGPoint(x: 90.5, y: 180.5))
+                            
+                            Spacer()
+                            
+                            Text("\(pickSportsbook) Sportsbook")
+                                .fontWeight(.regular)
+                                .font(Font.custom("Lexend", size: 15))
+                            //                            .frame(width: 129, height: 21, alignment: .topLeading)
+                            //                            .background(.ticketSecondary)
+                                .foregroundStyle(settled ? .darkGold : .gray)
+                                .padding(.bottom, 5)
+                                .padding(.leading, 20)
+                            //                            .position(CGPoint(x: 90.5, y: 180.5))
+                            
+                            Rectangle()
+                                .frame(width: 360, height: 2.5)
+                                .foregroundStyle(settled ? .darkGold : .ticketSecondary)
+                                .padding(.bottom, 60)
+                            //                            .position(x: 185.5, y: 110)
+                        }
+                        
+                        if settled {
+                            Image(systemName: "checkmark.circle")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 35)
+                                .foregroundStyle(.darkGold)
+                                .position(x: 328, y: 500)
+                        }
                     }
-                }
-                .padding(.top, 125)
+                    .frame(alignment: .bottom)
+                    .padding(.top, 135)
+                    .padding(.bottom, 85)
+//            }
         }
     }
 }
 
 #Preview {
-    TicketView(settled: false,
-               pickTeam: "Minnesota Vikings",
-               pickType: "Moneyline",
-               pickGameInfo: "Atlanta Falcons vs. Minnesota Vikings",
-               pickPublishDate: "Dec 8, 2024 at 7:58 PM",
-               pickDescription: "The Minnesota Vikings have been on a tremendous run this year leading to much success on the field. While the falcons have been playing decently withe new QB Kirk Cousins, the Vikings have better players in seemingly every position.",
-               pickSportsbook: "Fandual")
+    ZStack {
+        TicketView(settled: false,
+                   pickTeam: "Minnesota Vikings",
+                   pickType: "Moneyline",
+                   pickGameInfo: "Atlanta Falcons vs. Minnesota Vikings",
+                   pickPublishDate: "Dec 8, 2024 at 7:58 PM",
+                   pickDescription: "The Minnesota Vikings have been on a tremendous run this year leading to much success on the field. While the falcons have been playing decently withe new QB Kirk Cousins, the Vikings have better players in seemingly every position.",
+                   pickSportsbook: "Fandual")
+        HeaderView1Section(screenName: "Picks", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, section: "Weekly Picks")
+        VStack {
+            NavbarView(selectedTab: .constant(0))
+        }
+    }
 }
 
 struct TicketSubtraction: Shape {

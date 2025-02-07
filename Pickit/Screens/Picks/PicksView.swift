@@ -25,44 +25,54 @@ struct PicksView: View {
     var pickType: String
     
     var body: some View {
-        ZStack {
-            BackgroundView()
-            
-            ScrollView(.vertical) {
-                LazyVStack(spacing: 0) {
-                    ForEach(viewModel.tickets) { ticket in
-                        TicketView(settled: ticket.settled,
-                                   pickTeam: ticket.pickTeam,
-                                   pickType: ticket.pickType,
-                                   pickGameInfo: ticket.pickGameInfo,
-                                   pickPublishDate: ticket.pickPublishDate,
-                                   pickDescription: ticket.pickDescription,
-                                   pickSportsbook: ticket.pickSportsbook)
+//        GeometryReader { geometry in
+            ZStack {
+                BackgroundView()
+                
+                ScrollView(.vertical) {
+                    LazyVStack(spacing: 0) {
+                        ForEach(viewModel.tickets) { ticket in
+                            TicketView(settled: ticket.settled,
+                                       pickTeam: ticket.pickTeam,
+                                       pickType: ticket.pickType,
+                                       pickGameInfo: ticket.pickGameInfo,
+                                       pickPublishDate: ticket.pickPublishDate,
+                                       pickDescription: ticket.pickDescription,
+                                       pickSportsbook: ticket.pickSportsbook)
+                        }
                     }
                 }
+                .scrollIndicators(.hidden)
+                .scrollTargetBehavior(.paging)
+                
+                HeaderView1Section(screenName: self.screenName,
+                                   date: self.currentDate,
+                                   accountName: self.accountName,
+                                   isSubscribed: self.isSubscribed,
+                                   section: "Newest Picks")
             }
-            .scrollIndicators(.hidden)
-            .scrollTargetBehavior(.paging)
-            
-            HeaderView1Section(screenName: self.screenName,
-                               date: self.currentDate,
-                               accountName: self.accountName,
-                               isSubscribed: self.isSubscribed,
-                               section: "Newest Picks")
-        }
+//            .task {
+//                try? await viewModel.getTickets()
+//            }
+//        }
     }
 }
 
 #Preview {
-    PicksView(screenName: "Previous Picks",
-              currentDate: getCurrentDate(),
-             accountName: "Cadel Saszik",
-             isSubscribed: true,
-             settled: false,
-             pickGameInfo: "Atlanta Falcons vs. Minnesota Vikings",
-             pickPublishDate: "Dec 8, 2024 at 7:58 PM",
-             pickDescription: "The Minnesota Vikings have been on a tremendous run this year leading to much success on the field. While the falcons have been playing decently withe new QB Kirk Cousins, the Vikings have better players in seemingly every position.",
-             pickSportsbook: "Fandual",
-             pickTeam: "Minnesota Vikings",
-             pickType: "Moneyline")
+    ZStack {
+        PicksView(screenName: "Previous Picks",
+                  currentDate: getCurrentDate(),
+                  accountName: "Cadel Saszik",
+                  isSubscribed: true,
+                  settled: false,
+                  pickGameInfo: "Atlanta Falcons vs. Minnesota Vikings",
+                  pickPublishDate: "Dec 8, 2024 at 7:58 PM",
+                  pickDescription: "The Minnesota Vikings have been on a tremendous run this year leading to much success on the field. While the falcons have been playing decently withe new QB Kirk Cousins, the Vikings have better players in seemingly every position.",
+                  pickSportsbook: "Fandual",
+                  pickTeam: "Minnesota Vikings",
+                  pickType: "Moneyline")
+        VStack {
+            NavbarView(selectedTab: .constant(0))
+        }
+    }
 }

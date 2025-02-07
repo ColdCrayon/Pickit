@@ -24,8 +24,10 @@ final class PickitViewViewModel: ObservableObject {
     init() {
         self.handler = Auth.auth().addStateDidChangeListener { [weak self] _, user in
             DispatchQueue.main.async {
+                // GET CURRENT USER ID
                 self?.currentUserId = user?.uid ?? ""
                 
+                // IF SIGNED IN, ACCESS USER DOCUMENT
                 if(Auth.auth().currentUser != nil ) {
                     guard let docUser = self?.db.collection("users").document(self?.currentUserId ?? "") else {
                         print("No user id found")
@@ -34,14 +36,12 @@ final class PickitViewViewModel: ObservableObject {
                     
                     Task {
                         do {
+                            // SET VIEWMODEL COMPONENTS
                             let document = try await docUser.getDocument()
                             let data = document.data()
                             self?.username = data?["username"] as? String ?? ""
                             self?.isPremium = data?["isPremium"] as? Bool ?? false
                             self?.isAdmin = data?["isAdmin"] as? Bool ?? false
-                            
-                            print("Document does not exist")
-                            
                         } catch {
                             print("Error getting document: \(error)")
                         }
@@ -51,14 +51,10 @@ final class PickitViewViewModel: ObservableObject {
         }
     }
     
+    // IF USERID EXISTS, isSignedIn = True
     public var isSignedIn: Bool {
         withAnimation(.easeInOut(duration: 0.3)) {
             return Auth.auth().currentUser != nil
         }
-    }
-    
-    
-    public func getUser() {
-        
     }
 }
