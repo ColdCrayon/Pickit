@@ -17,6 +17,8 @@ Stop guessing, start profiting with Pickit!
         - [ ] standard account creation vs premium
     - [ ] Condition screens for premium vs. standard
     - [ ] Admin button conditionality 
+    - [ ] Profile picture functionality
+    - [ ] Subscribed account -> 1 section header
 
 - #### TOS AND PRIVACY POLICY MODALS
     - [ ] Design sheets
