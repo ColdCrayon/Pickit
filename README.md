@@ -11,15 +11,14 @@ Stop guessing, start profiting—Pickit!
 - ### GIT BRANCHING !!!
 
 - #### Header button click animates with no change
+    - Disabled button animation
+    - [ ] Implement click changes screen
+
 - #### ACCOUNT INFORMATION 
     - [x] Left align pfp
-    - [ ] add username, pswd, email, information to right side (view only)
-        - Added headers
-        - Watch account video with firebase for info on keeping track of account information and properly displaying
-        - form can be emptied now and information viewed
-        - REFACTOR
-    - [x]  add upgrade button next to subscribe
-        - [x] standard account creation vs premium
+    - [x] add username, pswd, email, information to right side (view only)
+    - [ ]  add upgrade button next to subscribe
+        - [ ] standard account creation vs premium
 
 - [x] Admin Button and View Screen for Arb and Game Tickets
 
@@ -30,19 +29,18 @@ Stop guessing, start profiting—Pickit!
 
 - #### View Models
     - Home ViewModel
-        - Sync Previous tickets and News
+        - [ ] Pull tickets into swipe
         - Add loading
         - Swipe feature between screens
-    - Game Ticket Sub View Model
-        - [ ] Ticket Creation
-        - [ ] Push to firebase
     - Picks ViewModel
+        - [x] Pull tickets into swipe
+    - Arbitrage ViewModel
         - [ ] Pull tickets into swipe
-    
+
 - #### Admin
     - ### Admin account title
-    - [ ] Push to fire base
-        - [ ] Create game tickets
+    - [x] Push to fire base
+        - [x] Create game tickets
         - [x] Arbitrage Tickets
 
 - #### Arbitrage
