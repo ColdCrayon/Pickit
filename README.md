@@ -2,7 +2,7 @@
 The ultimate edge for sports bettors. Our subscription service delivers expert arbitrage 
 opportunities and AI-powered picks, built on tens of thousands of games worth of data. 
 No gut feelings—just sharp, data-driven insights to help you bet smarter and win more. 
-Stop guessing, start profiting—Pickit!
+Stop guessing, start profiting with Pickit!
 
 # Todo
 
