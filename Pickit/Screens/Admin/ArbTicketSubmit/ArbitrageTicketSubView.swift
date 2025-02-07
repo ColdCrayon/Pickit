@@ -43,7 +43,7 @@ struct ArbitrageTicketSubView: View {
                     TicketEntryView(entryTitle: "Pick Team", entryValue: $viewModel.pickTeam)
                     TicketEntryView(entryTitle: "Pick Type", entryValue: $viewModel.pickType)
                     TicketEntryView(entryTitle: "Game Info", entryValue: $viewModel.gameInfo)
-                    TicketEntryView(entryTitle: "Publish Date", entryValue: $viewModel.publishDate)
+                    //                    TicketEntryView(entryTitle: "Publish Date", entryValue: $viewModel.publishDate)
                     TicketEntryView(entryTitle: "Description", entryValue: $viewModel.description)
                 } header: {
                     Text("Pick Info")
@@ -95,16 +95,16 @@ struct ArbitrageTicketSubView: View {
             
             AnimatedButton(title: "Submit", topColor: .ticketSubButtonLight, bottomColor: .ticketSubButtonDark, width: 330) {
                 // Submit Arb Ticket
-                viewModel.submitTicket()
-                viewModel.pickTeam = ""
-                viewModel.pickType = ""
-                viewModel.gameInfo = ""
-                viewModel.publishDate = ""
-                viewModel.description = ""
-                viewModel.sportsbook1 = ""
-                viewModel.oddsSB1 = ""
-                viewModel.sportsbook2 = ""
-                viewModel.oddsSB2 = ""
+                //                viewModel.submitTicket()
+                //                viewModel.pickTeam = ""
+                //                viewModel.pickType = ""
+                //                viewModel.gameInfo = ""
+                //                viewModel.publishDate = ""
+                //                viewModel.description = ""
+                //                viewModel.sportsbook1 = ""
+                //                viewModel.oddsSB1 = ""
+                //                viewModel.sportsbook2 = ""
+                //                viewModel.oddsSB2 = ""
             }
             .padding(.top, 35)
         }

@@ -37,7 +37,7 @@ struct TicketSubView: View {
                     TicketEntryView(entryTitle: "Pick Team", entryValue: $viewModel.pickTeam)
                     TicketEntryView(entryTitle: "Pick Type", entryValue: $viewModel.pickType)
                     TicketEntryView(entryTitle: "Game Info", entryValue: $viewModel.gameInfo)
-                    TicketEntryView(entryTitle: "Publish Date", entryValue: $viewModel.publishDate)
+//                    TicketEntryView(entryTitle: "Publish Date", entryValue: $viewModel.publishDate)
                     TicketEntryView(entryTitle: "Description", entryValue: $viewModel.description)
                     TicketEntryView(entryTitle: "Sportsbook", entryValue: $viewModel.sportsbook)
                 } header: {

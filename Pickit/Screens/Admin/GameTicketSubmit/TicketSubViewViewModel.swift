@@ -13,7 +13,7 @@ final class TicketSubViewViewModel: ObservableObject {
     @Published var pickTeam: String = ""
     @Published var pickType: String = ""
     @Published var gameInfo: String = ""
-    @Published var publishDate: String = ""
+//    @Published var publishDate: String = ""
     @Published var description: String = ""
     @Published var sportsbook: String = ""
     
@@ -26,7 +26,7 @@ final class TicketSubViewViewModel: ObservableObject {
               !pickType.trimmingCharacters(in: .whitespaces).isEmpty,
               !gameInfo.trimmingCharacters(in: .whitespaces).isEmpty,
               !description.trimmingCharacters(in: .whitespaces).isEmpty,
-              !publishDate.trimmingCharacters(in: .whitespaces).isEmpty,
+//              !publishDate.trimmingCharacters(in: .whitespaces).isEmpty,
               !description.trimmingCharacters(in: .whitespaces).isEmpty,
               !sportsbook.trimmingCharacters(in: .whitespaces).isEmpty else {
             errorMessage = "Please Fill Out All Fields"
@@ -49,14 +49,14 @@ final class TicketSubViewViewModel: ObservableObject {
         let newTicket = Ticket(id: id,
                                settled: settled,
                                pickGameInfo: gameInfo,
-                               pickPublishDate: publishDate,
+                               pickPublishDate: getTicketDate(),
                                pickDescription: description,
                                pickSportsbook: sportsbook,
                                pickTeam: pickTeam,
                                pickType: pickType)
         
         gameInfo = ""
-        publishDate = ""
+//        publishDate = ""
         description = ""
         sportsbook = ""
         pickTeam = ""

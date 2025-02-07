@@ -13,7 +13,7 @@ final class ArbitrageTicketSubViewViewModel: ObservableObject {
     @Published var pickTeam: String = ""
     @Published var pickType: String = ""
     @Published var gameInfo: String = ""
-    @Published var publishDate: String = ""
+//    @Published var publishDate: String = ""
     @Published var description: String = ""
     @Published var sportsbook1: String = ""
     @Published var sportsbook2: String = ""
@@ -29,7 +29,7 @@ final class ArbitrageTicketSubViewViewModel: ObservableObject {
               !pickType.trimmingCharacters(in: .whitespaces).isEmpty,
               !gameInfo.trimmingCharacters(in: .whitespaces).isEmpty,
               !description.trimmingCharacters(in: .whitespaces).isEmpty,
-              !publishDate.trimmingCharacters(in: .whitespaces).isEmpty,
+//              !publishDate.trimmingCharacters(in: .whitespaces).isEmpty,
               !description.trimmingCharacters(in: .whitespaces).isEmpty,
               !sportsbook1.trimmingCharacters(in: .whitespaces).isEmpty,
               !oddsSB1.trimmingCharacters(in: .whitespaces).isEmpty,
@@ -59,7 +59,7 @@ final class ArbitrageTicketSubViewViewModel: ObservableObject {
                                         pickGameInfo: gameInfo,
                                         pickOddsSB1: oddsSB1,
                                         pickOddsSB2: oddsSB2,
-                                        pickPublishDate: publishDate,
+                                        pickPublishDate: getTicketDate(),
                                         pickDescription: description,
                                         pickTeam: pickTeam,
                                         pickType: pickType)
@@ -67,7 +67,6 @@ final class ArbitrageTicketSubViewViewModel: ObservableObject {
         pickTeam = ""
         pickType = ""
         gameInfo = ""
-        publishDate = ""
         description = ""
         sportsbook1 = ""
         sportsbook2 = ""
