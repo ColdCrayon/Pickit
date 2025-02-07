@@ -90,11 +90,11 @@ struct AccountViewInformation: View {
                 
                 VStack {
                     ScrollView() {
-                        FormDisplayView(entryTitle: "Username", entryValue: $username)
+                        FormDisplayView(entryTitle: "Username", entryValue: $viewModel.username)
                             .padding(.top, 6)
-                        FormDisplayView(entryTitle: "Full Name", entryValue: $username)
+                        FormDisplayView(entryTitle: "Full Name", entryValue: $viewModel.fullName)
                         //                        FormPasswordView(entryTitle: "Password", entryValue: $password)
-                        FormDisplayView(entryTitle: "Email", entryValue: $email)
+                        FormDisplayView(entryTitle: "Email", entryValue: $viewModel.email)
                             .padding(.bottom, 15)
                         
                         Button {

@@ -10,6 +10,7 @@ import FirebaseFirestore
 import SwiftUI
 
 final class AccountViewInformationViewModel: ObservableObject {
+    @Published var currentUserId: String = ""
     @Published var username: String = ""
     @Published var fullName: String = ""
     @Published var password: String = ""
@@ -18,7 +19,39 @@ final class AccountViewInformationViewModel: ObservableObject {
     @Published var errorMessageLogin: String = ""
     @Published var errorMessageRegister: String = ""
     
-    init() {}
+    let db = Firestore.firestore()
+    
+    private var handler: AuthStateDidChangeListenerHandle?
+    
+    init() {
+        self.handler = Auth.auth().addStateDidChangeListener { [weak self] _, user in
+            DispatchQueue.main.async {
+                // GET CURRENT USER ID
+                self?.currentUserId = user?.uid ?? ""
+                
+                // IF SIGNED IN, ACCESS USER DOCUMENT
+                if(Auth.auth().currentUser != nil ) {
+                    guard let docUser = self?.db.collection("users").document(self?.currentUserId ?? "") else {
+                        print("No user id found")
+                        return
+                    }
+                    
+                    Task {
+                        do {
+                            // SET VIEWMODEL COMPONENTS
+                            let document = try await docUser.getDocument()
+                            let data = document.data()
+                            self?.username = data?["username"] as? String ?? ""
+                            self?.fullName = data?["name"] as? String ?? ""
+                            self?.email = data?["email"] as? String ?? ""
+                        } catch {
+                            print("Error getting document: \(error)")
+                        }
+                    }
+                }
+            }
+        }
+    }
     
     func signOut() {
         do {
