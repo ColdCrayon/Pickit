@@ -29,9 +29,9 @@ Stop guessing, start profiting—Pickit!
 
 - #### View Models
     - Home ViewModel
+        - [ ] Add previous tickets function
+            - List of settled tickets
         - [ ] Pull tickets into swipe
-        - Add loading
-        - Swipe feature between screens
     - Picks ViewModel
         - [x] Pull tickets into swipe
     - Arbitrage ViewModel
