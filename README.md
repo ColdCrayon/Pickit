@@ -10,10 +10,6 @@ Stop guessing, start profiting—Pickit!
 
 - ### GIT BRANCHING !!!
 
-- #### Header button click animates with no change
-    - Disabled button animation
-    - [ ] Implement click changes screen
-
 - #### ACCOUNT INFORMATION 
     - [x] Left align pfp
     - [x] add username, pswd, email, information to right side (view only)
@@ -38,10 +34,11 @@ Stop guessing, start profiting—Pickit!
         - [ ] Pull tickets into swipe
 
 - #### Admin
-    - ### Admin account title
-    - [x] Push to fire base
-        - [x] Create game tickets
-        - [x] Arbitrage Tickets
+    - Admin account title
+
+- #### Header button click animates with no change
+    - Disabled button animation
+    - [ ] Implement click changes screen
 
 - #### Arbitrage
     - Webscraping
