@@ -16,6 +16,8 @@ final class AccountViewInformationViewModel: ObservableObject {
     @Published var password: String = ""
     @Published var email: String = ""
     
+    @Published var isLoading: Bool = false
+    
     @Published var errorMessageLogin: String = ""
     @Published var errorMessageRegister: String = ""
     
@@ -24,6 +26,7 @@ final class AccountViewInformationViewModel: ObservableObject {
     private var handler: AuthStateDidChangeListenerHandle?
     
     init() {
+        isLoading = true
         self.handler = Auth.auth().addStateDidChangeListener { [weak self] _, user in
             DispatchQueue.main.async {
                 // GET CURRENT USER ID
@@ -40,6 +43,7 @@ final class AccountViewInformationViewModel: ObservableObject {
                         do {
                             // SET VIEWMODEL COMPONENTS
                             let document = try await docUser.getDocument()
+                            self?.isLoading = false
                             let data = document.data()
                             self?.username = data?["username"] as? String ?? ""
                             self?.fullName = data?["name"] as? String ?? ""

@@ -22,6 +22,7 @@ final class PicksViewModel: ObservableObject {
     private var handler: AuthStateDidChangeListenerHandle?
     
     init() {
+        isLoading = true
         self.handler = Auth.auth().addStateDidChangeListener { [weak self] _, user in
             DispatchQueue.main.async {
                 if(Auth.auth().currentUser != nil ) {
@@ -31,6 +32,7 @@ final class PicksViewModel: ObservableObject {
                     
                     Task {
                         let snapshot = try await GTicketcollection.getDocuments()
+                        self?.isLoading = false
                         
                         
                         for document in snapshot.documents {

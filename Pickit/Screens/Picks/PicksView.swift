@@ -25,7 +25,7 @@ struct PicksView: View {
     var pickType: String
     
     var body: some View {
-//        GeometryReader { geometry in
+        ZStack {
             ZStack {
                 BackgroundView()
                 
@@ -51,10 +51,11 @@ struct PicksView: View {
                                    isSubscribed: self.isSubscribed,
                                    section: "Newest Picks")
             }
-//            .task {
-//                try? await viewModel.getTickets()
-//            }
-//        }
+            
+            if(viewModel.isLoading) {
+                LoadingView()
+            }
+        }
     }
 }
 

@@ -60,34 +60,40 @@ struct ArbitrageView: View {
         // =======================================================================================
         // SAMPLE TICKETS LIST
         ZStack {
-            
-            BackgroundView()
-            
-            ScrollView(.vertical) {
-                LazyVStack(spacing: 0) {
-                    ForEach(viewModel.arbitrageTickets) { ticket in
-                        ArbitrageTicketView(settled: ticket.settled,
-                                            sportsBook1: ticket.sportsBook1,
-                                            sportsBook2: ticket.sportsBook2,
-                                            pickTeam: ticket.pickTeam,
-                                            pickType: ticket.pickType,
-                                            pickGameInfo: ticket.pickGameInfo,
-                                            pickOddsSB1: ticket.pickOddsSB1,
-                                            pickOddsSB2: ticket.pickOddsSB2,
-                                            pickPublishDate: ticket.pickPublishDate,
-                                            pickDescription: ticket.pickDescription,
-                                            pickSportsbook: "Draft Kings")
+            ZStack {
+                
+                BackgroundView()
+                
+                ScrollView(.vertical) {
+                    LazyVStack(spacing: 0) {
+                        ForEach(viewModel.arbitrageTickets) { ticket in
+                            ArbitrageTicketView(settled: ticket.settled,
+                                                sportsBook1: ticket.sportsBook1,
+                                                sportsBook2: ticket.sportsBook2,
+                                                pickTeam: ticket.pickTeam,
+                                                pickType: ticket.pickType,
+                                                pickGameInfo: ticket.pickGameInfo,
+                                                pickOddsSB1: ticket.pickOddsSB1,
+                                                pickOddsSB2: ticket.pickOddsSB2,
+                                                pickPublishDate: ticket.pickPublishDate,
+                                                pickDescription: ticket.pickDescription,
+                                                pickSportsbook: "Draft Kings")
+                        }
                     }
                 }
+                .scrollIndicators(.hidden)
+                .scrollTargetBehavior(.paging)
+                
+                HeaderView1Section(screenName: self.screenName,
+                                   date: self.currentDate,
+                                   accountName: self.accountName,
+                                   isSubscribed: self.isSubscribed,
+                                   section: self.section)
             }
-            .scrollIndicators(.hidden)
-            .scrollTargetBehavior(.paging)
             
-            HeaderView1Section(screenName: self.screenName,
-                               date: self.currentDate,
-                               accountName: self.accountName,
-                               isSubscribed: self.isSubscribed,
-                               section: self.section)
+            if(viewModel.isLoading) {
+                LoadingView()
+            }
         }
     }
 }

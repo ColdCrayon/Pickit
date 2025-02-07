@@ -63,46 +63,52 @@ struct HomeView: View {
         // SAMPLE TICKETS LIST
         
         ZStack {
-//            ScrollView(.vertical) {
-//                LazyVStack(spacing: 0) {
-//                    ForEach(viewModel.tickets) { ticket in
-//                        TicketView(settled: ticket.settled,
-//                                   pickTeam: ticket.pickTeam,
-//                                   pickType: ticket.pickType,
-//                                   pickGameInfo: ticket.pickGameInfo,
-//                                   pickPublishDate: ticket.pickPublishDate,
-//                                   pickDescription: ticket.pickDescription,
-//                                   pickSportsbook: ticket.pickSportsbook)
-//                    }
-//                }
-//            }
-//            .scrollIndicators(.hidden)
-//            .scrollTargetBehavior(.paging)
-            BackgroundView()
-            
             ZStack {
-                PreviousPicksView(screenName: screenName,
-                                  currentDate: getCurrentDate(),
-                                  accountName: accountName,
-                                  isSubscribed: isSubscribed,
-                                  leftSectionActive: $leftSectionActive)
-                .gesture(drag)
+                //            ScrollView(.vertical) {
+                //                LazyVStack(spacing: 0) {
+                //                    ForEach(viewModel.tickets) { ticket in
+                //                        TicketView(settled: ticket.settled,
+                //                                   pickTeam: ticket.pickTeam,
+                //                                   pickType: ticket.pickType,
+                //                                   pickGameInfo: ticket.pickGameInfo,
+                //                                   pickPublishDate: ticket.pickPublishDate,
+                //                                   pickDescription: ticket.pickDescription,
+                //                                   pickSportsbook: ticket.pickSportsbook)
+                //                    }
+                //                }
+                //            }
+                //            .scrollIndicators(.hidden)
+                //            .scrollTargetBehavior(.paging)
+                BackgroundView()
                 
-                ComingSoonView(screenName: screenName,
-                               date: getCurrentDate(),
-                               accountName: accountName,
-                               isSubscribed: isSubscribed)
-                .gesture(drag)
-                .offset(x: offset)
+                ZStack {
+                    PreviousPicksView(screenName: screenName,
+                                      currentDate: getCurrentDate(),
+                                      accountName: accountName,
+                                      isSubscribed: isSubscribed,
+                                      leftSectionActive: $leftSectionActive)
+                    .gesture(drag)
+                    
+                    ComingSoonView(screenName: screenName,
+                                   date: getCurrentDate(),
+                                   accountName: accountName,
+                                   isSubscribed: isSubscribed)
+                    .gesture(drag)
+                    .offset(x: offset)
+                }
+                
+                HeaderView2Section(screenName: screenName,
+                                   date: self.currentDate,
+                                   accountName: self.accountName,
+                                   isSubscribed: self.isSubscribed,
+                                   leftSection: self.leftSection,
+                                   rightSection: self.rightSection,
+                                   leftSectionActive: $leftSectionActive)
             }
             
-            HeaderView2Section(screenName: screenName,
-                               date: self.currentDate,
-                               accountName: self.accountName,
-                               isSubscribed: self.isSubscribed,
-                               leftSection: self.leftSection,
-                               rightSection: self.rightSection,
-                               leftSectionActive: $leftSectionActive)
+            if(viewModel.isLoading) {
+                LoadingView()
+            }
         }
     }
 }
