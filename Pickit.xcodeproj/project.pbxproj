@@ -61,6 +61,7 @@
 		0349946F2D548252004FDDAC /* ArbitrageTicketSubViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0349946E2D548252004FDDAC /* ArbitrageTicketSubViewViewModel.swift */; };
 		039C81E72D5488570038E3E6 /* IdGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039C81E62D5488570038E3E6 /* IdGenerator.swift */; };
 		039C81EA2D551E5A0038E3E6 /* TicketSubViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039C81E92D551E5A0038E3E6 /* TicketSubViewViewModel.swift */; };
+		039F10EE2D56A3D600038F70 /* PreviousPicksViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039F10ED2D56A3D600038F70 /* PreviousPicksViewViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -134,6 +135,7 @@
 		0349946E2D548252004FDDAC /* ArbitrageTicketSubViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArbitrageTicketSubViewViewModel.swift; sourceTree = "<group>"; };
 		039C81E62D5488570038E3E6 /* IdGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdGenerator.swift; sourceTree = "<group>"; };
 		039C81E92D551E5A0038E3E6 /* TicketSubViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicketSubViewViewModel.swift; sourceTree = "<group>"; };
+		039F10ED2D56A3D600038F70 /* PreviousPicksViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviousPicksViewViewModel.swift; sourceTree = "<group>"; };
 		03C697D62CFF95A20010E0EE /* Pickit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pickit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		03C697E62CFF95A30010E0EE /* PickitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PickitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		03C697F02CFF95A30010E0EE /* PickitUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PickitUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -229,10 +231,10 @@
 		0349940A2D547EF8004FDDAC /* Home */ = {
 			isa = PBXGroup;
 			children = (
+				039F10EB2D56A3B000038F70 /* PreviousPicks */,
 				034994062D547EF8004FDDAC /* HomeView.swift */,
 				034994072D547EF8004FDDAC /* HomeViewModel.swift */,
 				034994082D547EF8004FDDAC /* NewsView.swift */,
-				034994092D547EF8004FDDAC /* PreviousPicksView.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -421,6 +423,15 @@
 				039C81E92D551E5A0038E3E6 /* TicketSubViewViewModel.swift */,
 			);
 			path = GameTicketSubmit;
+			sourceTree = "<group>";
+		};
+		039F10EB2D56A3B000038F70 /* PreviousPicks */ = {
+			isa = PBXGroup;
+			children = (
+				034994092D547EF8004FDDAC /* PreviousPicksView.swift */,
+				039F10ED2D56A3D600038F70 /* PreviousPicksViewViewModel.swift */,
+			);
+			path = PreviousPicks;
 			sourceTree = "<group>";
 		};
 		03C697CD2CFF95A20010E0EE = {
@@ -618,6 +629,7 @@
 				034994532D547EF8004FDDAC /* RegisterSheetView.swift in Sources */,
 				034994542D547EF8004FDDAC /* SignInView.swift in Sources */,
 				034994552D547EF8004FDDAC /* SignInViewViewModel.swift in Sources */,
+				039F10EE2D56A3D600038F70 /* PreviousPicksViewViewModel.swift in Sources */,
 				034994562D547EF8004FDDAC /* PickitView.swift in Sources */,
 				034994572D547EF8004FDDAC /* PickitViewViewModel.swift in Sources */,
 				034994582D547EF8004FDDAC /* EXTDictionary.swift in Sources */,

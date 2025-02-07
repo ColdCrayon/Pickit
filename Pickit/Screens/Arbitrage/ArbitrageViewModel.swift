@@ -25,7 +25,6 @@ final class ArbitrageViewModel: ObservableObject {
         self.handler = Auth.auth().addStateDidChangeListener { [weak self] _, user in
             DispatchQueue.main.async {
                 if(Auth.auth().currentUser != nil ) {
-                    // IMPLEMENT PREVIOUS TICKETS
                     guard let ATicketcollection = self?.db.collection("arbTickets") else {
                         return
                     }
@@ -39,8 +38,8 @@ final class ArbitrageViewModel: ObservableObject {
                             
                             let arbTicket = ArbitrageTicket(id: ticket["id"] as! String,
                                                             settled: ticket["settled"] as! Bool,
-                                                            sportsBook1: ticket["sportsbook1"] as! String,
-                                                            sportsBook2: ticket["sportsbook2"] as! String,
+                                                            sportsBook1: ticket["sportsBook1"] as! String,
+                                                            sportsBook2: ticket["sportsBook2"] as! String,
                                                             pickGameInfo: ticket["pickGameInfo"] as! String,
                                                             pickOddsSB1: ticket["pickOddsSB1"] as! String,
                                                             pickOddsSB2: ticket["pickOddsSB2"] as! String,
