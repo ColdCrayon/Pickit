@@ -7,6 +7,9 @@ Stop guessing, start profiting with Pickit!
 <img src="https://github.com/ColdCrayon/Pickit/blob/main/Pictures/AccountScreen.png" alt="Account Screen" width=200/>
 <img src="https://github.com/ColdCrayon/Pickit/blob/main/Pictures/ArbitrageScreen.png" alt="Arbitrage Screen" width=200/>
 
+<div align="center">
+    <img src="" alt="Image Grid" width="400" height="400" alt="css-in-readme"> 
+</div>
 # Todo
 
 - Git push script
