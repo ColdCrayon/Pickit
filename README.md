@@ -6,6 +6,7 @@ Stop guessing, start profiting with Pickit!
 
 ![Account Screen](https://github.com/ColdCrayon/Pickit/blob/main/Pictures/AccountScreen.png)
 ![Home Screen](https://github.com/ColdCrayon/Pickit/blob/main/Pictures/ArbitrageScreen.png)
+<img src="https://github.com/ColdCrayon/Pickit/blob/main/Pictures/ArbitrageScreen.png" alt"Home Screen" width=200/>
 # Todo
 
 - Git push script
