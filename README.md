@@ -10,6 +10,7 @@ Stop guessing, start profiting with Pickit!
 
 - ### GIT BRANCHING !!!
 
+## APPLICATION DEVELOPMENT
 - #### ACCOUNT INFORMATION 
     - [x] Left align pfp
     - [x] add username, pswd, email, information to right side (view only)
@@ -42,6 +43,11 @@ Stop guessing, start profiting with Pickit!
     - Disabled button animation
     - [ ] Implement click changes screen
 
+## WEBSITE DEVELOPMENT
+- Privacy policy info
+    - https://developer.apple.com/app-store/review/guidelines/#privacy
+
+## ALGORITHM DEVELOPMENT
 - #### Arbitrage
     - Webscraping
         - Pull data from multiple sportsbooks
