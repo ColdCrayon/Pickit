@@ -5,7 +5,7 @@ No gut feelings—just sharp, data-driven insights to help you bet smarter and w
 Stop guessing, start profiting with Pickit!
 
 ![Account Screen](https://github.com/ColdCrayon/Pickit/blob/main/Pictures/AccountScreen.png)
-![Home Screen](https://github.com/ColdCrayon/Pickit/Pictures/ArbitrageScreen.png)
+![Home Screen](https://github.com/ColdCrayon/Pickit/blob/main/Pictures/ArbitrageScreen.png)
 # Todo
 
 - Git push script
