@@ -4,8 +4,8 @@ opportunities and AI-powered picks, built on tens of thousands of games worth of
 No gut feelings—just sharp, data-driven insights to help you bet smarter and win more. 
 Stop guessing, start profiting with Pickit!
 
-![Account Screen](https://github.com/ColdCrayon/Pickit/Pictures/AccountScreen.png?raw=true)
-![Home Screen](https://github.com/ColdCrayon/Pickit/Pictures/ArbitrageScreen.png?raw=true)
+![Account Screen](https://github.com/ColdCrayon/Pickit/Pictures/AccountScreen.png)
+![Home Screen](https://github.com/ColdCrayon/Pickit/Pictures/ArbitrageScreen.png)
 # Todo
 
 - Git push script
