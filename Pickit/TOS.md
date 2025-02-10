@@ -1,5 +1,3 @@
-TERMS OF SERVICE
-
 Effective Date: 2/9/2025
 
 Welcome to Pickit! By accessing or using our sports betting advice app, you agree to these Terms of Service. If you do not agree, please do not use the App.
