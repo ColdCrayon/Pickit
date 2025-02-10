@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TOSSheetView: View {
     
-    @StateObject var model = Model()
+    @StateObject var model = ModelTOS()
     
     var body: some View {
         ZStack {
@@ -35,6 +35,7 @@ struct TOSSheetView: View {
                                 .foregroundStyle(.black)
                         }
                     }
+                    .scrollIndicators(.hidden)
                     .padding([.leading, .trailing], 20)
                     .background(
                         RoundedRectangle(cornerRadius: 30, style: .continuous)
@@ -46,27 +47,6 @@ struct TOSSheetView: View {
         }
     }
 }
-
-class Model: ObservableObject {
-    @Published var data: String = ""
-    init() { self.load(file: "TOS") }
-    
-    func load(file: String) {
-        if let filepath = Bundle.main.path(forResource: file, ofType: "md") {
-            do {
-                let contents = try String(contentsOfFile: filepath, encoding: .utf8)
-                DispatchQueue.main.async {
-                    self.data = contents
-                }
-            } catch let error as NSError {
-                print(error.localizedDescription)
-            }
-        } else {
-            print("File not found")
-        }
-    }
-}
-
 
 #Preview {
     TOSSheetView()
