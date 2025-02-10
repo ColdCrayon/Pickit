@@ -24,6 +24,8 @@ struct PicksView: View {
     var pickTeam: String
     var pickType: String
     
+    var section: String
+    
     var body: some View {
         ZStack {
             ZStack {
@@ -55,6 +57,10 @@ struct PicksView: View {
             if(viewModel.isLoading) {
                 LoadingView()
             }
+            
+            if(!viewModel.isPremium) {
+                PremiumReqView(screenName: self.screenName, date: getCurrentDate(), accountName: self.accountName, isSubscribed: false, section: self.section)
+            }
         }
     }
 }
@@ -71,7 +77,8 @@ struct PicksView: View {
                   pickDescription: "The Minnesota Vikings have been on a tremendous run this year leading to much success on the field. While the falcons have been playing decently withe new QB Kirk Cousins, the Vikings have better players in seemingly every position.",
                   pickSportsbook: "Fandual",
                   pickTeam: "Minnesota Vikings",
-                  pickType: "Moneyline")
+                  pickType: "Moneyline",
+                  section: "Picks")
         VStack {
             NavbarView(selectedTab: .constant(0))
         }

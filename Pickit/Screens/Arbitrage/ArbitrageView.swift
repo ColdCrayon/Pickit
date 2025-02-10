@@ -87,12 +87,20 @@ struct ArbitrageView: View {
                 HeaderView1Section(screenName: self.screenName,
                                    date: self.currentDate,
                                    accountName: self.accountName,
-                                   isSubscribed: self.isSubscribed,
+                                   isSubscribed: viewModel.isPremium,
                                    section: self.section)
             }
             
             if(viewModel.isLoading) {
                 LoadingView()
+            }
+            
+            if(!viewModel.isPremium) {
+                PremiumReqView(screenName: self.screenName,
+                               date: getCurrentDate(),
+                               accountName: self.accountName,
+                               isSubscribed: viewModel.isPremium,
+                               section: self.section)
             }
         }
     }

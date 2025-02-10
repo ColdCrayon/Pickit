@@ -56,7 +56,8 @@ struct PickitView: View {
                                   pickDescription: "The Minnesota Vikings have been on a tremendous run this year leading to much success on the field. While the falcons have been playing decently withe new QB Kirk Cousins, the Vikings have better players in seemingly every position.",
                                   pickSportsbook: "Fandual",
                                   pickTeam: "Minnesota Vikings",
-                                  pickType: "Moneyline")
+                                  pickType: "Moneyline",
+                                  section: "Newest Picks")
                     }
                 }
                 .tag(1)
@@ -89,7 +90,6 @@ struct PickitView: View {
                                     date: getCurrentDate(),
                                     accountName: viewModel.username,
                                     isSubscribed: viewModel.isPremium,
-                                    isAdmin: viewModel.isAdmin,
                                     information: .constant(true),
                                     leftSectionActive: $leftSectionActiveAccount,
                                     selectedTab: $selectedTab)

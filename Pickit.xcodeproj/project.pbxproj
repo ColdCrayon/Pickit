@@ -62,6 +62,10 @@
 		039C81E72D5488570038E3E6 /* IdGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039C81E62D5488570038E3E6 /* IdGenerator.swift */; };
 		039C81EA2D551E5A0038E3E6 /* TicketSubViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039C81E92D551E5A0038E3E6 /* TicketSubViewViewModel.swift */; };
 		039F10EE2D56A3D600038F70 /* PreviousPicksViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039F10ED2D56A3D600038F70 /* PreviousPicksViewViewModel.swift */; };
+		039F10F32D57005E00038F70 /* AccountViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039F10F22D57005E00038F70 /* AccountViewViewModel.swift */; };
+		039F10F52D57058300038F70 /* PremiumReqView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039F10F42D57058300038F70 /* PremiumReqView.swift */; };
+		039F10FC2D5719A700038F70 /* TOSSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039F10FB2D5719A700038F70 /* TOSSheetView.swift */; };
+		039F10FE2D5719B400038F70 /* PrivacyPolicySheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039F10FD2D5719B400038F70 /* PrivacyPolicySheetView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -136,6 +140,10 @@
 		039C81E62D5488570038E3E6 /* IdGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdGenerator.swift; sourceTree = "<group>"; };
 		039C81E92D551E5A0038E3E6 /* TicketSubViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicketSubViewViewModel.swift; sourceTree = "<group>"; };
 		039F10ED2D56A3D600038F70 /* PreviousPicksViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviousPicksViewViewModel.swift; sourceTree = "<group>"; };
+		039F10F22D57005E00038F70 /* AccountViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewViewModel.swift; sourceTree = "<group>"; };
+		039F10F42D57058300038F70 /* PremiumReqView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumReqView.swift; sourceTree = "<group>"; };
+		039F10FB2D5719A700038F70 /* TOSSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TOSSheetView.swift; sourceTree = "<group>"; };
+		039F10FD2D5719B400038F70 /* PrivacyPolicySheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicySheetView.swift; sourceTree = "<group>"; };
 		03C697D62CFF95A20010E0EE /* Pickit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pickit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		03C697E62CFF95A30010E0EE /* PickitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PickitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		03C697F02CFF95A30010E0EE /* PickitUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PickitUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -200,11 +208,11 @@
 		034993FE2D547EF8004FDDAC /* Account */ = {
 			isa = PBXGroup;
 			children = (
+				039F10F62D57185100038F70 /* Sheets */,
+				039F10F02D57004200038F70 /* AccountBilling */,
+				039F10EF2D57002800038F70 /* AccountInformation */,
 				034993F92D547EF8004FDDAC /* AccountView.swift */,
-				034993FA2D547EF8004FDDAC /* AccountViewBilling.swift */,
-				034993FB2D547EF8004FDDAC /* AccountViewBillingViewModel.swift */,
-				034993FC2D547EF8004FDDAC /* AccountViewInformation.swift */,
-				034993FD2D547EF8004FDDAC /* AccountViewInformationViewModel.swift */,
+				039F10F22D57005E00038F70 /* AccountViewViewModel.swift */,
 			);
 			path = Account;
 			sourceTree = "<group>";
@@ -243,6 +251,7 @@
 			isa = PBXGroup;
 			children = (
 				0349940B2D547EF8004FDDAC /* ComingSoonView.swift */,
+				039F10F42D57058300038F70 /* PremiumReqView.swift */,
 				0349940C2D547EF8004FDDAC /* LoadingView.swift */,
 			);
 			path = Other;
@@ -434,6 +443,33 @@
 			path = PreviousPicks;
 			sourceTree = "<group>";
 		};
+		039F10EF2D57002800038F70 /* AccountInformation */ = {
+			isa = PBXGroup;
+			children = (
+				034993FC2D547EF8004FDDAC /* AccountViewInformation.swift */,
+				034993FD2D547EF8004FDDAC /* AccountViewInformationViewModel.swift */,
+			);
+			path = AccountInformation;
+			sourceTree = "<group>";
+		};
+		039F10F02D57004200038F70 /* AccountBilling */ = {
+			isa = PBXGroup;
+			children = (
+				034993FA2D547EF8004FDDAC /* AccountViewBilling.swift */,
+				034993FB2D547EF8004FDDAC /* AccountViewBillingViewModel.swift */,
+			);
+			path = AccountBilling;
+			sourceTree = "<group>";
+		};
+		039F10F62D57185100038F70 /* Sheets */ = {
+			isa = PBXGroup;
+			children = (
+				039F10FB2D5719A700038F70 /* TOSSheetView.swift */,
+				039F10FD2D5719B400038F70 /* PrivacyPolicySheetView.swift */,
+			);
+			path = Sheets;
+			sourceTree = "<group>";
+		};
 		03C697CD2CFF95A20010E0EE = {
 			isa = PBXGroup;
 			children = (
@@ -607,9 +643,11 @@
 				0349946F2D548252004FDDAC /* ArbitrageTicketSubViewViewModel.swift in Sources */,
 				034994402D547EF8004FDDAC /* AccountView.swift in Sources */,
 				034994412D547EF8004FDDAC /* AccountViewBilling.swift in Sources */,
+				039F10F32D57005E00038F70 /* AccountViewViewModel.swift in Sources */,
 				034994422D547EF8004FDDAC /* AccountViewBillingViewModel.swift in Sources */,
 				034994432D547EF8004FDDAC /* AccountViewInformation.swift in Sources */,
 				034994442D547EF8004FDDAC /* AccountViewInformationViewModel.swift in Sources */,
+				039F10F52D57058300038F70 /* PremiumReqView.swift in Sources */,
 				034994452D547EF8004FDDAC /* AdminView.swift in Sources */,
 				0349946D2D54823E004FDDAC /* AdminViewViewModel.swift in Sources */,
 				034994462D547EF8004FDDAC /* ArbitrageTicketSubView.swift in Sources */,
@@ -624,12 +662,14 @@
 				0349944E2D547EF8004FDDAC /* ComingSoonView.swift in Sources */,
 				0349944F2D547EF8004FDDAC /* LoadingView.swift in Sources */,
 				034994502D547EF8004FDDAC /* PicksView.swift in Sources */,
+				039F10FE2D5719B400038F70 /* PrivacyPolicySheetView.swift in Sources */,
 				034994512D547EF8004FDDAC /* PicksViewModel.swift in Sources */,
 				034994522D547EF8004FDDAC /* LoginSheetView.swift in Sources */,
 				034994532D547EF8004FDDAC /* RegisterSheetView.swift in Sources */,
 				034994542D547EF8004FDDAC /* SignInView.swift in Sources */,
 				034994552D547EF8004FDDAC /* SignInViewViewModel.swift in Sources */,
 				039F10EE2D56A3D600038F70 /* PreviousPicksViewViewModel.swift in Sources */,
+				039F10FC2D5719A700038F70 /* TOSSheetView.swift in Sources */,
 				034994562D547EF8004FDDAC /* PickitView.swift in Sources */,
 				034994572D547EF8004FDDAC /* PickitViewViewModel.swift in Sources */,
 				034994582D547EF8004FDDAC /* EXTDictionary.swift in Sources */,

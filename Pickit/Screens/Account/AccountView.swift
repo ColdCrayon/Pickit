@@ -9,11 +9,12 @@ import SwiftUI
 
 struct AccountView: View {
     
+    @StateObject var viewModel = AccountViewViewModel()
+    
     var screenName: String
     var date: String
     var accountName: String
     var isSubscribed: Bool
-    var isAdmin: Bool
     
     @Binding var information: Bool
     @Binding var leftSectionActive: Bool
@@ -80,30 +81,39 @@ struct AccountView: View {
                                            date: self.date,
                                            accountName: self.accountName,
                                            isSubscribed: self.isSubscribed,
-                                           isAdmin: self.isAdmin,
                                            selectedTab: $selectedTab)
                 }
                 .gesture(drag)
                 
-                ZStack{
-                    BackgroundViewBilling()
-                    
-                    AccountViewBilling(screenName: self.screenName,
-                                       date: self.date,
-                                       accountName: self.accountName,
-                                       isSubscribed: self.isSubscribed)
+                if(!viewModel.isPremium) {
+                    ZStack{
+                        BackgroundViewBilling()
+                        
+                        AccountViewBilling(screenName: self.screenName,
+                                           date: self.date,
+                                           accountName: self.accountName,
+                                           isSubscribed: self.isSubscribed)
+                    }
+                    .gesture(drag)
+                    .offset(x: offset)
                 }
-                .gesture(drag)
-                .offset(x: offset)
             }
             
-            HeaderView2Section(screenName: self.screenName,
-                               date: self.date,
-                               accountName: self.accountName,
-                               isSubscribed: self.isSubscribed,
-                               leftSection: "Information",
-                               rightSection: "Billing",
-                               leftSectionActive: $leftSectionActive)
+            if(viewModel.isPremium) {
+                HeaderView1Section(screenName: self.screenName,
+                                   date: getCurrentDate(),
+                                   accountName: self.accountName,
+                                   isSubscribed: true,
+                                   section: "Information")
+            } else if (!viewModel.isPremium){
+                HeaderView2Section(screenName: self.screenName,
+                                   date: self.date,
+                                   accountName: self.accountName,
+                                   isSubscribed: false,
+                                   leftSection: "Information",
+                                   rightSection: "Billing",
+                                   leftSectionActive: $leftSectionActive)
+            }
         }
     }
 }
@@ -114,7 +124,6 @@ struct AccountView: View {
                     date: getCurrentDate(),
                     accountName: "Cadel Saszik",
                     isSubscribed: true,
-                    isAdmin: true,
                     information: .constant(true),
                     leftSectionActive: .constant(true),
                     selectedTab: .constant(3))

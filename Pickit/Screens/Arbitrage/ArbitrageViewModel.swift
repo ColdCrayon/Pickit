@@ -15,6 +15,8 @@ final class ArbitrageViewModel: ObservableObject {
     @Published var arbitrageTickets: [ArbitrageTicket] = []
     @Published var alertItem: AlertItem?
     @Published var isLoading = false
+    @Published var currentUserId: String = ""
+    @Published var isPremium: Bool = false
     
     let db = Firestore.firestore()
     
@@ -24,8 +26,16 @@ final class ArbitrageViewModel: ObservableObject {
         isLoading = true
         self.handler = Auth.auth().addStateDidChangeListener { [weak self] _, user in
             DispatchQueue.main.async {
+                // GET CURRENT USER ID
+                self?.currentUserId = user?.uid ?? ""
+                
                 if(Auth.auth().currentUser != nil ) {
                     guard let ATicketcollection = self?.db.collection("arbTickets") else {
+                        return
+                    }
+                    
+                    guard let docUser = self?.db.collection("users").document(self?.currentUserId ?? "") else {
+                        print("No user id found")
                         return
                     }
                     
@@ -52,6 +62,10 @@ final class ArbitrageViewModel: ObservableObject {
                             print("Arbitrage Ticket Added")
                         }
                         print(self?.arbitrageTickets.count ?? 0)
+                        
+                        let document = try await docUser.getDocument()
+                        let data = document.data()
+                        self?.isPremium = data?["isPremium"] as? Bool ?? false
                     }
                 }
             }

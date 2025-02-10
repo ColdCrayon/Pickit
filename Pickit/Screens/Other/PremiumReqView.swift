@@ -7,12 +7,13 @@
 
 import SwiftUI
 
-struct ComingSoonView: View {
+struct PremiumReqView: View {
     
     var screenName: String
     var date: String
     var accountName: String
     var isSubscribed: Bool
+    var section: String
     
     var body: some View {
         ZStack {
@@ -30,11 +31,13 @@ struct ComingSoonView: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 170)
                 
-                Text("This Feature is Coming Soon!")
+                Text("Subscribe to access this feature!")
                     .font(Font.custom("Lexend", size: 20))
                     .foregroundStyle(.lightWhite)
                     .fontWeight(.medium)
             }
+            
+            HeaderView1Section(screenName: self.screenName, date: getCurrentDate(), accountName: self.accountName, isSubscribed: self.isSubscribed, section: self.section)
         }
     }
 }

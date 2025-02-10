@@ -17,6 +17,9 @@ final class PicksViewModel: ObservableObject {
     @Published var alertItem: AlertItem?
     @Published var isLoading = false
     
+    @Published var currentUserId: String = ""
+    @Published var isPremium: Bool = false
+    
     let db = Firestore.firestore()
     
     private var handler: AuthStateDidChangeListenerHandle?
@@ -25,8 +28,16 @@ final class PicksViewModel: ObservableObject {
         isLoading = true
         self.handler = Auth.auth().addStateDidChangeListener { [weak self] _, user in
             DispatchQueue.main.async {
+                // GET CURRENT USER ID
+                self?.currentUserId = user?.uid ?? ""
+                
                 if(Auth.auth().currentUser != nil ) {
                     guard let GTicketcollection = self?.db.collection("gameTickets") else {
+                        return
+                    }
+                    
+                    guard let docUser = self?.db.collection("users").document(self?.currentUserId ?? "") else {
+                        print("No user id found")
                         return
                     }
                     
@@ -51,6 +62,10 @@ final class PicksViewModel: ObservableObject {
                             print("Game Ticket Added")
                         }
                         print(self?.tickets.count ?? 0)
+                        
+                        let document = try await docUser.getDocument()
+                        let data = document.data()
+                        self?.isPremium = data?["isPremium"] as? Bool ?? false
                     }
                 }
             }

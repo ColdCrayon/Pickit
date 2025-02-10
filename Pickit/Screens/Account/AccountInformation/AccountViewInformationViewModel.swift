@@ -15,6 +15,7 @@ final class AccountViewInformationViewModel: ObservableObject {
     @Published var fullName: String = ""
     @Published var password: String = ""
     @Published var email: String = ""
+    @Published var isAdmin: Bool = false
     
     @Published var isLoading: Bool = false
     
@@ -48,6 +49,7 @@ final class AccountViewInformationViewModel: ObservableObject {
                             self?.username = data?["username"] as? String ?? ""
                             self?.fullName = data?["name"] as? String ?? ""
                             self?.email = data?["email"] as? String ?? ""
+                            self?.isAdmin = data?["isAdmin"] as? Bool ?? false
                         } catch {
                             print("Error getting document: \(error)")
                         }

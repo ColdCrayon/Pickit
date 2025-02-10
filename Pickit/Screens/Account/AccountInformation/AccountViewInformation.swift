@@ -15,13 +15,15 @@ struct AccountViewInformation: View {
     var date: String
     var accountName: String
     var isSubscribed: Bool
-    var isAdmin: Bool
     
     @Binding var selectedTab: Int
     
     @State private var username = ""
     @State private var password = ""
     @State private var email = ""
+    
+    @State private var isShowingTOS: Bool = false
+    @State private var isShowingPP: Bool = false
     
     var body: some View {
         ZStack {
@@ -50,7 +52,7 @@ struct AccountViewInformation: View {
                                 .foregroundStyle(.lightWhite)
                                 .padding(.top, -18)
                             
-                            if(isAdmin) {
+                            if(viewModel.isAdmin) {
                                 Button {
                                     selectedTab = 4
                                 } label: {
@@ -133,17 +135,21 @@ struct AccountViewInformation: View {
                         
                         HStack {
                             Button {
-                                
+                                isShowingTOS = true
                             } label: {
-                                Text("Terms and Conditions")
+                                Text("Terms of Service")
                                     .font(Font.custom("Lexend", size: 12).bold())
                                     .foregroundStyle(.lightBlue)
                                     .frame(width: UIScreen.main.bounds.width / 2)
                             }
                             .frame(width: screenWidth / 2, height: 24)
+                            .sheet(isPresented: $isShowingTOS) {
+                                TOSSheetView()
+                                    .presentationDetents([.fraction(0.999)])
+                            }
                             
                             Button {
-                                
+                                isShowingPP = true
                             } label: {
                                 Text("Privacy Policy")
                                     .font(Font.custom("Lexend", size: 12).bold())
@@ -151,6 +157,10 @@ struct AccountViewInformation: View {
                                     .frame(width: UIScreen.main.bounds.width / 2)
                             }
                             .frame(width: screenWidth / 2, height: 24)
+                            .sheet(isPresented: $isShowingPP) {
+                                PrivacyPolicySheetView()
+                                    .presentationDetents([.fraction(0.999)])
+                            }
                         }
                         .padding(.top, 3)
                         .padding(.bottom, 15)
@@ -169,7 +179,7 @@ struct AccountViewInformation: View {
 
 #Preview {
     ZStack {
-        AccountViewInformation(screenName: "Account", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, isAdmin: true, selectedTab: .constant(3))
+        AccountViewInformation(screenName: "Account", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, selectedTab: .constant(3))
         HeaderView2Section(screenName: "Account", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, leftSection: "Information", rightSection: "Billing", leftSectionActive: .constant(true))
         //        VStack {
         //            NavbarView(selectedTab: .constant(4))
