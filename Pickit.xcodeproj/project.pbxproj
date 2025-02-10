@@ -60,6 +60,7 @@
 		0349946D2D54823E004FDDAC /* AdminViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0349946C2D54823E004FDDAC /* AdminViewViewModel.swift */; };
 		0349946F2D548252004FDDAC /* ArbitrageTicketSubViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0349946E2D548252004FDDAC /* ArbitrageTicketSubViewViewModel.swift */; };
 		038DD33B2D59AC19007E4C9A /* TOS.md in Resources */ = {isa = PBXBuildFile; fileRef = 038DD33A2D59AC19007E4C9A /* TOS.md */; };
+		038DD33D2D59C349007E4C9A /* PrivacyPolicy.md in Resources */ = {isa = PBXBuildFile; fileRef = 038DD33C2D59C349007E4C9A /* PrivacyPolicy.md */; };
 		039C81E72D5488570038E3E6 /* IdGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039C81E62D5488570038E3E6 /* IdGenerator.swift */; };
 		039C81EA2D551E5A0038E3E6 /* TicketSubViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039C81E92D551E5A0038E3E6 /* TicketSubViewViewModel.swift */; };
 		039F10EE2D56A3D600038F70 /* PreviousPicksViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039F10ED2D56A3D600038F70 /* PreviousPicksViewViewModel.swift */; };
@@ -140,6 +141,7 @@
 		0349946C2D54823E004FDDAC /* AdminViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminViewViewModel.swift; sourceTree = "<group>"; };
 		0349946E2D548252004FDDAC /* ArbitrageTicketSubViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArbitrageTicketSubViewViewModel.swift; sourceTree = "<group>"; };
 		038DD33A2D59AC19007E4C9A /* TOS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TOS.md; sourceTree = "<group>"; };
+		038DD33C2D59C349007E4C9A /* PrivacyPolicy.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = PrivacyPolicy.md; sourceTree = "<group>"; };
 		039C81E62D5488570038E3E6 /* IdGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdGenerator.swift; sourceTree = "<group>"; };
 		039C81E92D551E5A0038E3E6 /* TicketSubViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicketSubViewViewModel.swift; sourceTree = "<group>"; };
 		039F10ED2D56A3D600038F70 /* PreviousPicksViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviousPicksViewViewModel.swift; sourceTree = "<group>"; };
@@ -408,6 +410,7 @@
 				034994372D547EF8004FDDAC /* GoogleService-Info.plist */,
 				034994382D547EF8004FDDAC /* Info.plist */,
 				034994392D547EF8004FDDAC /* PickitApp.swift */,
+				038DD33C2D59C349007E4C9A /* PrivacyPolicy.md */,
 				038DD33A2D59AC19007E4C9A /* TOS.md */,
 			);
 			path = Pickit;
@@ -621,6 +624,7 @@
 				038DD33B2D59AC19007E4C9A /* TOS.md in Resources */,
 				0349943B2D547EF8004FDDAC /* Lexend-VariableFont_wght.ttf in Resources */,
 				0349943C2D547EF8004FDDAC /* Preview Assets.xcassets in Resources */,
+				038DD33D2D59C349007E4C9A /* PrivacyPolicy.md in Resources */,
 				0349943D2D547EF8004FDDAC /* Assets.xcassets in Resources */,
 				0349943E2D547EF8004FDDAC /* GoogleService-Info.plist in Resources */,
 			);
