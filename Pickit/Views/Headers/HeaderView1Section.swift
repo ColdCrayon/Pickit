@@ -9,6 +9,8 @@ import SwiftUI
 
 struct HeaderView1Section: View {
     
+    @StateObject var viewModel = HeaderViewViewModel()
+    
     var screenName: String
     var date: String
     var accountName: String
@@ -50,19 +52,21 @@ struct HeaderView1Section: View {
                                 
                                 Spacer()
                                 
-                                VStack(alignment: .trailing) {
-                                    Text(accountName)
-                                        .font(Font.custom("Lexend", size: 24))
-                                        .fontWeight(.bold)
-                                        .foregroundStyle(LinearGradient(colors: [.billingBGLight, .billingBGDark], startPoint: .topLeading, endPoint: .bottomTrailing))
-                                        .padding(.trailing, 14)
-                                        .padding(.top, 5)
-                                    Text(isSubscribed ? "PREMIUM" : "STANDARD")
-                                        .font(Font.custom("Lexend", size: 12))
-                                        .fontWeight(.bold)
-                                        .foregroundStyle(.lightWhite)
-                                        .padding(.trailing, 14)
-                                        .padding(.top, -18)
+                                if(viewModel.isSignedIn) {
+                                    VStack(alignment: .trailing) {
+                                        Text(accountName)
+                                            .font(Font.custom("Lexend", size: 24))
+                                            .fontWeight(.bold)
+                                            .foregroundStyle(LinearGradient(colors: [.billingBGLight, .billingBGDark], startPoint: .topLeading, endPoint: .bottomTrailing))
+                                            .padding(.trailing, 14)
+                                            .padding(.top, 5)
+                                        Text(isSubscribed ? "PREMIUM" : "STANDARD")
+                                            .font(Font.custom("Lexend", size: 12))
+                                            .fontWeight(.bold)
+                                            .foregroundStyle(.lightWhite)
+                                            .padding(.trailing, 14)
+                                            .padding(.top, -18)
+                                    }
                                 }
                             }
                             

@@ -66,6 +66,7 @@
 		039F10F52D57058300038F70 /* PremiumReqView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039F10F42D57058300038F70 /* PremiumReqView.swift */; };
 		039F10FC2D5719A700038F70 /* TOSSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039F10FB2D5719A700038F70 /* TOSSheetView.swift */; };
 		039F10FE2D5719B400038F70 /* PrivacyPolicySheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039F10FD2D5719B400038F70 /* PrivacyPolicySheetView.swift */; };
+		039F11002D59988F00038F70 /* HeaderViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039F10FF2D59988F00038F70 /* HeaderViewViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -144,6 +145,7 @@
 		039F10F42D57058300038F70 /* PremiumReqView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumReqView.swift; sourceTree = "<group>"; };
 		039F10FB2D5719A700038F70 /* TOSSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TOSSheetView.swift; sourceTree = "<group>"; };
 		039F10FD2D5719B400038F70 /* PrivacyPolicySheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicySheetView.swift; sourceTree = "<group>"; };
+		039F10FF2D59988F00038F70 /* HeaderViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderViewViewModel.swift; sourceTree = "<group>"; };
 		03C697D62CFF95A20010E0EE /* Pickit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pickit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		03C697E62CFF95A30010E0EE /* PickitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PickitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		03C697F02CFF95A30010E0EE /* PickitUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PickitUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -357,6 +359,7 @@
 			children = (
 				0349942C2D547EF8004FDDAC /* HeaderView1Section.swift */,
 				0349942D2D547EF8004FDDAC /* HeaderView2Section.swift */,
+				039F10FF2D59988F00038F70 /* HeaderViewViewModel.swift */,
 			);
 			path = Headers;
 			sourceTree = "<group>";
@@ -664,6 +667,7 @@
 				034994502D547EF8004FDDAC /* PicksView.swift in Sources */,
 				039F10FE2D5719B400038F70 /* PrivacyPolicySheetView.swift in Sources */,
 				034994512D547EF8004FDDAC /* PicksViewModel.swift in Sources */,
+				039F11002D59988F00038F70 /* HeaderViewViewModel.swift in Sources */,
 				034994522D547EF8004FDDAC /* LoginSheetView.swift in Sources */,
 				034994532D547EF8004FDDAC /* RegisterSheetView.swift in Sources */,
 				034994542D547EF8004FDDAC /* SignInView.swift in Sources */,
