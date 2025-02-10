@@ -8,7 +8,7 @@ Stop guessing, start profiting with Pickit!
 <img src="https://github.com/ColdCrayon/Pickit/blob/main/Pictures/ArbitrageScreen.png" alt="Arbitrage Screen" width=200/>
 
 <div align="center">
-    <img src="example.svg" alt="Image Grid" width="400" height="400" alt="css-in-readme"> 
+    <img src="https://github.com/ColdCrayon/Pickit/blob/main/Pictures/pictures.svg" alt="Image Grid" width="400" height="400" alt="css-in-readme"> 
 </div>
 
 # Todo
