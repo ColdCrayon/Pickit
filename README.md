@@ -10,6 +10,7 @@ Stop guessing, start profiting with Pickit!
 <div align="center">
     <img src="" alt="Image Grid" width="400" height="400" alt="css-in-readme"> 
 </div>
+
 # Todo
 
 - Git push script
@@ -20,27 +21,27 @@ Stop guessing, start profiting with Pickit!
 - #### ACCOUNT INFORMATION 
     - [x] Left align pfp
     - [x] add username, pswd, email, information to right side (view only)
-    - [ ]  add upgrade button next to subscribe
-        - [ ] standard account creation vs premium
-    - [ ] Condition screens for premium vs. standard
-    - [ ] Admin button conditionality 
-    - [ ] Profile picture functionality
-    - [ ] Subscribed account -> 1 section header
+    - [ ] standard account creation vs premium
+        - [ ] Option to subscribe on account creation
+    - [x] Condition screens for premium vs. standard
+    - [x] Admin button conditionality 
+    - [x] Profile picture functionality
+    - [x] Subscribed account -> 1 section header
 
 - #### TOS AND PRIVACY POLICY MODALS
     - [ ] Design sheets
-    - [ ] Implement into AccountViewInformation
+    - [x] Implement into AccountViewInformation
     - [ ] Start website outline and basic text docs
 
 - #### View Models
     - Home ViewModel
         - [ ] Add previous tickets function
             - List of settled tickets
-        - [ ] Pull tickets into swipe
+        - [x] Pull tickets into swipe
     - Picks ViewModel
         - [x] Pull tickets into swipe
     - Arbitrage ViewModel
-        - [ ] Pull tickets into swipe
+        - [x] Pull tickets into swipe
 
 - #### Admin
     - Admin account title
