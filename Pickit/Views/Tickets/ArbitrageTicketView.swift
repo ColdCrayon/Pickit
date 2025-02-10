@@ -28,7 +28,7 @@ struct ArbitrageTicketView: View {
             Rectangle()
                 .subtracting(ArbitrageTicketSubtraction())
                 .foregroundStyle(settled ? LinearGradient(colors: [.gold, .lightGold], startPoint: .topLeading, endPoint: .bottomTrailing) : LinearGradient(colors: [.lightWhite, .lightWhite], startPoint: .topLeading, endPoint: .bottomTrailing))
-                .frame(width: 360, height: 530)
+                .frame(width: 360, height: screenHeight * 0.6)
                 .cornerRadius(24)
                 .shadow(radius: 6, x: 0, y: 5)
                 .overlay(alignment: .topLeading) {
@@ -180,7 +180,10 @@ struct ArbitrageTicketView: View {
                             .position(x: 328, y: 500)
                     }
                 }
-                .padding(.top, 125)
+            // THIS SIZING DOES NOT WORK ACROSS DEVICES
+            .frame(alignment: .bottom)
+            .padding(.top, 135)
+            .padding(.bottom, 85)
         }
     }
 }
