@@ -8,17 +8,10 @@ Stop guessing, start profiting with Pickit!
 <img src="https://github.com/ColdCrayon/Pickit/blob/main/Pictures/ArbitrageScreen.png" alt="Arbitrage Screen" width=200/>
 
 <div align="center">
-    <img src="https://github.com/ColdCrayon/Pickit/blob/main/Pictures/pictures.svg" alt="Image Grid" width="400" height="400" alt="css-in-readme"> 
+    <img src="https://github.com/ColdCrayon/Pickit/blob/main/Pictures/pictures.svg" alt="Image Grid" width="400" alt="Account and Home Screen"> 
 </div>
-<div align="center">
-	<a href="https://github.com/ColdCrayon/Pickit/blob/main/Pictures/pictures.svg">
-		<picture>
-		  <source media="(min-width: 720px)" srcset="picture.svg">
-		  <img src="pictures.svg" width="800" alt="Account and Home Screen">
-		</picture>
-	</a>
-</div>
-# Todo
+
+# To-do
 
 - Git push script
 
