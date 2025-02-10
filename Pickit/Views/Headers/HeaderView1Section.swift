@@ -62,7 +62,7 @@ struct HeaderView1Section: View {
                                         .fontWeight(.bold)
                                         .foregroundStyle(.lightWhite)
                                         .padding(.trailing, 14)
-                                        .padding(.top, -21)
+                                        .padding(.top, -18)
                                 }
                             }
                             
