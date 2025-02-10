@@ -4,8 +4,10 @@ opportunities and AI-powered picks, built on tens of thousands of games worth of
 No gut feelings—just sharp, data-driven insights to help you bet smarter and win more. 
 Stop guessing, start profiting with Pickit!
 
+<p>
 <img src="https://github.com/ColdCrayon/Pickit/blob/main/Pictures/AccountScreen.png" alt="Account Screen" width=200/>
 <img src="https://github.com/ColdCrayon/Pickit/blob/main/Pictures/ArbitrageScreen.png" alt="Arbitrage Screen" width=200/>
+</p>
 
 <div align="center">
     <img src="https://github.com/ColdCrayon/Pickit/blob/main/Pictures/pictures.svg" alt="Image Grid" width="400" alt="Account and Home Screen"> 
