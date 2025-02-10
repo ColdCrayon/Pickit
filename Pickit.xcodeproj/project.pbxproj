@@ -61,6 +61,7 @@
 		0349946F2D548252004FDDAC /* ArbitrageTicketSubViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0349946E2D548252004FDDAC /* ArbitrageTicketSubViewViewModel.swift */; };
 		038DD33B2D59AC19007E4C9A /* TOS.md in Resources */ = {isa = PBXBuildFile; fileRef = 038DD33A2D59AC19007E4C9A /* TOS.md */; };
 		038DD33D2D59C349007E4C9A /* PrivacyPolicy.md in Resources */ = {isa = PBXBuildFile; fileRef = 038DD33C2D59C349007E4C9A /* PrivacyPolicy.md */; };
+		038DD33F2D59C5AB007E4C9A /* FileReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038DD33E2D59C5AB007E4C9A /* FileReader.swift */; };
 		039C81E72D5488570038E3E6 /* IdGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039C81E62D5488570038E3E6 /* IdGenerator.swift */; };
 		039C81EA2D551E5A0038E3E6 /* TicketSubViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039C81E92D551E5A0038E3E6 /* TicketSubViewViewModel.swift */; };
 		039F10EE2D56A3D600038F70 /* PreviousPicksViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039F10ED2D56A3D600038F70 /* PreviousPicksViewViewModel.swift */; };
@@ -142,6 +143,7 @@
 		0349946E2D548252004FDDAC /* ArbitrageTicketSubViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArbitrageTicketSubViewViewModel.swift; sourceTree = "<group>"; };
 		038DD33A2D59AC19007E4C9A /* TOS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TOS.md; sourceTree = "<group>"; };
 		038DD33C2D59C349007E4C9A /* PrivacyPolicy.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = PrivacyPolicy.md; sourceTree = "<group>"; };
+		038DD33E2D59C5AB007E4C9A /* FileReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileReader.swift; sourceTree = "<group>"; };
 		039C81E62D5488570038E3E6 /* IdGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdGenerator.swift; sourceTree = "<group>"; };
 		039C81E92D551E5A0038E3E6 /* TicketSubViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicketSubViewViewModel.swift; sourceTree = "<group>"; };
 		039F10ED2D56A3D600038F70 /* PreviousPicksViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviousPicksViewViewModel.swift; sourceTree = "<group>"; };
@@ -326,6 +328,7 @@
 				034994202D547EF8004FDDAC /* User.swift */,
 				034994322D547EF8004FDDAC /* DatePicker.swift */,
 				039C81E62D5488570038E3E6 /* IdGenerator.swift */,
+				038DD33E2D59C5AB007E4C9A /* FileReader.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -667,6 +670,7 @@
 				034994492D547EF8004FDDAC /* ArbitrageViewModel.swift in Sources */,
 				039C81EA2D551E5A0038E3E6 /* TicketSubViewViewModel.swift in Sources */,
 				0349944A2D547EF8004FDDAC /* HomeView.swift in Sources */,
+				038DD33F2D59C5AB007E4C9A /* FileReader.swift in Sources */,
 				0349944B2D547EF8004FDDAC /* HomeViewModel.swift in Sources */,
 				0349944C2D547EF8004FDDAC /* NewsView.swift in Sources */,
 				0349944D2D547EF8004FDDAC /* PreviousPicksView.swift in Sources */,
