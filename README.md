@@ -30,7 +30,7 @@ Stop guessing, start profiting with Pickit!
     - [x] Design sheets
     - [x] Implement into AccountViewInformation
     - [ ] Start website outline and basic text docs
-        - [ ] Temporary privacy policy and tos
+        - [x] Temporary privacy policy and tos
         - [ ] Add too website
 
 - #### View Models
@@ -44,7 +44,7 @@ Stop guessing, start profiting with Pickit!
         - [x] Pull tickets into swipe
 
 - #### Transactions
-    - [ ] Pricing on display
+    - [x] Pricing on display
     - [ ] Implement subscription option
     - [ ] Billing on account creation
     - [ ] Billing on subscribe

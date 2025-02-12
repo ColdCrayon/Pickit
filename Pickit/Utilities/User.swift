@@ -2,18 +2,7 @@
 //  User.swift
 //  Pickit
 //
-//  Created by Cadel Saszik on 1/19/25.
+//  Created by Cadel Saszik on 2/11/25.
 //
 
 import Foundation
-
-struct User: Codable {
-    let id: String
-    let name: String
-    let username: String
-    let email: String
-    let isPremium: Bool
-    let isAdmin: Bool
-    
-    let joined: TimeInterval
-}
