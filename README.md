@@ -11,9 +11,11 @@ Stop guessing, start profiting with Pickit!
 
 # To-do
 
+- ### FIREBASE SECURITY RULES
+
 - Git push script
 
-- ### GIT BRANCHING !!!
+- ### GIT BRANCHING 
 
 ## APPLICATION DEVELOPMENT
 - #### ACCOUNT INFORMATION 
@@ -50,8 +52,13 @@ Stop guessing, start profiting with Pickit!
     - [ ] Billing on subscribe
     - [ ] Cancelation
 
+- #### Notifications
+    - [ ] New ticket release
+    - [ ] News articles
+    - [ ] Arb ticket found
+    - [ ] Betting trend
+
 - #### Header button click animates with no change
-    - Disabled button animation
     - [ ] Implement click changes screen
 
 ## WEBSITE DEVELOPMENT
