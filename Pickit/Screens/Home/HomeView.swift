@@ -97,6 +97,10 @@ struct HomeView: View {
                     .offset(x: offset)
                 }
                 
+                if(viewModel.isLoading) {
+                    LoadingView()
+                }
+                
                 HeaderView2Section(screenName: screenName,
                                    date: self.currentDate,
                                    accountName: self.accountName,
@@ -104,10 +108,6 @@ struct HomeView: View {
                                    leftSection: self.leftSection,
                                    rightSection: self.rightSection,
                                    leftSectionActive: $leftSectionActive)
-            }
-            
-            if(viewModel.isLoading) {
-                LoadingView()
             }
         }
     }
