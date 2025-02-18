@@ -124,8 +124,10 @@ struct PickitView: View {
                 .tag(4)
             }
             .sheet(isPresented: $isShowingSubscribe) {
-                SubscribeView()
-                    .presentationDetents([.fraction(0.999)])
+                if !viewModel.isPremium {
+                    SubscribeView()
+                        .presentationDetents([.fraction(0.999)])
+                }
             }
             
             
