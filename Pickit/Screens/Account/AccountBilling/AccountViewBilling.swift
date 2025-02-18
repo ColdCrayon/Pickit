@@ -22,52 +22,39 @@ struct AccountViewBilling: View {
                 .foregroundStyle(LinearGradient(colors: [.white, .lightWhite], startPoint: .top, endPoint: .bottom))
                 .frame(width: screenWidth - 50, height: screenHeight - 350)
                 .cornerRadius(30)
-                .shadow(radius: 10)
+                .shadow(radius: 10, y: 2)
                 .overlay {
                     VStack {
-                        Text("TicketMaster")
+                        Text("Ticket Master")
                             .font(Font.custom("Lexend", size: 32))
                             .fontWeight(.bold)
                             .padding(.top, 32)
                             .padding(.bottom, 41)
                         
-                        VStack(alignment: .leading, spacing: 18) {
-                            Label {
-                                Text("Full Access to weekly tickets for NBA and MLB")
-                                    .font(Font.custom("Lexend", size: 20))
-                                    .fontWeight(.bold)
-                            } icon: {
-                                Image(systemName: "circle.fill")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 9)
-                            }
-                            Label {
-                                Text("Full Access to arbitrage betting tools")
-                                    .font(Font.custom("Lexend", size: 20))
-                                    .fontWeight(.bold)
-                            } icon: {
-                                Image(systemName: "circle.fill")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 9)
-                            }
-                            Label {
-                                Text("Ad free access news and tickets")
-                                    .font(Font.custom("Lexend", size: 20))
-                                    .fontWeight(.bold)
-                            } icon: {
-                                Image(systemName: "circle.fill")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 9)
-                            }
+                        VStack(alignment: .center, spacing: 20) {
+                            Text("Full Access to weekly tickets for NBA and MLB")
+                                .font(Font.custom("Lexend", size: 20))
+                                .fontWeight(.bold)
+                            
+                            Text("Full Access to arbitrage betting tools")
+                                .font(Font.custom("Lexend", size: 20))
+                                .fontWeight(.bold)
+                            
+                            Text("Ad free access news and tickets")
+                                .font(Font.custom("Lexend", size: 20))
+                                .fontWeight(.bold)
+                            
                         }
-                        .padding()
+                        .multilineTextAlignment(.center)
+                        .padding([.leading, .trailing], 30)
                         
                         Spacer()
                         
-//                        SubscribeButtonBilling()
+                        Text("4.99 Per Month")
+                            .foregroundStyle(LinearGradient(colors: [.billingBGLight, .billingBGDark], startPoint: .topLeading, endPoint: .bottomTrailing))
+                            .font(Font.custom("Lexend", size: 20))
+                            .fontWeight(.bold)
+                        
                         AnimatedButton(title: "SUBSCRIBE",
                                              topColor: .billingBGDark,
                                              bottomColor: .billingSubDarker,

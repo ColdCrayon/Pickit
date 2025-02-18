@@ -20,6 +20,7 @@ struct PickitView: View {
     @State var selectedTab: Int = 5
     
     @State var isSignedIn: Bool = false
+    @State var isShowingSubscribe = false
     
     @State var leftSectionActiveHome: Bool = true
     @State var leftSectionActiveAccount: Bool = true
@@ -122,6 +123,10 @@ struct PickitView: View {
                 }
                 .tag(4)
             }
+            .sheet(isPresented: $isShowingSubscribe) {
+                SubscribeView()
+                    .presentationDetents([.fraction(0.999)])
+            }
             
             
             
@@ -135,6 +140,7 @@ struct PickitView: View {
                                date: getCurrentDate(),
                                accountName: "",
                                isSubscribed: false,
+                               isShowingSubscribe: $isShowingSubscribe,
                                isSignedIn: $isSignedIn)
                 }
             }

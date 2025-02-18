@@ -62,6 +62,7 @@
 		038DD33B2D59AC19007E4C9A /* TOS.md in Resources */ = {isa = PBXBuildFile; fileRef = 038DD33A2D59AC19007E4C9A /* TOS.md */; };
 		038DD33D2D59C349007E4C9A /* PrivacyPolicy.md in Resources */ = {isa = PBXBuildFile; fileRef = 038DD33C2D59C349007E4C9A /* PrivacyPolicy.md */; };
 		038DD33F2D59C5AB007E4C9A /* FileReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038DD33E2D59C5AB007E4C9A /* FileReader.swift */; };
+		0393A25B2D644F6000BECF29 /* SubscribeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0393A25A2D644F6000BECF29 /* SubscribeView.swift */; };
 		039C81E72D5488570038E3E6 /* IdGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039C81E62D5488570038E3E6 /* IdGenerator.swift */; };
 		039C81EA2D551E5A0038E3E6 /* TicketSubViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039C81E92D551E5A0038E3E6 /* TicketSubViewViewModel.swift */; };
 		039F10EE2D56A3D600038F70 /* PreviousPicksViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039F10ED2D56A3D600038F70 /* PreviousPicksViewViewModel.swift */; };
@@ -144,6 +145,7 @@
 		038DD33A2D59AC19007E4C9A /* TOS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TOS.md; sourceTree = "<group>"; };
 		038DD33C2D59C349007E4C9A /* PrivacyPolicy.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = PrivacyPolicy.md; sourceTree = "<group>"; };
 		038DD33E2D59C5AB007E4C9A /* FileReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileReader.swift; sourceTree = "<group>"; };
+		0393A25A2D644F6000BECF29 /* SubscribeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscribeView.swift; sourceTree = "<group>"; };
 		039C81E62D5488570038E3E6 /* IdGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdGenerator.swift; sourceTree = "<group>"; };
 		039C81E92D551E5A0038E3E6 /* TicketSubViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicketSubViewViewModel.swift; sourceTree = "<group>"; };
 		039F10ED2D56A3D600038F70 /* PreviousPicksViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviousPicksViewViewModel.swift; sourceTree = "<group>"; };
@@ -397,6 +399,7 @@
 				034994312D547EF8004FDDAC /* Tickets */,
 				034994332D547EF8004FDDAC /* UIKitComponents */,
 				034994342D547EF8004FDDAC /* NavbarView.swift */,
+				0393A25A2D644F6000BECF29 /* SubscribeView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -697,6 +700,7 @@
 				0349945E2D547EF8004FDDAC /* BackgroundView.swift in Sources */,
 				0349945F2D547EF8004FDDAC /* BackgroundViewBilling.swift in Sources */,
 				034994602D547EF8004FDDAC /* AnimatedButton.swift in Sources */,
+				0393A25B2D644F6000BECF29 /* SubscribeView.swift in Sources */,
 				039C81E72D5488570038E3E6 /* IdGenerator.swift in Sources */,
 				034994612D547EF8004FDDAC /* NavButton.swift in Sources */,
 				034994622D547EF8004FDDAC /* FormDisplayView.swift in Sources */,

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SignInView: View {
     
-//    @StateObject var viewModel = SignInViewViewModel()
+    @StateObject var viewModel = SignInViewViewModel()
     
     var screenName: String
     var date: String
@@ -18,6 +18,7 @@ struct SignInView: View {
     
     @State var isShowingLogin: Bool = false
     @State var isShowingRegister: Bool = false
+    @Binding var isShowingSubscribe: Bool
     
     @Binding var isSignedIn: Bool
     
@@ -61,13 +62,17 @@ struct SignInView: View {
                                    RegisterSheetView(isSignedIn: $isSignedIn)
                                        .presentationDetents([.fraction(0.8)])
                                }
-                
+                               .onDisappear {
+                                   if(viewModel.isSignedIn) {
+                                       isShowingSubscribe = true
+                                   }
+                               }
             }
         }
     }
 }
 
 #Preview {
-    SignInView(screenName: "Sign in", date: getCurrentDate(), accountName: "", isSubscribed: false, isSignedIn: .constant(false))
+    SignInView(screenName: "Sign in", date: getCurrentDate(), accountName: "", isSubscribed: false, isShowingSubscribe: .constant(false), isSignedIn: .constant(false))
 }
 
