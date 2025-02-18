@@ -12,7 +12,6 @@ Stop guessing, start profiting with Pickit!
 # To-do
 
 - Git push script
-- Added Merging
 
 ## APPLICATION DEVELOPMENT
 - #### ACCOUNT INFORMATION 
