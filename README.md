@@ -11,11 +11,7 @@ Stop guessing, start profiting with Pickit!
 
 # To-do
 
-- ### FIREBASE SECURITY RULES
-
 - Git push script
-
-- ### GIT BRANCHING 
 
 ## APPLICATION DEVELOPMENT
 - #### ACCOUNT INFORMATION 
@@ -31,9 +27,9 @@ Stop guessing, start profiting with Pickit!
 - #### TOS AND PRIVACY POLICY MODALS
     - [x] Design sheets
     - [x] Implement into AccountViewInformation
-    - [ ] Start website outline and basic text docs
+    - [x] Start website outline and basic text docs
         - [x] Temporary privacy policy and tos
-        - [ ] Add too website
+        - [ ] Add to website
 
 - #### View Models
     - Home ViewModel
