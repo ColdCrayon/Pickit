@@ -11,14 +11,11 @@ Stop guessing, start profiting with Pickit!
 
 # To-do
 
-- Git push script
-
 ## APPLICATION DEVELOPMENT
 - #### ACCOUNT INFORMATION 
     - [x] Left align pfp
     - [x] add username, pswd, email, information to right side (view only)
-    - [ ] standard account creation vs premium
-        - [ ] Option to subscribe on account creation
+    - [x] standard account creation vs premium
     - [x] Condition screens for premium vs. standard
     - [x] Admin button conditionality 
     - [x] Profile picture functionality
