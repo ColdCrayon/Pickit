@@ -93,6 +93,7 @@ struct AccountView: View {
                                            date: self.date,
                                            accountName: self.accountName,
                                            isSubscribed: self.isSubscribed)
+                        .padding(.top, 100)
                     }
                     .gesture(drag)
                     .offset(x: offset)

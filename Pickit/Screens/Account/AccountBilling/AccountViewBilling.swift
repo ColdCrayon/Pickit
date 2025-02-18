@@ -68,7 +68,7 @@ struct AccountViewBilling: View {
                 .foregroundStyle(.black)
             
         }
-        .padding(.top, 100)
+//        .padding(.top, 100)
     }
 }
 

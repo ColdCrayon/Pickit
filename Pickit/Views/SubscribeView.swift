@@ -12,7 +12,19 @@ struct SubscribeView: View {
         ZStack {
             BackgroundViewBilling()
             
-            AccountViewBilling(screenName: "", date: getCurrentDate(), accountName: "", isSubscribed: false)
+            VStack {
+                Text("Subscribe!")
+                    .font(Font.custom("Lexend", size: 32))
+                    .foregroundStyle(.white)
+                    .fontWeight(.bold)
+                    .padding(.top, 32)
+                    .shadow(radius: 4, x: 0, y: 3)
+                
+                AccountViewBilling(screenName: "",
+                                   date: getCurrentDate(),
+                                   accountName: "",
+                                   isSubscribed: false)
+            }
         }
     }
 }
