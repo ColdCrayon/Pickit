@@ -1,5 +1,11 @@
 # Ignore all .xcodeproj
-Pickit.xcodeproj
+DerivedData/
+*.xcuserdatad/
+*.xcworkspace/
+*.xcuserdata/
+*.xcodeproj/project.xcworkspace/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/xcuserdata/*.xcuserdatad/
 
 # Ignore .DS_Store
 .DS_Store
