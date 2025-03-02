@@ -47,7 +47,6 @@ final class ArbitrageViewModel: ObservableObject {
                             let ticket = document.data()
                             
                             let arbTicket = ArbitrageTicket(id: ticket["id"] as! String,
-                                                            settled: ticket["settled"] as! Bool,
                                                             sportsBook1: ticket["sportsBook1"] as! String,
                                                             sportsBook2: ticket["sportsBook2"] as! String,
                                                             pickGameInfo: ticket["pickGameInfo"] as! String,
@@ -57,7 +56,7 @@ final class ArbitrageViewModel: ObservableObject {
                                                             pickDescription: ticket["pickDescription"] as! String,
                                                             pickTeam: ticket["pickTeam"] as! String,
                                                             pickType: ticket["pickType"] as! String,
-                                                            settleDate: ticket["settleDate"] as? Date ?? Date())
+                                                            settleDate: ticket["settleDate"] as? TimeInterval ?? 0)
                             
                             self?.arbitrageTickets.append(arbTicket)
                             print("Arbitrage Ticket Added")

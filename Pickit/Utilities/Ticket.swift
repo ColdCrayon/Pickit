@@ -33,7 +33,16 @@ struct Ticket: Codable, Identifiable {
 struct ArbitrageTicket: Codable, Identifiable {
     var id: String
     
-    let settled: Bool
+//    let settled: Bool
+    
+    public var settled: Bool {
+        if(settleDate <= Date.now.timeIntervalSince1970) {
+            return true
+        }
+        
+        return false
+    }
+    
     let sportsBook1: String
     let sportsBook2: String
     let pickGameInfo: String
@@ -44,7 +53,7 @@ struct ArbitrageTicket: Codable, Identifiable {
     let pickTeam: String
     let pickType: String
     
-    let settleDate: Date
+    let settleDate: TimeInterval
 }
 
 struct Account: Decodable, Identifiable {
@@ -78,7 +87,6 @@ struct MockTicket {
                                      settleDate: dateInterval)
     
     static let sampleArbitrageTicket = ArbitrageTicket(id: "",
-                                                       settled: false,
                                                        sportsBook1: "Draftkings",
                                                        sportsBook2: "Fandual",
                                                        pickGameInfo: "Buffalo Bills vs. Kansas City Cheifs",
@@ -88,10 +96,9 @@ struct MockTicket {
                                                        pickDescription: "The Buffalo Bills are the better team",
                                                        pickTeam: "Buffalo Bills",
                                                        pickType: "Moneyline",
-                                                       settleDate: date)
+                                                       settleDate: dateInterval)
     
     static let sampleArbitrageTicket2 = ArbitrageTicket(id: "",
-                                                        settled: false,
                                                         sportsBook1: "Draftkings",
                                                         sportsBook2: "Fandual",
                                                         pickGameInfo: "Buffalo Bills vs. Kansas City Cheifs",
@@ -101,7 +108,7 @@ struct MockTicket {
                                                         pickDescription: "The Buffalo Bills are the better team",
                                                         pickTeam: "Buffalo Bills",
                                                         pickType: "Moneylin",
-                                                        settleDate: date)
+                                                        settleDate: dateInterval)
     
     static let sampleTickets = [sampleTicket, sampleTicket, sampleTicket, sampleTicket]
     

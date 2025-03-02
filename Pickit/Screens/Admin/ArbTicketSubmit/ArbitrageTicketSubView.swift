@@ -78,6 +78,23 @@ struct ArbitrageTicketSubView: View {
                 }
                 .listRowBackground(Color.mainBackground)
                 .listRowSeparatorTint(.black)
+                
+                Section {
+                    DatePicker(selection: $viewModel.settleDate, displayedComponents: .date) {
+                        Text("Selection:")
+                            .foregroundStyle(.lightWhite.opacity(0.6))
+                            .font(Font.custom("Lexend", size: 18))
+                            .fontWeight(.bold)
+                    }
+                    .tint(.billingBGDark)
+                    .datePickerStyle(.graphical)
+                } header: {
+                    Text("Pick Expiration Date")
+                        .font(Font.custom("Lexend", size: 18))
+                        .fontWeight(.bold)
+                }
+                .listRowBackground(Color.lightWhite)
+                .listRowSeparatorTint(.black)
             }
             .scrollIndicators(.hidden)
             .background(
