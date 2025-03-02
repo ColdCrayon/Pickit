@@ -34,7 +34,8 @@ Stop guessing, start profiting with Pickit!
 - #### View Models
     - Home ViewModel
         - [ ] Add previous tickets function
-            - List of settled tickets
+            - [x] Conditionally settled tickets
+            - [ ] Conditionally display tickets on home page
         - [x] Pull tickets into swipe
     - Picks ViewModel
         - [x] Pull tickets into swipe
