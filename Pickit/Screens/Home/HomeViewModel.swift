@@ -39,18 +39,20 @@ final class HomeViewModel: ObservableObject {
                             let ticket = document.data()
                             
                             let gameTicket = Ticket(id: ticket["id"] as! String,
-                                                    settled: ticket["settled"] as! Bool,
+//                                                    settled: ticket["settled"] as! Bool,
                                                     pickGameInfo: ticket["pickGameInfo"] as! String,
                                                     pickPublishDate: ticket["pickPublishDate"] as! String,
                                                     pickDescription: ticket["pickDescription"] as! String,
                                                     pickSportsbook: ticket["pickSportsbook"] as! String,
                                                     pickTeam: ticket["pickTeam"] as! String,
-                                                    pickType: ticket["pickType"] as! String)
+                                                    pickType: ticket["pickType"] as! String,
+                                                    settleDate: ticket["settleDate"] as? TimeInterval ?? 0)
                             
                             self?.tickets.append(gameTicket)
-                            print("Game Ticket Added")
+//                            print("Game Ticket Added")
+//                            print("Settle Date: \(gameTicket.settleDate)")
                         }
-                        print(self?.tickets.count ?? 0)
+//                        print(self?.tickets.count ?? 0)
                     }
                 }
             }

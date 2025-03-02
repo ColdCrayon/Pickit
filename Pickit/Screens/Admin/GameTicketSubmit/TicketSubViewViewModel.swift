@@ -16,6 +16,7 @@ final class TicketSubViewViewModel: ObservableObject {
 //    @Published var publishDate: String = ""
     @Published var description: String = ""
     @Published var sportsbook: String = ""
+    @Published var settleDate: Date = Date()
     
     @Published var errorMessage: String = ""
     
@@ -47,13 +48,14 @@ final class TicketSubViewViewModel: ObservableObject {
     
     private func insertTicketRecord(id: String) {
         let newTicket = Ticket(id: id,
-                               settled: settled,
+//                               settled: settled,
                                pickGameInfo: gameInfo,
                                pickPublishDate: getTicketDate(),
                                pickDescription: description,
                                pickSportsbook: sportsbook,
                                pickTeam: pickTeam,
-                               pickType: pickType)
+                               pickType: pickType,
+                               settleDate: settleDate.timeIntervalSince1970)
         
         gameInfo = ""
 //        publishDate = ""

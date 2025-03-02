@@ -37,7 +37,6 @@ struct TicketSubView: View {
                     TicketEntryView(entryTitle: "Pick Team", entryValue: $viewModel.pickTeam)
                     TicketEntryView(entryTitle: "Pick Type", entryValue: $viewModel.pickType)
                     TicketEntryView(entryTitle: "Game Info", entryValue: $viewModel.gameInfo)
-//                    TicketEntryView(entryTitle: "Publish Date", entryValue: $viewModel.publishDate)
                     TicketEntryView(entryTitle: "Description", entryValue: $viewModel.description)
                     TicketEntryView(entryTitle: "Sportsbook", entryValue: $viewModel.sportsbook)
                 } header: {
@@ -46,6 +45,32 @@ struct TicketSubView: View {
                         .fontWeight(.bold)
                 }
                 .listRowBackground(Color.mainBackground)
+                .listRowSeparatorTint(.black)
+                
+                Section {
+                    //                    DatePicker("Select Date",
+                    //                               selection: $viewModel.settleDate,
+                    //                               displayedComponents: .date)
+                    //                    .font(Font.custom("Lexend", size: 18))
+                    //                    .datePickerStyle(.compact) // Use .compact or .graphical for a modern look
+                    //                    .labelsHidden() // Hides default label for a cleaner design
+                    //                    .background(.billingSubDarker) // Match the app's dark theme
+                    //                    .tint(.billingSubDarker)
+                    //                    .cornerRadius(10)
+                    DatePicker(selection: $viewModel.settleDate, displayedComponents: .date) {
+                        Text("Selection:")
+                            .foregroundStyle(.lightWhite.opacity(0.6))
+                            .font(Font.custom("Lexend", size: 18))
+                            .fontWeight(.bold)
+                    }
+                    .tint(.billingBGDark)
+                    .datePickerStyle(.graphical)
+                } header: {
+                    Text("Pick Expiration Date")
+                        .font(Font.custom("Lexend", size: 18))
+                        .fontWeight(.bold)
+                }
+                .listRowBackground(Color.lightWhite)
                 .listRowSeparatorTint(.black)
             }
             .scrollIndicators(.hidden)
@@ -58,18 +83,18 @@ struct TicketSubView: View {
             .scrollContentBackground(.hidden)
             .foregroundStyle(.lightWhite)
             .frame(width: screenWidth - 80, height: screenHeight - 550)
-//            .padding([.leading, .trailing], 50)
+            //            .padding([.leading, .trailing], 50)
             .padding(.top, 10)
             
             AnimatedButton(title: "Submit", topColor: .ticketSubButtonLight, bottomColor: .ticketSubButtonDark, width: 330) {
                 // Submit Ticket
                 viewModel.submitTicket()
-//                viewModel.pickTeam = ""
-//                viewModel.pickType = ""
-//                viewModel.gameInfo = ""
-//                viewModel.publishDate = ""
-//                viewModel.description = ""
-//                viewModel.sportsbook = ""
+                //                viewModel.pickTeam = ""
+                //                viewModel.pickType = ""
+                //                viewModel.gameInfo = ""
+                //                viewModel.publishDate = ""
+                //                viewModel.description = ""
+                //                viewModel.sportsbook = ""
             }
             .padding(.top, 35)
         }

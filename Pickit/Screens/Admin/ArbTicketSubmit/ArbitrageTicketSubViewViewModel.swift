@@ -19,6 +19,7 @@ final class ArbitrageTicketSubViewViewModel: ObservableObject {
     @Published var sportsbook2: String = ""
     @Published var oddsSB1: String = ""
     @Published var oddsSB2: String = ""
+    @Published var settleDate: Date = Date()
     
     @Published var errorMessage: String = ""
     
@@ -62,7 +63,8 @@ final class ArbitrageTicketSubViewViewModel: ObservableObject {
                                         pickPublishDate: getTicketDate(),
                                         pickDescription: description,
                                         pickTeam: pickTeam,
-                                        pickType: pickType)
+                                        pickType: pickType,
+                                        settleDate: settleDate)
         
         pickTeam = ""
         pickType = ""

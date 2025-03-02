@@ -10,13 +10,24 @@ import Foundation
 struct Ticket: Codable, Identifiable {
     var id: String
     
-    let settled: Bool
+//    let settled: Bool
+    
+    public var settled: Bool {
+        if(settleDate <= Date.now.timeIntervalSince1970) {
+            return true
+        }
+        
+        return false
+    }
+    
     let pickGameInfo: String
     let pickPublishDate: String
     let pickDescription: String
     let pickSportsbook: String
     let pickTeam: String
     let pickType: String
+    
+    let settleDate: TimeInterval
 }
 
 struct ArbitrageTicket: Codable, Identifiable {
@@ -32,6 +43,8 @@ struct ArbitrageTicket: Codable, Identifiable {
     let pickDescription: String
     let pickTeam: String
     let pickType: String
+    
+    let settleDate: Date
 }
 
 struct Account: Decodable, Identifiable {
@@ -50,15 +63,19 @@ struct TicketResponse: Decodable {
     let request: [Ticket]
 }
 
+let dateInterval: TimeInterval = Date.now.timeIntervalSince1970
+let date: Date = Date()
+
 struct MockTicket {
     static let sampleTicket = Ticket(id: "",
-                                     settled: true,
+//                                     settled: true,
                                      pickGameInfo: "Atlanta Falcons vs. Minnesota Vikings",
                                      pickPublishDate: "Dec 8, 2024 at 7:58 PM",
                                      pickDescription: "The Minnesota Vikings have been on a tremendous run this year leading to much success on the field. While the falcons have been playing decently withe new QB Kirk Cousins, the Vikings have better players in seemingly every position.",
                                      pickSportsbook: "Fandual",
                                      pickTeam: "Minnesota Vikings",
-                                     pickType: "Moneyline")
+                                     pickType: "Moneyline",
+                                     settleDate: dateInterval)
     
     static let sampleArbitrageTicket = ArbitrageTicket(id: "",
                                                        settled: false,
@@ -70,19 +87,21 @@ struct MockTicket {
                                                        pickPublishDate: "Dec 10, 2024 at 1:10 PM",
                                                        pickDescription: "The Buffalo Bills are the better team",
                                                        pickTeam: "Buffalo Bills",
-                                                       pickType: "Moneyline")
+                                                       pickType: "Moneyline",
+                                                       settleDate: date)
     
     static let sampleArbitrageTicket2 = ArbitrageTicket(id: "",
-                                                       settled: false,
-                                                       sportsBook1: "Draftkings",
-                                                       sportsBook2: "Fandual",
-                                                       pickGameInfo: "Buffalo Bills vs. Kansas City Cheifs",
-                                                       pickOddsSB1: "-210",
-                                                       pickOddsSB2: "+180",
-                                                       pickPublishDate: "Dec 10, 2024 at 1:10 PM",
-                                                       pickDescription: "The Buffalo Bills are the better team",
-                                                       pickTeam: "Buffalo Bills",
-                                                       pickType: "Moneylin")
+                                                        settled: false,
+                                                        sportsBook1: "Draftkings",
+                                                        sportsBook2: "Fandual",
+                                                        pickGameInfo: "Buffalo Bills vs. Kansas City Cheifs",
+                                                        pickOddsSB1: "-210",
+                                                        pickOddsSB2: "+180",
+                                                        pickPublishDate: "Dec 10, 2024 at 1:10 PM",
+                                                        pickDescription: "The Buffalo Bills are the better team",
+                                                        pickTeam: "Buffalo Bills",
+                                                        pickType: "Moneylin",
+                                                        settleDate: date)
     
     static let sampleTickets = [sampleTicket, sampleTicket, sampleTicket, sampleTicket]
     
