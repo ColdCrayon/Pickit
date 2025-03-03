@@ -18,6 +18,8 @@ struct SignInView: View {
     
     @State var isShowingLogin: Bool = false
     @State var isShowingRegister: Bool = false
+    @State var isShowingTOS: Bool = false
+    @State var isShowingPP: Bool = false
     @Binding var isShowingSubscribe: Bool
     
     @Binding var isSignedIn: Bool
@@ -37,6 +39,7 @@ struct SignInView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 170)
+                    .padding(.bottom, 15)
                 
                 AnimatedButton(title: "Login",
                                topColor: .ticketSubButtonLight,
@@ -44,9 +47,7 @@ struct SignInView: View {
                                width: 300) {
                     isShowingLogin.toggle()
                 }
-//                Button("Login") {
-//                    isShowingLogin.toggle()
-//                }
+                
                                .sheet(isPresented: $isShowingLogin) {
                                    LoginSheetView(isSignedIn: $isSignedIn)
                                        .presentationDetents([.medium])
@@ -67,6 +68,33 @@ struct SignInView: View {
                                        isShowingSubscribe = true
                                    }
                                }
+                
+                HStack(alignment: .center, spacing: 30) {
+                    Button {
+                        isShowingTOS = true
+                    } label: {
+                        Text("Terms of Service")
+                            .font(Font.custom("Lexend", size: 12).bold())
+                            .foregroundStyle(.lightBlue)
+                    }
+                    .sheet(isPresented: $isShowingTOS) {
+                        TOSSheetView()
+                            .presentationDetents([.fraction(0.999)])
+                    }
+                    
+                    Button {
+                        isShowingPP = true
+                    } label: {
+                        Text("Privacy Policy")
+                            .font(Font.custom("Lexend", size: 12).bold())
+                            .foregroundStyle(.lightBlue)
+                    }
+                    .sheet(isPresented: $isShowingPP) {
+                        PrivacyPolicySheetView()
+                            .presentationDetents([.fraction(0.999)])
+                    }
+                }
+                .padding(.top, 20)
             }
         }
     }
