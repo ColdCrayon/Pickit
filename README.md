@@ -22,6 +22,8 @@ Stop guessing, start profiting with Pickit!
     - [x] Subscribed account -> 1 section header
 
 - #### TOS AND PRIVACY POLICY MODALS
+    - [ ] Switch from modal to navigation link
+        - [ ] Model TOS and PP on button click
     - [ ] Force agree on register
         - [ ] Add checkbox above create account button
         - [ ] Only register account if box is checked (validate box)
