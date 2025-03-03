@@ -64,7 +64,7 @@ struct SignInView: View {
                                        .presentationDetents([.fraction(0.8)])
                                }
                                .onDisappear {
-                                   if(viewModel.isSignedIn) {
+                                   if(viewModel.isSignedIn && viewModel.isPremium) {
                                        isShowingSubscribe = true
                                    }
                                }

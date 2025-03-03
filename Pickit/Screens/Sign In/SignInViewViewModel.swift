@@ -19,6 +19,7 @@ final class SignInViewViewModel: ObservableObject {
     @Published var fullName: String = ""
     @Published var password: String = ""
     @Published var email: String = ""
+    @Published var isPremium: Bool = false
     
     @Published var tosAccepted: Bool = false
     
@@ -37,6 +38,17 @@ final class SignInViewViewModel: ObservableObject {
                     guard let docUser = self?.db.collection("users").document(self?.currentUserId ?? "") else {
                         print("No user id found")
                         return
+                    }
+                    
+                    Task {
+                        do {
+                            // SET VIEWMODEL COMPONENTS
+                            let document = try await docUser.getDocument()
+                            let data = document.data()
+                            self?.isPremium = data?["isPremium"] as? Bool ?? false
+                        } catch {
+                            print("Error getting document: \(error)")
+                        }
                     }
                 }
             }
