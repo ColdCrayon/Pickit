@@ -71,6 +71,7 @@
 		039F10FC2D5719A700038F70 /* TOSSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039F10FB2D5719A700038F70 /* TOSSheetView.swift */; };
 		039F10FE2D5719B400038F70 /* PrivacyPolicySheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039F10FD2D5719B400038F70 /* PrivacyPolicySheetView.swift */; };
 		039F11002D59988F00038F70 /* HeaderViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039F10FF2D59988F00038F70 /* HeaderViewViewModel.swift */; };
+		03F58FA12D73EB0000C758E7 /* ToggleStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F58FA02D73EB0000C758E7 /* ToggleStyle.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -157,6 +158,7 @@
 		03C697D62CFF95A20010E0EE /* Pickit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pickit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		03C697E62CFF95A30010E0EE /* PickitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PickitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		03C697F02CFF95A30010E0EE /* PickitUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PickitUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		03F58FA02D73EB0000C758E7 /* ToggleStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleStyle.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -316,6 +318,7 @@
 			children = (
 				0349941A2D547EF8004FDDAC /* EXTDictionary.swift */,
 				0349941B2D547EF8004FDDAC /* EXTPlaceholder.swift */,
+				03F58FA02D73EB0000C758E7 /* ToggleStyle.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -700,6 +703,7 @@
 				0349945E2D547EF8004FDDAC /* BackgroundView.swift in Sources */,
 				0349945F2D547EF8004FDDAC /* BackgroundViewBilling.swift in Sources */,
 				034994602D547EF8004FDDAC /* AnimatedButton.swift in Sources */,
+				03F58FA12D73EB0000C758E7 /* ToggleStyle.swift in Sources */,
 				0393A25B2D644F6000BECF29 /* SubscribeView.swift in Sources */,
 				039C81E72D5488570038E3E6 /* IdGenerator.swift in Sources */,
 				034994612D547EF8004FDDAC /* NavButton.swift in Sources */,

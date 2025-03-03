@@ -20,6 +20,8 @@ final class SignInViewViewModel: ObservableObject {
     @Published var password: String = ""
     @Published var email: String = ""
     
+    @Published var tosAccepted: Bool = false
+    
     let db = Firestore.firestore()
     
     private var handler: AuthStateDidChangeListenerHandle?
@@ -116,6 +118,25 @@ final class SignInViewViewModel: ObservableObject {
             
             guard password.count >= 8 else {
                 errorMessageRegister = "Your password must be at least 8 characters"
+                return false
+            }
+            
+            guard password.contains("1") ||
+                    password.contains("2") ||
+                    password.contains("3") ||
+                    password.contains("4") ||
+                    password.contains("5") ||
+                    password.contains("6") ||
+                    password.contains("7") ||
+                    password.contains("8") ||
+                    password.contains("9") ||
+                    password.contains("0") else {
+                errorMessageRegister = "Your password must contain a number"
+                return false
+            }
+            
+            guard tosAccepted == true else {
+                errorMessageRegister = "Please Agree to the Terms of Service"
                 return false
             }
             

@@ -44,6 +44,17 @@ struct RegisterSheetView: View {
                     FormEntryView(entryTitle: "Full Name", entryValue: $viewModel.fullName)
                     FormEntryView(entryTitle: "Username", entryValue: $viewModel.username)
                         .padding(.bottom, 15)
+                    
+                    VStack(alignment: .leading) {
+                        Toggle(isOn: $viewModel.tosAccepted) {
+                            Text("I accept the Terms of Service")
+                                .foregroundStyle(.lightWhite)
+                                .font(Font.custom("Lexend", size: 16))
+                                .fontWeight(.bold)
+                        }
+                        .toggleStyle(iOSCheckboxToggleStyle())
+                    }
+                    
                     AnimatedButton(title: "Create Account",
                                    topColor: .midBlue,
                                    bottomColor: .darkBlue,
