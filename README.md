@@ -64,6 +64,8 @@ Stop guessing, start profiting with Pickit!
 ## WEBSITE DEVELOPMENT
 - Privacy policy info
     - https://developer.apple.com/app-store/review/guidelines/#privacy
+- Landing Page
+<img src="Website/Website Landing Page.png" alt="landing page" width=700/>
 
 ## ALGORITHM DEVELOPMENT
 - #### Arbitrage
