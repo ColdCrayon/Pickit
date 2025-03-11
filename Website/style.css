@@ -113,6 +113,23 @@ header.top-nav {
     background-color: #2A2C2D; 
 }
 
+.account-icon-button {
+    padding: 8px;
+    border-radius: 50%;
+    background-color: #393D3F;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.account-icon-button:hover{
+    background-color:#2C2F31;
+}
+
+.account-icon {
+    height: 24px;
+    width: 24px;
+}
+
 aside.sidebar {
     background-color: #1A5079;
     color: white;
@@ -151,7 +168,7 @@ aside.sidebar {
 }
 
 .sidebar nav ul li a:hover {
-    transition: background-color 0.3s ease;
+    opacity: 0.8;
 }
 
 main {
@@ -175,6 +192,9 @@ main {
     margin: 0;
     padding: 0;
 }
+
+
+
 
 
 
