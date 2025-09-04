@@ -20,6 +20,7 @@ Stop guessing, start profiting with Pickit!
     - [x] Admin button conditionality 
     - [x] Profile picture functionality
     - [x] Subscribed account -> 1 section header
+    - [ ] !!! Premium status functionality !!!
 
 - #### TOS AND PRIVACY POLICY MODALS
     - [x] Force agree on register
