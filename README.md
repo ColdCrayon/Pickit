@@ -4,8 +4,8 @@ arbitrage opportunities and AI-powered picks, built on tens of thousands of game
 of data. No more gut feelings and 8-leg parlays, use our data-driven insights to help 
 you bet smarter and win more. Stop guessing, start profiting with Pickit!
 
-#### Key Features
-- ###### iOS ONLY
+### Key Features
+###### iOS ONLY
 - Arbitrage opportunity detection across multiple sportsbooks
 - Algorithmic betting strategies built on historical game data
 - Real-time odds tracking
@@ -16,22 +16,22 @@ you bet smarter and win more. Stop guessing, start profiting with Pickit!
     <img src="https://github.com/ColdCrayon/Pickit/blob/main/Pictures/ArbitrageScreen.png" alt="Arbitrage Screen" width=400/>
 </p>
 
-#### Premium Unlocks
+### Premium Unlocks
 - Arbitrage Alerts
 - Real-time data
 - Exclusive betting models
 Learn more at ...
 
-#### Stack
+### Stack
 - Swift
 - Firebase
 - JavaScript/HTML/CSS
 - APIs
 
-#### Contribution
+### Contribution
 - Closed-source
 
-#### Disclaimer
+### Disclaimer
 This application is intended for educational and informational purposes only.
 It does not facilitate or encourage illegal gambling. Users are responsible 
 for complying with local laws and regulations regarding sports betting. No 
