@@ -29,7 +29,7 @@ Learn more at ...
 - APIs
 
 ### Contribution
-- Closed-source
+Currently closed-source
 
 ### Disclaimer
 This application is intended for educational and informational purposes only.
