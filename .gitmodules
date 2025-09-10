@@ -1,0 +1,3 @@
+[submodule "Sportsbook-Scraper"]
+	path = Sportsbook-Scraper
+	url = https://github.com/ColdCrayon/Sportsbook-Scraper
