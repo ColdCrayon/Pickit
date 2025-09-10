@@ -16,6 +16,8 @@ you bet smarter and win more. Stop guessing, start profiting with Pickit!
     <img src="https://github.com/ColdCrayon/Pickit/blob/main/Pictures/ArbitrageScreen.png" alt="Arbitrage Screen" width=400/>
 </p>
 
+---
+
 ### Premium Unlocks
 - Arbitrage Alerts
 - Real-time data
@@ -30,6 +32,8 @@ Learn more at ...
 
 ### Contribution
 Currently closed-source
+
+---
 
 ### Disclaimer
 This application is intended for educational and informational purposes only.
