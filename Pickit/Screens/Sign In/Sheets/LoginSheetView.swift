@@ -61,6 +61,7 @@ struct LoginSheetView: View {
                         .foregroundStyle(.billingBGDark)
                 )
             }
+            .padding(.top, -20)
         }
     }
 }

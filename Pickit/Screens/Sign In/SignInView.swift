@@ -62,6 +62,7 @@ struct SignInView: View {
                                .sheet(isPresented: $isShowingRegister) {
                                    RegisterSheetView(isSignedIn: $isSignedIn)
                                        .presentationDetents([.fraction(0.8)])
+                                   
                                }
                                .onDisappear {
                                    if(viewModel.isSignedIn && viewModel.isPremium) {
