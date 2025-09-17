@@ -47,5 +47,9 @@ struct PremiumReqView: View {
 }
 
 #Preview {
-    PremiumReqView(screenName: "Picks", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, section: "Newest Picks")
+    PremiumReqView(screenName: "Picks",
+                   date: getCurrentDate(),
+                   accountName: "Cadel Saszik",
+                   isSubscribed: true,
+                   section: "Newest Picks")
 }
