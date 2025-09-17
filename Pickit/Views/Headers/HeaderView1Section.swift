@@ -33,7 +33,7 @@ struct HeaderView1Section: View {
                     .shadow(color: .black, radius: 10, y: 3)
                     .overlay(alignment: .topLeading) {
                         VStack {
-                            HStack {
+                            HStack(alignment: .top) {
                                 VStack(alignment: .leading) {
                                     Text(screenName)
                                         .font(Font.custom("Lexend", size: 24))
@@ -52,8 +52,8 @@ struct HeaderView1Section: View {
                                 
                                 Spacer()
                                 
-                                if(viewModel.isSignedIn) {
-                                    VStack(alignment: .trailing) {
+//                                if(viewModel.isSignedIn) {
+                                VStack(alignment: .trailing) {
                                         Text(accountName)
                                             .font(Font.custom("Lexend", size: 24))
                                             .fontWeight(.bold)
@@ -65,8 +65,8 @@ struct HeaderView1Section: View {
                                             .fontWeight(.bold)
                                             .foregroundStyle(.lightWhite)
                                             .padding(.trailing, 14)
-                                            .padding(.top, -18)
-                                    }
+                                            .padding(.top, -8)
+//                                    }
                                 }
                             }
                             

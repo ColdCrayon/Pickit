@@ -18,7 +18,6 @@ struct PremiumReqView: View {
     var body: some View {
         ZStack {
             BackgroundView()
-            
 //            HeaderView1Section(screenName: screenName,
 //                               date: date,
 //                               accountName: accountName,
@@ -37,11 +36,16 @@ struct PremiumReqView: View {
                     .fontWeight(.medium)
             }
             
-            HeaderView1Section(screenName: self.screenName, date: getCurrentDate(), accountName: self.accountName, isSubscribed: self.isSubscribed, section: self.section)
+            HeaderView1Section(screenName: self.screenName,
+                               date: getCurrentDate(),
+                               accountName: self.accountName,
+                               isSubscribed: self.isSubscribed,
+                               section: self.section)
+
         }
     }
 }
 
 #Preview {
-    ComingSoonView(screenName: "Arbitrage Picks", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true)
+    PremiumReqView(screenName: "Picks", date: getCurrentDate(), accountName: "Cadel Saszik", isSubscribed: true, section: "Newest Picks")
 }

@@ -29,7 +29,7 @@ struct HeaderView2Section: View {
                     .shadow(color: .black, radius: 10, y: 3)
                     .overlay(alignment: .topLeading) {
                         VStack {
-                            HStack {
+                            HStack(alignment: .top) {
                                 VStack(alignment: .leading) {
                                     Text(screenName)
                                         .font(Font.custom("Lexend", size: 24))
@@ -43,7 +43,7 @@ struct HeaderView2Section: View {
                                         .fontWeight(.light)
                                         .foregroundStyle(.lightWhite)
                                         .padding(.leading, 14)
-                                        .padding(.top, -21)
+                                        .padding(.top, -8)
                                 }
                                 
                                 Spacer()
@@ -60,7 +60,7 @@ struct HeaderView2Section: View {
                                         .fontWeight(.bold)
                                         .foregroundStyle(.lightWhite)
                                         .padding(.trailing, 14)
-                                        .padding(.top, -18)
+                                        .padding(.top, -8)
                                 }
                             }
                             
