@@ -18,6 +18,8 @@ final class TicketSubViewViewModel: ObservableObject {
     @Published var sportsbook: String = ""
     @Published var settleDate: Date = Date()
     
+//  2025-03-06T19:20:40.285Z
+    
     @Published var errorMessage: String = ""
     
     init() {}
@@ -55,7 +57,8 @@ final class TicketSubViewViewModel: ObservableObject {
                                pickSportsbook: sportsbook,
                                pickTeam: pickTeam,
                                pickType: pickType,
-                               settleDate: settleDate.timeIntervalSince1970)
+                               settleDate: settleDate.timeIntervalSince1970,
+                               FBSD: Timestamp())
         
         gameInfo = ""
 //        publishDate = ""
