@@ -61,7 +61,6 @@ final class ArbitrageViewModel: ObservableObject {
                             self?.arbitrageTickets.append(arbTicket)
                             print("Arbitrage Ticket Added")
                         }
-                        print(self?.arbitrageTickets.count ?? 0)
                         
                         let document = try await docUser.getDocument()
                         let data = document.data()
