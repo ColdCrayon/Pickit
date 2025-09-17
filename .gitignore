@@ -7,6 +7,7 @@ DerivedData/
 *.xcodeproj/xcuserdata/
 *.xcodeproj/xcuserdata/*.xcuserdatad/
 *.xcuserstate
+Pickit.xcodeproj
 
 # Ignore .DS_Store
 .DS_Store
