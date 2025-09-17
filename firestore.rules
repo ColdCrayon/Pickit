@@ -1,0 +1,52 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users collection - users can only read/write their own data
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Game tickets collection with settle date validation
+    match /gameTickets/{ticketId} {
+      // Allow admins to create/update tickets
+      allow create, update: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+      
+      // Allow authenticated users to read tickets only if they haven't settled yet
+      allow read: if request.auth != null && 
+        resource.data.settleDate > request.time.toMillis() / 1000;
+      
+      // Allow reading for premium users or if ticket is not settled
+      allow read: if request.auth != null && (
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isPremium == true) ||
+        resource.data.settleDate > request.time.toMillis() / 1000
+      );
+    }
+    
+    // Arbitrage tickets collection with settle date validation
+    match /arbTickets/{ticketId} {
+      // Allow admins to create/update tickets
+      allow create, update: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+      
+      // Allow premium users to read arbitrage tickets only if they haven't settled
+      allow read: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isPremium == true &&
+        resource.data.settleDate > request.time.toMillis() / 1000;
+    }
+    
+    // Metadata collection for server operations
+    match /metadata/{document} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
