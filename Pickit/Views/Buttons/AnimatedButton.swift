@@ -49,15 +49,14 @@ struct AnimatedButton: View {
                     .foregroundStyle(topColor)
                     .cornerRadius(20)
                     .offset(y: CGFloat(hasPressed ? subButtonOffset : 0))
-                    .simultaneousGesture(buttonPress)
                 Text(title)
                     .font(Font.custom("Lexend", size: 24))
                     .fontWeight(.bold)
                     .foregroundStyle(.white)
                     .offset(y: CGFloat(hasPressed ? subButtonOffset : 0))
-                    .simultaneousGesture(buttonPress)
             }
         }
+        .simultaneousGesture(buttonPress)
     }
 }
 
