@@ -2,21 +2,11 @@
 
 ## APPLICATION DEVELOPMENT
 - #### ACCOUNT INFORMATION 
-    - [x] Left align pfp
-    - [x] add username, pswd, email, information to right side (view only)
-    - [x] standard account creation vs premium
-    - [x] Condition screens for premium vs. standard
-    - [x] Admin button conditionality 
-    - [x] Profile picture functionality
-    - [x] Subscribed account -> 1 section header
     - [ ] !!! Premium status functionality !!!
+    - [ ] Add password error pessage
 
 - #### TOS AND PRIVACY POLICY MODALS
-    - [x] Force agree on register
-        - [x] Add checkbox above create account button
-        - [x] Only register account if box is checked (validate box)
-    - [x] Design sheets
-    - [x] Implement into AccountViewInformation
+    - [ ] Finalize and remove emojis
 
 - #### View Models
     - Home ViewModel
@@ -28,11 +18,6 @@
             - [ ] New prevTickets Collection
             - All settledates < current date 
             - [ ] Security Rules for collection
-        - [x] Pull tickets into swipe
-    - Picks ViewModel
-        - [x] Pull tickets into swipe
-    - Arbitrage ViewModel
-        - [x] Pull tickets into swipe
 
 - #### Transactions
     - [x] Pricing on display
