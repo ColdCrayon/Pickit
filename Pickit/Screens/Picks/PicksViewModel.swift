@@ -60,9 +60,13 @@ final class PicksViewModel: ObservableObject {
                             self?.tickets.append(gameTicket)
                         }
                         
-                        let document = try await docUser.getDocument()
-                        let data = document.data()
-                        self?.isPremium = data?["isPremium"] as? Bool ?? false
+                        do {
+                            let document = try await docUser.getDocument()
+                            let data = document.data()
+                            self?.isPremium = data?["isPremium"] as? Bool ?? false
+                        } catch {
+                            print("Error getting documents: \(error)")
+                        }
                     }
                 }
             }

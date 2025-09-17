@@ -50,7 +50,7 @@ struct PicksView: View {
                 HeaderView1Section(screenName: self.screenName,
                                    date: self.currentDate,
                                    accountName: self.accountName,
-                                   isSubscribed: self.isSubscribed,
+                                   isSubscribed: viewModel.isPremium,
                                    section: "Newest Picks")
             }
             
@@ -78,7 +78,7 @@ struct PicksView: View {
                   pickSportsbook: "Fandual",
                   pickTeam: "Minnesota Vikings",
                   pickType: "Moneyline",
-                  section: "Picks")
+                  section: "Newest Picks")
         VStack {
             NavbarView(selectedTab: .constant(0))
         }

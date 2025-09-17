@@ -84,16 +84,17 @@ struct ArbitrageView: View {
                 .scrollIndicators(.hidden)
                 .scrollTargetBehavior(.paging)
                 
-                HeaderView1Section(screenName: self.screenName,
-                                   date: self.currentDate,
-                                   accountName: self.accountName,
-                                   isSubscribed: viewModel.isPremium,
-                                   section: self.section)
             }
             
             if(viewModel.isLoading) {
                 LoadingView()
             }
+            
+            HeaderView1Section(screenName: self.screenName,
+                               date: self.currentDate,
+                               accountName: self.accountName,
+                               isSubscribed: viewModel.isPremium,
+                               section: self.section)
             
             if(!viewModel.isPremium) {
                 PremiumReqView(screenName: self.screenName,
@@ -109,7 +110,7 @@ struct ArbitrageView: View {
 #Preview {
     ZStack {
         ArbitrageView(screenName: "Arbitrage Picks",
-                      currentDate: "12/8/24",
+                      currentDate: getCurrentDate(),
                       accountName: "Cadel Saszik",
                       isSubscribed: true,
                       section: "Newest Picks",
