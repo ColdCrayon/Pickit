@@ -47,7 +47,7 @@ struct PickitView: View {
                 
                 TabView {
                     ZStack {
-                        PicksView(screenName: "Previous Picks",
+                        PicksView(screenName: "Picks",
                                   currentDate: getCurrentDate(),
                                   accountName: viewModel.username,
                                   isSubscribed: true,
