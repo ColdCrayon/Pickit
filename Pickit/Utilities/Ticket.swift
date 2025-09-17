@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import FirebaseCore
+import FirebaseFirestore
 
 struct Ticket: Codable, Identifiable {
     var id: String
@@ -28,6 +30,7 @@ struct Ticket: Codable, Identifiable {
     let pickType: String
     
     let settleDate: TimeInterval
+    var FBSD: Timestamp = Timestamp()
 }
 
 struct ArbitrageTicket: Codable, Identifiable {
@@ -54,6 +57,7 @@ struct ArbitrageTicket: Codable, Identifiable {
     let pickType: String
     
     let settleDate: TimeInterval
+    var FBSD: Timestamp = Timestamp(seconds: 0, nanoseconds: 0)
 }
 
 struct Account: Decodable, Identifiable {

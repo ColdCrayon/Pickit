@@ -13,7 +13,6 @@ final class TicketSubViewViewModel: ObservableObject {
     @Published var pickTeam: String = ""
     @Published var pickType: String = ""
     @Published var gameInfo: String = ""
-//    @Published var publishDate: String = ""
     @Published var description: String = ""
     @Published var sportsbook: String = ""
     @Published var settleDate: Date = Date()
@@ -22,14 +21,14 @@ final class TicketSubViewViewModel: ObservableObject {
     
     @Published var errorMessage: String = ""
     
+    let db = Firestore.firestore()
+    
     init() {}
     
     func validateTicket() -> Bool {
         guard !pickTeam.trimmingCharacters(in: .whitespaces).isEmpty,
               !pickType.trimmingCharacters(in: .whitespaces).isEmpty,
               !gameInfo.trimmingCharacters(in: .whitespaces).isEmpty,
-              !description.trimmingCharacters(in: .whitespaces).isEmpty,
-//              !publishDate.trimmingCharacters(in: .whitespaces).isEmpty,
               !description.trimmingCharacters(in: .whitespaces).isEmpty,
               !sportsbook.trimmingCharacters(in: .whitespaces).isEmpty else {
             errorMessage = "Please Fill Out All Fields"
@@ -50,7 +49,6 @@ final class TicketSubViewViewModel: ObservableObject {
     
     private func insertTicketRecord(id: String) {
         let newTicket = Ticket(id: id,
-//                               settled: settled,
                                pickGameInfo: gameInfo,
                                pickPublishDate: getTicketDate(),
                                pickDescription: description,
@@ -61,7 +59,6 @@ final class TicketSubViewViewModel: ObservableObject {
                                FBSD: Timestamp())
         
         gameInfo = ""
-//        publishDate = ""
         description = ""
         sportsbook = ""
         pickTeam = ""

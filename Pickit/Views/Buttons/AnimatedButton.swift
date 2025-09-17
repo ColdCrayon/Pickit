@@ -36,6 +36,7 @@ struct AnimatedButton: View {
     var body: some View {
         Button {
             action()
+            print("Action")
         } label: {
             ZStack{
                 Rectangle()
