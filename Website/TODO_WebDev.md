@@ -1,12 +1,10 @@
 # To-Do
 
 ## WEBSITE DEVELOPMENT
-- [ ] Dependencies 
-    - Check Dependencies and make sure all dependencies are installed and run correctly
+- [ ] Website Restart Implementation
+    - Add all the new 
 - [ ] Add Privacy Policy
     - Privacy policy info @ https://developer.apple.com/app-store/review/guidelines/#privacy
 - [ ] Add TOS
     - Found in Pickit Folder
     - DO NOT HARDCODE
-
-
