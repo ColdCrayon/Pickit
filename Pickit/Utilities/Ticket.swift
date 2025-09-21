@@ -30,7 +30,8 @@ struct Ticket: Codable, Identifiable {
     let pickType: String
     
     let settleDate: TimeInterval
-    var FBSD: Timestamp = Timestamp()
+    let serverSettled: Bool
+//    var FBSD: Timestamp = Timestamp()
 }
 
 struct ArbitrageTicket: Codable, Identifiable {
@@ -88,7 +89,8 @@ struct MockTicket {
                                      pickSportsbook: "Fandual",
                                      pickTeam: "Minnesota Vikings",
                                      pickType: "Moneyline",
-                                     settleDate: dateInterval)
+                                     settleDate: dateInterval,
+                                     serverSettled: false)
     
     static let sampleArbitrageTicket = ArbitrageTicket(id: "",
                                                        sportsBook1: "Draftkings",

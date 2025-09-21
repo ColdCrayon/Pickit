@@ -45,7 +45,8 @@ final class HomeViewModel: ObservableObject {
                                                     pickSportsbook: ticket["pickSportsbook"] as! String,
                                                     pickTeam: ticket["pickTeam"] as! String,
                                                     pickType: ticket["pickType"] as! String,
-                                                    settleDate: ticket["settleDate"] as? TimeInterval ?? 0)
+                                                    settleDate: ticket["settleDate"] as? TimeInterval ?? 0,
+                                                    serverSettled: ticket["serverSettled"] as? Bool ?? false)
                             
                             self?.tickets.append(gameTicket)
                         }
