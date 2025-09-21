@@ -16,6 +16,7 @@ final class TicketSubViewViewModel: ObservableObject {
     @Published var description: String = ""
     @Published var sportsbook: String = ""
     @Published var settleDate: Date = Date()
+//    @Published var settleDate: Double = Date().timeIntervalSince1970
     
 //  2025-03-06T19:20:40.285Z
     
