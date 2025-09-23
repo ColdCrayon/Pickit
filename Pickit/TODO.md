@@ -3,21 +3,23 @@
 ## APPLICATION DEVELOPMENT
 - #### ACCOUNT INFORMATION 
     - [ ] !!! Premium status functionality !!!
-    - [ ] Add password error pessage
-
-- #### TOS AND PRIVACY POLICY MODALS
-    - [ ] Finalize and remove emojis
+    - [ ] Add password error message
 
 - #### View Models
     - Home ViewModel
         - [ ] Add previous tickets function
             - [x] Conditionally settled tickets
             - [ ] Conditionally display tickets on home page
-        - [ ] Changing ticket collections
-            - [ ] Move or copy and delete
-            - [ ] New prevTickets Collection
-            - All settledates < current date 
-            - [ ] Security Rules for collection
+        - [ ] Merge tickets and arbTickets list by settleDate
+
+- #### Header button click animates with no change
+    - [ ] Implement click changes screen
+
+- #### Notifications
+    - [ ] New ticket release
+    - [ ] News articles
+    - [ ] Arb ticket found
+    - [ ] Betting trend
 
 - #### Transactions
     - [x] Pricing on display
@@ -26,12 +28,7 @@
     - [ ] Billing on subscribe
     - [ ] Cancelation
 
-- #### Notifications
-    - [ ] New ticket release
-    - [ ] News articles
-    - [ ] Arb ticket found
-    - [ ] Betting trend
+- #### TOS AND PRIVACY POLICY MODALS
+    - [ ] Finalize and remove emojis
 
-- #### Header button click animates with no change
-    - [ ] Implement click changes screen
 
