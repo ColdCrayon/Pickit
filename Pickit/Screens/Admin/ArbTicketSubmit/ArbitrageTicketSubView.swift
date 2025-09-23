@@ -80,7 +80,9 @@ struct ArbitrageTicketSubView: View {
                 .listRowSeparatorTint(.black)
                 
                 Section {
-                    DatePicker(selection: $viewModel.settleDate, displayedComponents: .date) {
+                    DatePicker(
+                        selection: $viewModel.settleDate,
+                        displayedComponents: .date) {
                         Text("Selection:")
                             .foregroundStyle(.lightWhite.opacity(0.6))
                             .font(Font.custom("Lexend", size: 18))
