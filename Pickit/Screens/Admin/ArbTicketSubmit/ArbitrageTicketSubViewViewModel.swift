@@ -78,8 +78,12 @@ final class ArbitrageTicketSubViewViewModel: ObservableObject {
         
         let db = Firestore.firestore()
         
-        db.collection("arbTickets")
-            .document(id)
-            .setData(newTicket.asDictionary())
+        do {
+            try db.collection("arbTickets")
+                .document(id)
+                .setData(from: newTicket)
+        } catch {
+            print("Error writing document: \(error)")
+        }
     }
 }
