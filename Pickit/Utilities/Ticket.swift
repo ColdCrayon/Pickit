@@ -12,10 +12,8 @@ import FirebaseFirestore
 struct Ticket: Codable, Identifiable {
     var id: String
     
-//    let settled: Bool
-    
     public var settled: Bool {
-        if(settleDate <= Date.now.timeIntervalSince1970) {
+        if(Double(settleDate.seconds) <= Date.now.timeIntervalSince1970) {
             return true
         }
         
@@ -29,18 +27,15 @@ struct Ticket: Codable, Identifiable {
     let pickTeam: String
     let pickType: String
     
-    let settleDate: TimeInterval
+    let settleDate: Timestamp
     let serverSettled: Bool
-//    var FBSD: Timestamp = Timestamp()
 }
 
 struct ArbitrageTicket: Codable, Identifiable {
     var id: String
     
-//    let settled: Bool
-    
     public var settled: Bool {
-        if(settleDate <= Date.now.timeIntervalSince1970) {
+        if(Double(settleDate.seconds) <= Date.now.timeIntervalSince1970) {
             return true
         }
         
@@ -57,8 +52,8 @@ struct ArbitrageTicket: Codable, Identifiable {
     let pickTeam: String
     let pickType: String
     
-    let settleDate: TimeInterval
-    var FBSD: Timestamp = Timestamp(seconds: 0, nanoseconds: 0)
+    let settleDate: Timestamp
+    let serverSettled: Bool
 }
 
 struct Account: Decodable, Identifiable {
@@ -77,7 +72,8 @@ struct TicketResponse: Decodable {
     let request: [Ticket]
 }
 
-let dateInterval: TimeInterval = Date.now.timeIntervalSince1970
+//let dateInterval: TimeInterval = Date.now.timeIntervalSince1970
+let dateInterval: Timestamp = Timestamp(date: Date())
 let date: Date = Date()
 
 struct MockTicket {
@@ -102,7 +98,8 @@ struct MockTicket {
                                                        pickDescription: "The Buffalo Bills are the better team",
                                                        pickTeam: "Buffalo Bills",
                                                        pickType: "Moneyline",
-                                                       settleDate: dateInterval)
+                                                       settleDate: dateInterval,
+                                                       serverSettled: false)
     
     static let sampleArbitrageTicket2 = ArbitrageTicket(id: "",
                                                         sportsBook1: "Draftkings",
@@ -114,7 +111,8 @@ struct MockTicket {
                                                         pickDescription: "The Buffalo Bills are the better team",
                                                         pickTeam: "Buffalo Bills",
                                                         pickType: "Moneylin",
-                                                        settleDate: dateInterval)
+                                                        settleDate: dateInterval,
+                                                        serverSettled: false)
     
     static let sampleTickets = [sampleTicket, sampleTicket, sampleTicket, sampleTicket]
     

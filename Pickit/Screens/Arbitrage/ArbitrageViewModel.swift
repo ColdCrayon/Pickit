@@ -56,7 +56,8 @@ final class ArbitrageViewModel: ObservableObject {
                                                             pickDescription: ticket["pickDescription"] as! String,
                                                             pickTeam: ticket["pickTeam"] as! String,
                                                             pickType: ticket["pickType"] as! String,
-                                                            settleDate: ticket["settleDate"] as? TimeInterval ?? 0)
+//                                                            settleDate: ticket["settleDate"] as? TimeInterval ?? 0
+                                                            settleDate: ticket["settleDate"] as? Timestamp ?? Timestamp())
                             
                             self?.arbitrageTickets.append(arbTicket)
                             print("Arbitrage Ticket Added")
