@@ -94,7 +94,7 @@ struct ArbitrageTicketView: View {
                         Text(pickDescription)
                             .fontWeight(.regular)
                             .font(Font.custom("Lexend", size: 15))
-                            .frame(height: 140)
+//                            .frame(height: 140)
 //                            .background(.ticketSecondary)
                             .foregroundStyle(settled ? .darkGold : .mainBackground)
                             .padding(.top, 10)
@@ -167,7 +167,7 @@ struct ArbitrageTicketView: View {
                         Rectangle()
                             .frame(width: 360, height: 2.5)
                             .foregroundStyle(settled ? .darkGold : .ticketSecondary)
-                            .padding(.bottom, 60)
+                            .padding(.bottom, 50)
 //                            .position(x: 185.5, y: 110)
                     }
                     
@@ -177,7 +177,7 @@ struct ArbitrageTicketView: View {
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 35)
                             .foregroundStyle(.darkGold)
-                            .position(x: 328, y: 500)
+                            .position(x: 328, y: screenHeight * 0.57)
                     }
                 }
             // THIS SIZING DOES NOT WORK ACROSS DEVICES
@@ -189,7 +189,7 @@ struct ArbitrageTicketView: View {
 }
 
 #Preview {
-    ArbitrageTicketView(settled: false, sportsBook1: "Draft Kings", sportsBook2: "Fandual", pickTeam: "Minnesota Vikings", pickType: "Moneyline", pickGameInfo: "Atlanta Falcons vs. Minnesota Vikings", pickOddsSB1: "-150", pickOddsSB2: "+110", pickPublishDate: "Dec 8, 2024 at 7:58 PM", pickDescription: "The Minnesota Vikings have been on a tremendous run this year leading to much success on the field. While the falcons have been playing decently with new QB Kirk Cousins, the Vikings have better players in seemingly every position." , pickSportsbook: "Fandual")
+    ArbitrageTicketView(settled: true, sportsBook1: "Draft Kings", sportsBook2: "Fandual", pickTeam: "Minnesota Vikings", pickType: "Moneyline", pickGameInfo: "Atlanta Falcons vs. Minnesota Vikings", pickOddsSB1: "-150", pickOddsSB2: "+110", pickPublishDate: "Dec 8, 2024 at 7:58 PM", pickDescription: "The Minnesota Vikings have been on a tremendous run this year leading to much success on the field. While the falcons have been playing decently with new QB Kirk Cousins, the Vikings have better players in seemingly every position." , pickSportsbook: "Fandual")
 }
 
 struct ArbitrageTicketSubtraction: Shape {
