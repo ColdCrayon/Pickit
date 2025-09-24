@@ -1,4 +1,8 @@
+##########################
 # Logs
+##########################
+
+# --------------------- #
 logs
 *.log
 npm-debug.log*
@@ -11,8 +15,13 @@ node_modules
 dist
 dist-ssr
 *.local
+# --------------------- #
 
+##########################
 # Editor directories and files
+##########################
+
+# --------------------- #
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -23,3 +32,20 @@ dist-ssr
 *.sln
 *.sw?
 .env
+# --------------------- #
+
+##########################
+# All Personal Settings
+##########################
+
+# --------------------- #
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+# --------------------- #
