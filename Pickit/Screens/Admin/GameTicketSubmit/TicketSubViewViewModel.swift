@@ -57,7 +57,7 @@ final class TicketSubViewViewModel: ObservableObject {
                                pickSportsbook: sportsbook,
                                pickTeam: pickTeam,
                                pickType: pickType,
-                               settleDate: Timestamp(date: settleDate),
+                               settleDate: settleDate,
                                serverSettled: serverSettled)
         
         gameInfo = ""

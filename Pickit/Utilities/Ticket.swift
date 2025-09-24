@@ -13,7 +13,7 @@ struct Ticket: Codable, Identifiable {
     var id: String
     
     public var settled: Bool {
-        if(Double(settleDate.seconds) <= Date.now.timeIntervalSince1970) {
+        if(settleDate.timeIntervalSince1970 <= Date.now.timeIntervalSince1970) {
             return true
         }
         
@@ -27,7 +27,7 @@ struct Ticket: Codable, Identifiable {
     let pickTeam: String
     let pickType: String
     
-    let settleDate: Timestamp
+    let settleDate: Date
     let serverSettled: Bool
 }
 
@@ -35,7 +35,7 @@ struct ArbitrageTicket: Codable, Identifiable {
     var id: String
     
     public var settled: Bool {
-        if(Double(settleDate.seconds) <= Date.now.timeIntervalSince1970) {
+        if(settleDate.timeIntervalSince1970 <= Date.now.timeIntervalSince1970) {
             return true
         }
         
@@ -52,7 +52,7 @@ struct ArbitrageTicket: Codable, Identifiable {
     let pickTeam: String
     let pickType: String
     
-    let settleDate: Timestamp
+    let settleDate: Date
     let serverSettled: Bool
 }
 
@@ -73,7 +73,8 @@ struct TicketResponse: Decodable {
 }
 
 //let dateInterval: TimeInterval = Date.now.timeIntervalSince1970
-let dateInterval: Timestamp = Timestamp(date: Date())
+//let dateInterval: Timestamp = Timestamp(date: Date())
+let dateInterval: Date = Date()
 let date: Date = Date()
 
 struct MockTicket {

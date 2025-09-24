@@ -64,7 +64,7 @@ final class ArbitrageTicketSubViewViewModel: ObservableObject {
                                         pickDescription: description,
                                         pickTeam: pickTeam,
                                         pickType: pickType,
-                                        settleDate: Timestamp(date: settleDate),
+                                        settleDate: settleDate,
                                         serverSettled: serverSettled)
         
         pickTeam = ""
