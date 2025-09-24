@@ -48,7 +48,7 @@ final class PicksViewModel: ObservableObject {
                         for document in snapshot.documents {
                             let ticket = document.data()
                             
-                            let gameTicket = Ticket(id: ticket["id"] as! String,
+                            let gameTicket = Ticket(id: ticket["id"] as? String,
                                                     pickGameInfo: ticket["pickGameInfo"] as! String,
                                                     pickPublishDate: ticket["pickPublishDate"] as! String,
                                                     pickDescription: ticket["pickDescription"] as! String,

@@ -54,8 +54,7 @@ final class ArbitrageTicketSubViewViewModel: ObservableObject {
     }
     
     private func insertTicketRecord(id: String) {
-        let newTicket = ArbitrageTicket(id: id,
-                                        sportsBook1: sportsbook1,
+        let newTicket = ArbitrageTicket(sportsBook1: sportsbook1,
                                         sportsBook2: sportsbook2,
                                         pickGameInfo: gameInfo,
                                         pickOddsSB1: oddsSB1,

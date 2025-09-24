@@ -50,8 +50,7 @@ final class TicketSubViewViewModel: ObservableObject {
     }
     
     private func insertTicketRecord(id: String) {
-        let newTicket = Ticket(id: id,
-                               pickGameInfo: gameInfo,
+        let newTicket = Ticket(pickGameInfo: gameInfo,
                                pickPublishDate: getTicketDate(),
                                pickDescription: description,
                                pickSportsbook: sportsbook,
@@ -71,7 +70,7 @@ final class TicketSubViewViewModel: ObservableObject {
         do {
             try db.collection("gameTickets")
                     .document(id)
-                    .setData(from: newTicket)
+                    .setData(from: newTicket, merge: true)
         } catch
             {
             print("Error writing document: \(error)")

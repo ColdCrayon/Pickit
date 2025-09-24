@@ -51,7 +51,7 @@ struct PreviousPicksView: View {
             ScrollView(.vertical) {
                 LazyVStack(spacing: 0) {
                     ForEach(viewModel.tickets) { ticket in
-                        TicketView(settled: ticket.serverSettled,
+                        TicketView(settled: ticket.settled,
                                    pickTeam: ticket.pickTeam,
                                    pickType: ticket.pickType,
                                    pickGameInfo: ticket.pickGameInfo,
