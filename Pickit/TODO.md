@@ -1,8 +1,10 @@
 # To-do
 
 ## APPLICATION DEVELOPMENT
+- Arbitrage ticket checkmark placement
+
 - #### ACCOUNT INFORMATION 
-    - [ ] !!! Premium status functionality !!!
+    - [x] Premium status functionality
     - [ ] Add password error message
 
 - #### View Models
