@@ -10,7 +10,7 @@ import FirebaseCore
 import FirebaseFirestore
 
 struct Ticket: Codable, Identifiable {
-    var id: String
+    @DocumentID var id: String?
     
     public var settled: Bool {
         if(settleDate.timeIntervalSince1970 <= Date.now.timeIntervalSince1970) {
@@ -32,7 +32,7 @@ struct Ticket: Codable, Identifiable {
 }
 
 struct ArbitrageTicket: Codable, Identifiable {
-    var id: String
+    @DocumentID var id: String?
     
     public var settled: Bool {
         if(settleDate.timeIntervalSince1970 <= Date.now.timeIntervalSince1970) {
