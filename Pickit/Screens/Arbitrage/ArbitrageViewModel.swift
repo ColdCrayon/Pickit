@@ -46,7 +46,7 @@ final class ArbitrageViewModel: ObservableObject {
                         for document in snapshot.documents {
                             let ticket = document.data()
                             
-                            let arbTicket = ArbitrageTicket(id: ticket["id"] as! String,
+                            let arbTicket = ArbitrageTicket(id: ticket["id"] as? String,
                                                             sportsBook1: ticket["sportsBook1"] as! String,
                                                             sportsBook2: ticket["sportsBook2"] as! String,
                                                             pickGameInfo: ticket["pickGameInfo"] as! String,
