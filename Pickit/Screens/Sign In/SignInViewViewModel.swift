@@ -62,6 +62,23 @@ final class SignInViewViewModel: ObservableObject {
             }
             
             Auth.auth().createUser(withEmail: email, password: password) { [weak self] result, error in
+                if let error = error as NSError? {
+                    switch AuthErrorCode(rawValue: error.code) {
+                    case .invalidEmail:
+                        // Handle malformed email
+                        self?.errorMessageLogin = "Error: Invalid email address format"
+                    case .weakPassword:
+                        // Handle weak password during user creation
+                        self?.errorMessageLogin = "Error: Password is too weak. Please use a stronger password"
+                    case .emailAlreadyInUse:
+                        // Handle email already in use during user creation
+                        self?.errorMessageLogin = "Error: This email address is already registered"
+                    default:
+                        // Handle other Firebase Auth errors
+                        self?.errorMessageLogin = "Firebase Auth Error: \(error.localizedDescription)"
+                    }
+                }
+                
                 guard let userId = result?.user.uid else {
                     print("Unable to create user")
                     return
@@ -90,11 +107,34 @@ final class SignInViewViewModel: ObservableObject {
         
         func login() {
             guard validateLogin() else {
-                errorMessageLogin = "An error occured during login"
+//                errorMessageLogin = "An error occured during login"
                 return
             }
             
-            Auth.auth().signIn(withEmail: email, password: password)
+            Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
+                if let error = error as NSError? {
+                    switch AuthErrorCode(rawValue: error.code) {
+                    case .wrongPassword:
+                        // Handle incorrect password
+                        self.errorMessageLogin = "Error: Incorrect password"
+                    case .invalidEmail:
+                        // Handle malformed email
+                        self.errorMessageLogin = "Error: Invalid email address format"
+                    case .userNotFound:
+                        // Handle user not found
+                        self.errorMessageLogin = "Error: No user found with this email"
+                    case .weakPassword:
+                        // Handle weak password during user creation
+                        self.errorMessageLogin = "Error: Password is too weak. Please use a stronger password"
+                    case .emailAlreadyInUse:
+                        // Handle email already in use during user creation
+                        self.errorMessageLogin = "Error: This email address is already registered"
+                    default:
+                        // Handle other Firebase Auth errors
+                        self.errorMessageLogin = "Firebase Auth Error: \(error.localizedDescription)"
+                    }
+                }
+            }
         }
         
         func validateLogin() -> Bool {

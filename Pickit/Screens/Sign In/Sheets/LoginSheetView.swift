@@ -34,6 +34,8 @@ struct LoginSheetView: View {
                         .foregroundStyle(.red)
                         .font(Font.custom("Lexend", size: 12))
                         .fontWeight(.bold)
+                        .multilineTextAlignment(.center)
+                        .padding(.top, 5)
                 }
                 
                 VStack {
