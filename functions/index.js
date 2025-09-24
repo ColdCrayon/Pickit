@@ -44,13 +44,13 @@ exports.settleTickets = onSchedule("every 5 minutes", async (event) => {
 
   const snapshot = await db
       .collection("gameTickets")
-      .where("settleTime", "<=", now)
-      .where("settled", "==", false)
+      .where("settleDate", "<=", now)
+      .where("serverSettled", "==", false)
       .get();
 
   const batch = db.batch();
   snapshot.forEach((doc) => {
-    batch.update(doc.ref, {settled: true});
+    batch.update(doc.ref, {serverSettled: true});
   });
 
   await batch.commit();

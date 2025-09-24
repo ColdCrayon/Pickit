@@ -16,6 +16,8 @@ final class TicketSubViewViewModel: ObservableObject {
     @Published var description: String = ""
     @Published var sportsbook: String = ""
     @Published var settleDate: Date = Date()
+//    @Published var settleDate: Timestamp = Timestamp()
+    @Published var serverSettled: Bool = false
     
 //  2025-03-06T19:20:40.285Z
     
@@ -55,8 +57,8 @@ final class TicketSubViewViewModel: ObservableObject {
                                pickSportsbook: sportsbook,
                                pickTeam: pickTeam,
                                pickType: pickType,
-                               settleDate: settleDate.timeIntervalSince1970,
-                               FBSD: Timestamp())
+                               settleDate: Timestamp(date: settleDate),
+                               serverSettled: serverSettled)
         
         gameInfo = ""
         description = ""
@@ -66,9 +68,14 @@ final class TicketSubViewViewModel: ObservableObject {
         
         let db = Firestore.firestore()
         
-        db.collection("gameTickets")
-            .document(id)
-            .setData(newTicket.asDictionary())
+        do {
+            try db.collection("gameTickets")
+                    .document(id)
+                    .setData(from: newTicket)
+        } catch
+            {
+            print("Error writing document: \(error)")
+        }
     }
 }
 

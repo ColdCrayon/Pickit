@@ -57,7 +57,9 @@ struct TicketSubView: View {
                     //                    .background(.billingSubDarker) // Match the app's dark theme
                     //                    .tint(.billingSubDarker)
                     //                    .cornerRadius(10)
-                    DatePicker(selection: $viewModel.settleDate, displayedComponents: .date) {
+                    DatePicker(
+                        selection: $viewModel.settleDate,
+                        displayedComponents: .date) {
                         Text("Selection:")
                             .foregroundStyle(.lightWhite.opacity(0.6))
                             .font(Font.custom("Lexend", size: 18))

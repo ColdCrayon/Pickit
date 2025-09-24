@@ -13,13 +13,14 @@ final class ArbitrageTicketSubViewViewModel: ObservableObject {
     @Published var pickTeam: String = ""
     @Published var pickType: String = ""
     @Published var gameInfo: String = ""
-//    @Published var publishDate: String = ""
     @Published var description: String = ""
     @Published var sportsbook1: String = ""
     @Published var sportsbook2: String = ""
     @Published var oddsSB1: String = ""
     @Published var oddsSB2: String = ""
     @Published var settleDate: Date = Date()
+//    @Published var settleDate: Timestamp = Timestamp()
+    @Published var serverSettled: Bool = false
     
     @Published var errorMessage: String = ""
     
@@ -63,7 +64,8 @@ final class ArbitrageTicketSubViewViewModel: ObservableObject {
                                         pickDescription: description,
                                         pickTeam: pickTeam,
                                         pickType: pickType,
-                                        settleDate: settleDate.timeIntervalSince1970)
+                                        settleDate: Timestamp(date: settleDate),
+                                        serverSettled: serverSettled)
         
         pickTeam = ""
         pickType = ""
@@ -76,8 +78,12 @@ final class ArbitrageTicketSubViewViewModel: ObservableObject {
         
         let db = Firestore.firestore()
         
-        db.collection("arbTickets")
-            .document(id)
-            .setData(newTicket.asDictionary())
+        do {
+            try db.collection("arbTickets")
+                .document(id)
+                .setData(from: newTicket)
+        } catch {
+            print("Error writing document: \(error)")
+        }
     }
 }

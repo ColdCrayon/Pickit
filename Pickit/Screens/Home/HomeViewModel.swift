@@ -13,6 +13,7 @@ import SwiftUI
 final class HomeViewModel: ObservableObject {
     
     @Published var tickets: [Ticket] = []
+    @Published var arbTickets: [ArbitrageTicket] = []
     @Published var alertItem: AlertItem?
     @Published var isLoading = false
     
@@ -25,8 +26,12 @@ final class HomeViewModel: ObservableObject {
         self.handler = Auth.auth().addStateDidChangeListener { [weak self] _, user in
             DispatchQueue.main.async {
                 if(Auth.auth().currentUser != nil ) {
-                    // IMPLEMENT PREVIOUS TICKETS
+                    // GET ALL AVAILABLE TICKETS
                     guard let GTicketcollection = self?.db.collection("gameTickets") else {
+                        return
+                    }
+                    
+                    guard let ArbTicketCollection = self?.db.collection("arbitrageTickets") else {
                         return
                     }
                     
@@ -34,7 +39,7 @@ final class HomeViewModel: ObservableObject {
                         let snapshot = try await GTicketcollection.getDocuments()
                         self?.isLoading = false
                         
-                        
+                        // ADD TICKETS TO `tickets` LIST
                         for document in snapshot.documents {
                             let ticket = document.data()
                             
@@ -45,18 +50,39 @@ final class HomeViewModel: ObservableObject {
                                                     pickSportsbook: ticket["pickSportsbook"] as! String,
                                                     pickTeam: ticket["pickTeam"] as! String,
                                                     pickType: ticket["pickType"] as! String,
-                                                    settleDate: ticket["settleDate"] as? TimeInterval ?? 0)
+                                                    settleDate: ticket["settleDate"] as? Timestamp ?? Timestamp(),
+                                                    serverSettled: ticket["serverSettled"] as? Bool ?? false)
                             
                             self?.tickets.append(gameTicket)
+                        }
+                    }
+                    
+                    Task {
+                        let snapshot = try await ArbTicketCollection.getDocuments()
+                        self?.isLoading = false
+                        
+                        // ADD TICKETS TO `arbTickets` LIST
+                        for document in snapshot.documents {
+                            let ticket = document.data()
+                            
+                            let arbTicket = ArbitrageTicket(id: ticket["id"] as! String,
+                                                            sportsBook1: ticket["sportsBook1"] as! String,
+                                                            sportsBook2: ticket["sportsBook2"] as! String,
+                                                            pickGameInfo: ticket["pickGameInfo"] as! String,
+                                                            pickOddsSB1: ticket["pickOddsSB1"] as! String,
+                                                            pickOddsSB2: ticket["pickOddsSB2"] as! String,
+                                                            pickPublishDate: ticket["pickPublishDate"] as! String,
+                                                            pickDescription: ticket["pickDescription"] as! String,
+                                                            pickTeam: ticket["pickTeam"] as! String,
+                                                            pickType: ticket["pickType"] as! String,
+                                                            settleDate: ticket["settleDate"] as? Timestamp ?? Timestamp(),
+                                                            serverSettled: ticket["serverSettled"] as? Bool ?? false)
+                            
+                            self?.arbTickets.append(arbTicket)
                         }
                     }
                 }
             }
         }
     }
-    
-    func getTickets() {
-        
-    }
-
 }
