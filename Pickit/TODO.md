@@ -1,18 +1,12 @@
 # To-do
 
 ## APPLICATION DEVELOPMENT
-- Arbitrage ticket checkmark placement
+- [x] Arbitrage ticket checkmark placement
 
 - #### ACCOUNT INFORMATION 
     - [x] Premium status functionality
-    - [ ] Add password error message
-
-- #### View Models
-    - Home ViewModel
-        - [ ] Add previous tickets function
-            - [x] Conditionally settled tickets
-            - [ ] Conditionally display tickets on home page
-        - [ ] Merge tickets and arbTickets list by settleDate
+    - [x] Add password error message
+        - Could be slightly better. Uses firebase error which looks unprofessional
 
 - #### Header button click animates with no change
     - [ ] Implement click changes screen
@@ -22,6 +16,10 @@
     - [ ] News articles
     - [ ] Arb ticket found
     - [ ] Betting trend
+
+- #### View Models
+    - Home ViewModel
+        - [ ] Merge tickets and arbTickets list by settleDate
 
 - #### Transactions
     - [x] Pricing on display
