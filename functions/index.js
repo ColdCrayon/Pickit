@@ -42,18 +42,36 @@ exports.settleTickets = onSchedule("every 5 minutes", async (event) => {
   const db = getFirestore();
   const now = Timestamp.now();
 
-  const snapshot = await db
+
+  // ---- Game Tickets ----
+  const gameSnapshot = await db
       .collection("gameTickets")
       .where("settleDate", "<=", now)
       .where("serverSettled", "==", false)
       .get();
 
   const batch = db.batch();
-  snapshot.forEach((doc) => {
+  gameSnapshot.forEach((doc) => {
+    batch.update(doc.ref, {serverSettled: true});
+  });
+
+  // ---- Arbitrage Tickets
+  const arbSnapshot = await db
+      .collection("arbTickets")
+      .where("settleDate", "<=", now)
+      .where("serverSettled", "==", false)
+      .get();
+
+  arbSnapshot.forEach((doc) => {
     batch.update(doc.ref, {serverSettled: true});
   });
 
   await batch.commit();
-  console.log(`Settled ${snapshot.size} tickets`);
+
+  console.log(
+      `Settled ${gameSnapshot.size} tickets and ${arbSnapshot.size} arb 
+       tickets`,
+  );
+
   return null;
 });
