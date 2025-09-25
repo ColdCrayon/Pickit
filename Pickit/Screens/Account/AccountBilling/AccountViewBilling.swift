@@ -50,7 +50,7 @@ struct AccountViewBilling: View {
                         
                         Spacer()
                         
-                        Text("4.99 Per Month")
+                        Text("1.99 Per Month")
                             .foregroundStyle(LinearGradient(colors: [.billingBGLight, .billingBGDark], startPoint: .topLeading, endPoint: .bottomTrailing))
                             .font(Font.custom("Lexend", size: 20))
                             .fontWeight(.bold)
