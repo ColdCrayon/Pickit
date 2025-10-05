@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Routes, Route, Link, BrowserRouter } from "react-router-dom";
-import { User, Home, FileText, Shield, TrendingUp, BarChart3, Users, Zap, Award, X as CloseIcon } from 'lucide-react';
+import { Routes, Route, Link } from "react-router-dom";
+import { User, FileText, Shield, TrendingUp, BarChart3, Users, Zap, Award, X as CloseIcon, Home as HomeIcon } from 'lucide-react';
 import PrivacyPolicy from "./PrivacyPolicy";
 
 const logo = "/logo.png";
@@ -88,7 +88,7 @@ function App() {
               className="flex items-center space-x-3 py-3 px-4 rounded-xl hover:bg-white/10"
               onClick={() => setIsSidebarOpen(false)}
             >
-              <Home className="w-5 h-5" /> <span>Home</span>
+              <HomeIcon className="w-5 h-5" /> <span>Home</span>
             </Link>
             <a
               href="#"
@@ -114,7 +114,20 @@ function App() {
         />
       )}
 
-      {/* Main Content */}
+      <main 
+        className={`relative z-10 transition-all duration-300 ${isSidebarOpen ? 'ml-64' : ''}`}
+      >
+        <Routes>
+          <Route path="/" element={<Home isSidebarOpen={isSidebarOpen} />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+        </Routes>
+</main>
+    </div>
+  );
+}
+
+function Home({ isSidebarOpen }: { isSidebarOpen: boolean }) {
+  return (
       <main 
         className={`relative z-10 transition-all duration-300 ${
           isSidebarOpen ? 'ml-64' : ''
@@ -210,7 +223,6 @@ function App() {
           </div>
         </footer>
       </main>
-    </div>
   );
 }
 
