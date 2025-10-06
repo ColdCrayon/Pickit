@@ -1,7 +1,12 @@
 # To-do
 
 ## APPLICATION DEVELOPMENT
-- [x] Arbitrage ticket checkmark placement
+
+- #### View Models
+    - Ticket scrolling padding issues
+    - Home ViewModel
+        - [ ] Merge tickets and arbTickets list by settleDate
+
 
 - #### ACCOUNT INFORMATION 
     - [x] Premium status functionality
@@ -16,10 +21,6 @@
     - [ ] News articles
     - [ ] Arb ticket found
     - [ ] Betting trend
-
-- #### View Models
-    - Home ViewModel
-        - [ ] Merge tickets and arbTickets list by settleDate
 
 - #### Transactions
     - [x] Pricing on display
