@@ -110,6 +110,15 @@ struct HomeView: View {
                                    leftSectionActive: $leftSectionActive)
             }
         }
+        .onChange(of: leftSectionActive) {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                if leftSectionActive {
+                    offset = 0
+                } else {
+                    offset = screenWidth + 20
+                }
+            }
+        }
     }
 }
 
