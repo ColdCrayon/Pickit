@@ -83,23 +83,45 @@ function App() {
       >
         <div className="pt-20 px-6">
           <nav className="space-y-4">
-            <Link
-              to="/"
+             <Link
+               to="/"
+               className="flex items-center space-x-3 py-3 px-4 rounded-xl hover:bg-white/10"
+               onClick={() => setIsSidebarOpen(false)}
+             >
+               <HomeIcon className="w-5 h-5" /> <span>Home</span>
+             </Link>
+             <Link
+               to="/about"
+               className="flex items-center space-x-3 py-3 px-4 rounded-xl hover:bg-white/10"
+               onClick={() => setIsSidebarOpen(false)}
+             >
+              <FileText className="w-5 h-5" /> <span>About</span>
+             </Link>
+             <Link
+              to="/news"
               className="flex items-center space-x-3 py-3 px-4 rounded-xl hover:bg-white/10"
               onClick={() => setIsSidebarOpen(false)}
-            >
-              <HomeIcon className="w-5 h-5" /> <span>Home</span>
-            </Link>
-            <a
-              href="#"
+             >
+               <TrendingUp className="w-5 h-5" /> <span>News</span>
+             </Link>
+             <Link
+                to="/picks"
+                className="flex items-center space-x-3 py-3 px-4 rounded-xl hover:bg-white/10"
+                onClick={() => setIsSidebarOpen(false)}
+               >
+             <Award className="w-5 h-5" /> <span>Picks</span>
+             </Link>
+             <Link
+              to="/arbitrage"
               className="flex items-center space-x-3 py-3 px-4 rounded-xl hover:bg-white/10"
-            >
-              <FileText className="w-5 h-5" /> <span>Terms of Service</span>
-            </a>
-            <Link
-              to="/privacy"
-              className="flex items-center space-x-3 py-3 px-4 rounded-xl hover:bg-white/10"
-              onClick={() => setIsSidebarOpen(false)}
+             onClick={() => setIsSidebarOpen(false)}
+             >
+               <Zap className="w-5 h-5" /> <span>Arbitrage</span>
+             </Link>
+             <Link
+               to="/privacy"
+               className="flex items-center space-x-3 py-3 px-4 rounded-xl hover:bg-white/10"
+               onClick={() => setIsSidebarOpen(false)}
             >
               <Shield className="w-5 h-5" /> <span>Privacy Policy</span>
             </Link>
