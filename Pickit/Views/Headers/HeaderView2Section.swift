@@ -70,7 +70,7 @@ struct HeaderView2Section: View {
                                 HStack(spacing: 0) {
                                     Button {
                                         withAnimation(.easeInOut(duration: 0.2)) {
-//                                            leftSectionActive = true
+                                            leftSectionActive = true
                                         }
                                     } label: {
                                         ZStack {
@@ -94,7 +94,7 @@ struct HeaderView2Section: View {
                                     
                                     Button {
                                         withAnimation(.easeInOut(duration: 0.2)) {
-//                                            leftSectionActive = false
+                                            leftSectionActive = false
                                         }
                                     } label: {
                                         ZStack {

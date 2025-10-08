@@ -47,22 +47,31 @@ struct PreviousPicksView: View {
         
         ZStack {
             BackgroundView()
+                .ignoresSafeArea()
             
-            ScrollView(.vertical) {
-                LazyVStack(spacing: 0) {
-                    ForEach(viewModel.tickets) { ticket in
-                        TicketView(settled: ticket.settled,
-                                   pickTeam: ticket.pickTeam,
-                                   pickType: ticket.pickType,
-                                   pickGameInfo: ticket.pickGameInfo,
-                                   pickPublishDate: ticket.pickPublishDate,
-                                   pickDescription: ticket.pickDescription,
-                                   pickSportsbook: ticket.pickSportsbook)
+            GeometryReader { geo in
+                ScrollView(.vertical) {
+                    LazyVStack(spacing: 0) {
+                        ForEach(viewModel.tickets) { ticket in
+                            ZStack {
+                                Color.clear // expands to fill the page height
+                                TicketView(settled: ticket.settled,
+                                           pickTeam: ticket.pickTeam,
+                                           pickType: ticket.pickType,
+                                           pickGameInfo: ticket.pickGameInfo,
+                                           pickPublishDate: ticket.pickPublishDate,
+                                           pickDescription: ticket.pickDescription,
+                                           pickSportsbook: ticket.pickSportsbook)
+                            }
+                            .frame(width: geo.size.width, height: geo.size.height)
+                        }
                     }
+                    .scrollTargetLayout()
                 }
+                .scrollIndicators(.hidden)
+                .scrollTargetBehavior(.paging)
+                .contentMargins(.vertical, 0, for: .scrollContent)
             }
-            .scrollIndicators(.hidden)
-            .scrollTargetBehavior(.paging)
         }
     }
 }
