@@ -1,8 +1,9 @@
 # To-Do
 
 ## WEBSITE DEVELOPMENT
-- [ ] Add Privacy Policy
+- [x] Add Privacy Policy
     - Privacy policy info @ https://developer.apple.com/app-store/review/guidelines/#privacy
+- SAME FOOTER FOR ALL SITES
 - [ ] Add TOS
     - Found in Pickit Folder
     - DO NOT HARDCODE
