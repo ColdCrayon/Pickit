@@ -10,7 +10,7 @@ app.use(express.json());
 const API_HOST = "https://api.the-odds-api.com/v4";
 
 const API_KEY     = process.env.ODDS_API_KEY;
-const SPORTS_CSV  = process.env.ODDS_SPORTS || "americanfootball_nfl";
+const SPORTS_CSV  = process.env.ODDS_SPORTS || "icehockey_nhl";
 const REGIONS     = process.env.ODDS_REGIONS || "us";
 const MARKETS     = process.env.ODDS_MARKETS || "h2h,spreads,totals";
 const ODDS_FORMAT = process.env.ODDS_FORMAT || "decimal";
