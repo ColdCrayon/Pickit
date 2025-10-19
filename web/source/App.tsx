@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Routes, Route, Link } from "react-router-dom";
 import { User, FileText, Shield, TrendingUp, BarChart3, Users, Zap, Award, X as CloseIcon, Home as HomeIcon } from 'lucide-react';
 import PrivacyPolicy from "./PrivacyPolicy";
+import Account from "./Account";
+
 
 const logo = "/logo.png";
 
@@ -65,9 +67,11 @@ function App() {
             <button className="hidden sm:inline-flex px-6 py-2.5 bg-yellow-500/90 text-gray-900 font-bold rounded-xl hover:bg-yellow-400">
               UPGRADE
             </button>
-            <button className="hidden sm:inline-flex px-6 py-2.5 bg-gray-700/80 text-white font-bold rounded-xl hover:bg-gray-600/80">
+             <Link
+              to="/Account"
+              className="hidden sm:inline-flex px-6 py-2.5 bg-gray-700/80 text-white font-bold rounded-xl hover:bg-gray-600/80">
               ACCOUNT
-            </button>
+            </Link>
             <button className="p-2.5 bg-gray-700/80 rounded-xl hover:bg-gray-600/80">
               <User className="w-5 h-5" />
             </button>
@@ -142,6 +146,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home isSidebarOpen={isSidebarOpen} />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/Account" element={<Account />} />
         </Routes>
 </main>
     </div>
