@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 type View = "signin" | "signup" | "forgot" | "profile";
 
@@ -103,19 +104,19 @@ const Account: React.FC = () => {
   // tab buttons
   const Tabs = () => (
     <div className="flex justify-center gap-3 mb-6">
-      <button
+      <button type="button"
         className={`px-4 py-2 rounded-xl border ${view === "signin" ? "bg-white/10 border-white/30" : "border-white/10 hover:bg-white/5"}`}
         onClick={() => { setView("signin"); setMessage(null); }}
       >
         Sign In
       </button>
-      <button
+      <button type="button"
         className={`px-4 py-2 rounded-xl border ${view === "signup" ? "bg-white/10 border-white/30" : "border-white/10 hover:bg-white/5"}`}
         onClick={() => { setView("signup"); setMessage(null); }}
       >
         Create Account
       </button>
-      <button
+      <button type="button"
         className={`px-4 py-2 rounded-xl border ${view === "forgot" ? "bg-white/10 border-white/30" : "border-white/10 hover:bg-white/5"}`}
         onClick={() => { setView("forgot"); setMessage(null); }}
       >
@@ -125,17 +126,17 @@ const Account: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
+    <div className="min-h-screen flex flex-col bg-gray-900 text-white relative overflow-hidden">
       {/* Background */}
       <div
-        className="absolute inset-0 bg-cover bg-center"
+        className="absolute inset-0 bg-cover bg-center pointer-events-none"
         style={{
           backgroundImage:
             "linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)), url('Background.jpeg')",
         }}
       />
 
-      <main className="relative z-10 max-w-5xl mx-auto py-20 px-6">
+      <main className="relative z-10 max-w-5xl mx-auto flex-1 py-20 px-6">
         {/* Header */}
         <div className="text-center mb-10">
           <h2 className="text-5xl font-bold">Account</h2>
@@ -155,13 +156,13 @@ const Account: React.FC = () => {
                 <span className="font-semibold">{user.email}</span>
               </div>
               <div className="flex gap-3 pt-2">
-                <button
+                <button type="button"
                   onClick={() => setMessage("This is a mock system — no real password to change.")}
                   className="px-5 py-2 rounded-xl bg-white/10 hover:bg-white/20"
                 >
                   Change Password
                 </button>
-                <button
+                <button type="button"
                   onClick={handleSignOut}
                   className="px-5 py-2 rounded-xl bg-yellow-500/90 text-gray-900 font-semibold hover:bg-yellow-400"
                 >
@@ -268,9 +269,28 @@ const Account: React.FC = () => {
         )}
       </main>
 
-      <footer className="relative z-10 py-12 px-6 border-t border-white/10 text-center">
-        <p className="text-gray-400 text-sm">© 2025 PickIt. All rights reserved.</p>
-      </footer>
+      <footer className="relative z-10 py-12 px-50 border-t border-white/10 w-full text-center md:text-left">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="flex items-center space-x-3 mb-6 md:mb-0">
+              <div className="flex items-center space-x-2">
+                <img 
+                  src={logo} 
+                  alt="PickIt Logo" 
+                  className="w-10 h-10 rounded-full border border-white/20" 
+                />
+              </div>
+              <span className="text-xl font-bold">PickIt</span>
+            </div>
+            <div className="flex space-x-8 mb-6 md:mb-0">
+              <Link to="/privacy" className="text-gray-400 hover:text-white">
+                 Privacy Policy
+              </Link>
+              <a href="#" className="text-gray-400 hover:text-white">Terms of Service</a>
+              <a href="#" className="text-gray-400 hover:text-white">Support</a>
+            </div>
+            <p className="text-gray-400 text-sm">© 2025 Pickit. All rights reserved.</p>
+          </div>
+        </footer>
     </div>
   );
 };

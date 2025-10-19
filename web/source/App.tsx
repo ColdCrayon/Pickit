@@ -227,7 +227,7 @@ function Home({ isSidebarOpen }: { isSidebarOpen: boolean }) {
         </section>
 
         {/* Footer */}
-        <footer className="py-12 px-6 border-t border-white/10 w-full text-center md:text-left">
+        <footer className="py-12 px-50 border-t border-white/10 w-full text-center md:text-left">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-3 mb-6 md:mb-0">
               <div className="flex items-center space-x-2">
