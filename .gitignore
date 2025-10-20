@@ -12,7 +12,9 @@ Pickit.xcodeproj/
 # Ignore .DS_Store
 .DS_Store
 .env
-.yaml
+
+# Ignore API run variables
+.env.run.yaml
 
 node_modules/
 
