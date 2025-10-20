@@ -3,6 +3,8 @@ import { Routes, Route, Link } from "react-router-dom";
 import { User, FileText, Shield, TrendingUp, BarChart3, Users, Zap, Award, X as CloseIcon, Home as HomeIcon } from 'lucide-react';
 import PrivacyPolicy from "./PrivacyPolicy";
 import Account from "./Account";
+import TermsOfService from "./termsofservice";
+import Support from "./support";
 
 
 const logo = "/logo.png";
@@ -147,6 +149,8 @@ function App() {
           <Route path="/" element={<Home isSidebarOpen={isSidebarOpen} />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/Account" element={<Account />} />
+          <Route path="/termsofservice" element={<TermsOfService />} />
+          <Route path="/support" element={<Support />} />
         </Routes>
 </main>
     </div>
@@ -227,7 +231,7 @@ function Home({ isSidebarOpen }: { isSidebarOpen: boolean }) {
         </section>
 
         {/* Footer */}
-        <footer className="py-12 px-50 border-t border-white/10 w-full text-center md:text-left">
+        <footer className="relative z-10 py-12 px-10 border-t border-white/10 w-full text-center md:text-left">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-3 mb-6 md:mb-0">
               <div className="flex items-center space-x-2">
@@ -243,8 +247,12 @@ function Home({ isSidebarOpen }: { isSidebarOpen: boolean }) {
               <Link to="/privacy" className="text-gray-400 hover:text-white">
                  Privacy Policy
               </Link>
-              <a href="#" className="text-gray-400 hover:text-white">Terms of Service</a>
-              <a href="#" className="text-gray-400 hover:text-white">Support</a>
+              <Link to="/termsofservice" className="text-gray-400 hover:text-white">
+                 Terms of Service
+              </Link>
+              <Link to="/Support" className="text-gray-400 hover:text-white">
+                 Support
+              </Link>
             </div>
             <p className="text-gray-400 text-sm">© 2025 Pickit. All rights reserved.</p>
           </div>

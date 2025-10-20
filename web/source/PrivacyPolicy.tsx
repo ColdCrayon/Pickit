@@ -1,34 +1,51 @@
 import React from "react";
+import { Link } from "react-router-dom";
+
 const logo = "/logo.png";
 
-const PrivacyPolicy = () => {
+const PrivacyPolicy: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
       {/* Background */}
       <div
-        className="absolute inset-0 bg-cover bg-center"
+        className="absolute inset-0 bg-cover bg-center pointer-events-none"
         style={{
           backgroundImage:
             "linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)), url('Background.jpeg')",
         }}
       />
 
-      <main className="relative z-10 max-w-4xl mx-auto py-20 px-6">
+      {/* Main Content */}
+      <main className="relative z-10 max-w-5xl mx-auto py-20 px-6">
         {/* Header */}
-        <div className="flex flex-col items-center mb-16">
-          <img
-            src={logo}
-            alt="PickIt Logo"
-            className="w-16 h-16 mb-4 rounded-full border border-white/20"
-          />
-          <h1 className="text-5xl font-bold">Privacy Policy</h1>
-          <p className="text-gray-400 mt-2">Effective Date: September 2025</p>
+        <div className="flex items-center justify-between mb-10">
+          <div className="flex items-center space-x-3">
+            <img
+              src={logo}
+              alt="PickIt Logo"
+              className="w-10 h-10 rounded-full border border-white/20"
+            />
+            <h1 className="text-3xl font-bold">Privacy Policy</h1>
+          </div>
+          <div className="hidden md:flex items-center gap-4 text-sm text-gray-300">
+            <Link to="/" className="hover:text-white">
+              Home
+            </Link>
+            <span className="opacity-40">/</span>
+            <Link to="/termsofservice" className="hover:text-white">
+              Terms of Service
+            </Link>
+          </div>
         </div>
 
-        <div className="space-y-12 text-gray-300 leading-relaxed">
-          {/* 1. Introduction */}
+        {/* Policy Content Bubble */}
+        <div className="bg-white/5 border border-white/10 rounded-3xl p-8 md:p-10 leading-7 text-gray-300 space-y-10">
+          <p className="text-sm text-gray-400">
+            <span className="font-semibold">Effective Date:</span> September 2025
+          </p>
+
           <section>
-            <h2 className="text-2xl font-semibold mb-3">1. Introduction</h2>
+            <h2 className="text-xl font-semibold mb-3">1. Introduction</h2>
             <p>
               PickIt (“we”, “our”, “us”) values your privacy. This Privacy Policy
               explains how we collect, use, share, retain, and protect your
@@ -46,27 +63,25 @@ const PrivacyPolicy = () => {
             </p>
           </section>
 
-          {/* 2. Data Collection & Storage */}
           <section>
-            <h2 className="text-2xl font-semibold mb-3">
-              2. Data Collection & Storage
+            <h2 className="text-xl font-semibold mb-3">
+              2. Data Collection &amp; Storage
             </h2>
             <p>We may collect the following types of data:</p>
-            <ul className="list-disc list-inside space-y-2">
+            <ul className="list-disc pl-6 space-y-2">
               <li>
-                <strong>Account Information:</strong> name, email, and login
-                details.
+                <strong>Account Information:</strong> name, email, and login details.
               </li>
               <li>
                 <strong>Usage Data:</strong> interactions, preferences, logs.
               </li>
               <li>
-                <strong>Device & Analytics Data:</strong> device model, OS
-                version, performance/analytics metrics.
+                <strong>Device &amp; Analytics Data:</strong> device model, OS version,
+                performance/analytics metrics.
               </li>
               <li>
-                <strong>Cookies & Tracking:</strong> cookies, local storage,
-                and similar technologies to personalize and measure performance.
+                <strong>Cookies &amp; Tracking:</strong> cookies, local storage, and
+                similar technologies to personalize and measure performance.
               </li>
             </ul>
             <p>
@@ -75,11 +90,10 @@ const PrivacyPolicy = () => {
             </p>
           </section>
 
-          {/* 3. Use of Data */}
           <section>
-            <h2 className="text-2xl font-semibold mb-3">3. Use of Data</h2>
+            <h2 className="text-xl font-semibold mb-3">3. Use of Data</h2>
             <p>We use your data to:</p>
-            <ul className="list-disc list-inside space-y-2">
+            <ul className="list-disc pl-6 space-y-2">
               <li>Provide and operate our services and features.</li>
               <li>Personalize your experience and improve the product.</li>
               <li>Conduct analytics and monitor usage trends.</li>
@@ -88,10 +102,9 @@ const PrivacyPolicy = () => {
             </ul>
           </section>
 
-          {/* 4. Sharing & Third Parties */}
           <section>
-            <h2 className="text-2xl font-semibold mb-3">
-              4. Sharing & Third Parties
+            <h2 className="text-xl font-semibold mb-3">
+              4. Sharing &amp; Third Parties
             </h2>
             <p>
               We do not sell your personal data. We may share limited data with
@@ -115,23 +128,21 @@ const PrivacyPolicy = () => {
             </p>
           </section>
 
-          {/* 5. Data Retention & Deletion */}
           <section>
-            <h2 className="text-2xl font-semibold mb-3">
-              5. Data Retention & Deletion
+            <h2 className="text-xl font-semibold mb-3">
+              5. Data Retention &amp; Deletion
             </h2>
             <p>
               We retain personal data only as long as necessary for the purposes
-              described or as required by law. When no longer needed, we delete
-              or anonymize it securely.
+              described or as required by law. When no longer needed, we delete or
+              anonymize it securely.
             </p>
           </section>
 
-          {/* 6. Your Rights */}
           <section>
-            <h2 className="text-2xl font-semibold mb-3">6. Your Rights</h2>
+            <h2 className="text-xl font-semibold mb-3">6. Your Rights</h2>
             <p>Depending on your jurisdiction, you may have the right to:</p>
-            <ul className="list-disc list-inside space-y-2">
+            <ul className="list-disc pl-6 space-y-2">
               <li>Access the personal data we hold about you.</li>
               <li>Request correction or deletion of your data.</li>
               <li>Object to or restrict certain processing.</li>
@@ -141,40 +152,35 @@ const PrivacyPolicy = () => {
             <p>To exercise these rights, contact us using the details below.</p>
           </section>
 
-          {/* 7. Children & Minors */}
           <section>
-            <h2 className="text-2xl font-semibold mb-3">7. Children & Minors</h2>
+            <h2 className="text-xl font-semibold mb-3">7. Children &amp; Minors</h2>
             <p>
-              Our services are not directed to children under 13. We do not
-              knowingly collect personal data from children. If you believe we
-              have collected such data, contact us to request deletion.
+              Our services are not directed to children under 13. We do not knowingly
+              collect personal data from children. If you believe we have collected
+              such data, contact us to request deletion.
             </p>
           </section>
 
-          {/* 8. Security */}
           <section>
-            <h2 className="text-2xl font-semibold mb-3">8. Security</h2>
+            <h2 className="text-xl font-semibold mb-3">8. Security</h2>
             <p>
-              We implement technical and administrative safeguards (e.g.,
-              encryption, access controls, monitoring) to protect your data from
-              unauthorized access, alteration, or disclosure.
+              We implement technical and administrative safeguards (e.g., encryption,
+              access controls, monitoring) to protect your data from unauthorized
+              access, alteration, or disclosure.
             </p>
           </section>
 
-          {/* 9. Changes to This Policy */}
           <section>
-            <h2 className="text-2xl font-semibold mb-3">9. Changes to This Policy</h2>
+            <h2 className="text-xl font-semibold mb-3">9. Changes to This Policy</h2>
             <p>
-              We may update this Privacy Policy from time to time. We will
-              update the “Effective Date” and notify you through the app or
-              website where appropriate. Continued use after changes indicates
-              acceptance.
+              We may update this Privacy Policy from time to time. We will update the
+              “Effective Date” and notify you through the app or website where
+              appropriate. Continued use after changes indicates acceptance.
             </p>
           </section>
 
-          {/* 10. Contact */}
           <section>
-            <h2 className="text-2xl font-semibold mb-3">10. Contact</h2>
+            <h2 className="text-xl font-semibold mb-3">10. Contact</h2>
             <p>
               Questions or requests? Contact us at{" "}
               <a
@@ -189,9 +195,32 @@ const PrivacyPolicy = () => {
         </div>
       </main>
 
-      <footer className="relative z-10 py-12 px-6 border-t border-white/10 text-center">
-        <p className="text-gray-400 text-sm">© 2025 PickIt. All rights reserved.</p>
-      </footer>
+      <footer className="relative z-10 py-12 px-10 border-t border-white/10 w-full text-center md:text-left">
+                      <div className="flex flex-col md:flex-row justify-between items-center">
+                        <div className="flex items-center space-x-3 mb-6 md:mb-0">
+                          <div className="flex items-center space-x-2">
+                            <img 
+                              src={logo} 
+                              alt="PickIt Logo" 
+                              className="w-10 h-10 rounded-full border border-white/20" 
+                            />
+                          </div>
+                          <span className="text-xl font-bold">PickIt</span>
+                        </div>
+                        <div className="flex space-x-8 mb-6 md:mb-0">
+                          <Link to="/privacy" className="text-gray-400 hover:text-white">
+                             Privacy Policy
+                          </Link>
+                          <Link to="/termsofservice" className="text-gray-400 hover:text-white">
+                               Terms of Service
+                          </Link>
+                          <Link to="/Support" className="text-gray-400 hover:text-white">
+                                Support
+                          </Link>
+                        </div>
+                        <p className="text-gray-400 text-sm">© 2025 Pickit. All rights reserved.</p>
+                      </div>
+                    </footer>
     </div>
   );
 };

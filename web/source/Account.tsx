@@ -269,7 +269,7 @@ const Account: React.FC = () => {
         )}
       </main>
 
-      <footer className="relative z-10 py-12 px-50 border-t border-white/10 w-full text-center md:text-left">
+      <footer className="relative z-10 py-12 px-10 border-t border-white/10 w-full text-center md:text-left">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-3 mb-6 md:mb-0">
               <div className="flex items-center space-x-2">

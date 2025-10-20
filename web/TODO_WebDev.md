@@ -7,11 +7,11 @@
 - [ ] Add TOS
     - Found in Pickit Folder
     - DO NOT HARDCODE
-- [ ] Sidebar
+- [x] Sidebar
     - Home
     - About 
     - News
     - Picks
     - Arbitrage
-- [ ] Account Page
+- [x] Account Page
 - [ ] Upgrade Page
