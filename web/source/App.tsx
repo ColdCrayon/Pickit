@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link} from "react-router-dom";
 import { User, FileText, Shield, TrendingUp, BarChart3, Users, Zap, Award, X as CloseIcon, Home as HomeIcon } from 'lucide-react';
 import PrivacyPolicy from "./PrivacyPolicy";
 import Account from "./Account";
 import TermsOfService from "./termsofservice";
 import Support from "./support";
+import About from "./About";
 
 
 const logo = "/logo.png";
@@ -151,6 +152,7 @@ function App() {
           <Route path="/Account" element={<Account />} />
           <Route path="/termsofservice" element={<TermsOfService />} />
           <Route path="/support" element={<Support />} />
+          <Route path="/about" element={<About />} />
         </Routes>
 </main>
     </div>
@@ -178,9 +180,11 @@ function Home({ isSidebarOpen }: { isSidebarOpen: boolean }) {
               <button className="px-8 py-4 bg-white/10 text-white font-semibold rounded-2xl hover:bg-white/20">
                 Get Started
               </button>
-              <button className="px-8 py-4 border-2 border-white/30 text-white font-semibold rounded-2xl hover:bg-white hover:text-gray-900">
+              <Link
+                to="/about"
+                className="px-8 py-4 border-2 border-white/30 text-white font-semibold rounded-2xl hover:bg-white hover:text-gray-900">
                 Learn More
-              </button>
+              </Link>
             </div>
           </div>
         </section>
