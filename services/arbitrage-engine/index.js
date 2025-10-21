@@ -183,6 +183,39 @@ app.post("/scan", async (req, res) => {
   }
 });
 
-app.get("/healthz", (_, res) => res.send("ok"));
+// Kicker: run /scan now, then schedule another /scan in ~30s via Cloud Tasks.
+app.post("/kick", async (req, res) => {
+  try {
+    // 1) run one scan immediately (optional — or just enqueue both)
+    // await scanAll();
 
+    // 2) enqueue a task for /scan in 30 seconds
+    const parent = tasksClient.queuePath(PROJECT_ID, REGION, QUEUE);
+    const url = `${SERVICE_URL}/scan`;
+    const in30 = Math.floor(Date.now() / 1000) + 30;
+
+    const [task] = await tasksClient.createTask({
+      parent,
+      task: {
+        httpRequest: {
+          httpMethod: "POST",
+          url,
+          headers: { "Content-Type": "application/json" },
+          oidcToken: {
+            serviceAccountEmail: `tasks-invoker@${PROJECT_ID}.iam.gserviceaccount.com`,
+            audience: url,
+          },
+        },
+        scheduleTime: { seconds: in30 },
+      },
+    });
+
+    res.json({ ok: true, scheduled: task.name, etaSeconds: 30 });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ ok: false, error: String(e) });
+  }
+});
+
+app.get("/healthz", (_, res) => res.send("ok"));
 app.listen(process.env.PORT || 8080, () => console.log("arb-engine up"));
