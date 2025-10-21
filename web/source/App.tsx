@@ -6,6 +6,7 @@ import Account from "./Account";
 import TermsOfService from "./termsofservice";
 import Support from "./support";
 import About from "./About";
+import Upgrade from "./upgrade";
 
 
 const logo = "/logo.png";
@@ -67,9 +68,11 @@ function App() {
 
           {/* Right */}
           <div className="flex items-center space-x-3">
-            <button className="hidden sm:inline-flex px-6 py-2.5 bg-yellow-500/90 text-gray-900 font-bold rounded-xl hover:bg-yellow-400">
+            <Link
+              to="/upgrade"
+              className="hidden sm:inline-flex px-6 py-2.5 bg-yellow-500/90 text-gray-900 font-bold rounded-xl hover:bg-yellow-400">
               UPGRADE
-            </button>
+            </Link>
              <Link
               to="/Account"
               className="hidden sm:inline-flex px-6 py-2.5 bg-gray-700/80 text-white font-bold rounded-xl hover:bg-gray-600/80">
@@ -153,6 +156,7 @@ function App() {
           <Route path="/termsofservice" element={<TermsOfService />} />
           <Route path="/support" element={<Support />} />
           <Route path="/about" element={<About />} />
+          <Route path="/upgrade" element={<Upgrade />} />
         </Routes>
 </main>
     </div>
