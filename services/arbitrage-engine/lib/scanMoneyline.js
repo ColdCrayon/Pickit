@@ -1,3 +1,4 @@
+import { CONFIG } from "./config.js";
 import { firestore, getBooksLatest, newBatch, commitBatch, upsertArbTicket } from "./firestore.js";
 import { validDecimal, twoWayEdge, threeWayEdge, twoWayStakes, threeWayStakes, idemArbId } from "./oddsMath.js";
 

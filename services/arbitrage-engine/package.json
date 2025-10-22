@@ -1,9 +1,13 @@
 {
-  "name": "arbitrage-engine",
+  "name": "arb-engine",
   "type": "module",
-  "scripts": { "start": "node index.js" },
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
-    "express": "^4.19.2",
-    "firebase-admin": "^12.6.0"
+    "firebase-admin": "^12.7.0",
+    "express": "^4.19.2"
   }
 }
+

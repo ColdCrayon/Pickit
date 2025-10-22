@@ -1,61 +1,48 @@
-import { firestore, getBooksLatest, newBatch, commitBatch, upsertArbTicket } from "./firestore.js";
-import { validDecimal, twoWayEdge, twoWayStakes, idemArbId } from "./oddsMath.js";
+import { CONFIG } from "./config.js";
+import { firestore, newBatch, commitBatch, upsertArbTicket } from "./firestore.js";
+import { validDecimal, twoWayEdge, twoWayStakes, idemArbId, isFresh, normLine, fmt } from "./oddsMath.js";
 
-function tsToMs(ts) {
-  if (!ts?.seconds) return 0;
-  return ts.seconds * 1000 + Math.floor((ts.nanoseconds || 0) / 1e6);
-}
-function isFresh(updatedAt, stalenessSec) {
-  if (!updatedAt?.seconds) return false;
-  const ageSec = (Date.now() - tsToMs(updatedAt)) / 1000;
-  return ageSec <= stalenessSec;
-}
-// Normalize lines to 2 decimals (e.g., -3.5, +3.5); adjust if your feeds differ
-const norm = (line) => (typeof line === "number" ? Math.round(line * 100) / 100 : null);
-
-export async function scanSpreadForEvent(evDoc, cfg) {
+export async function scanEventSpreads(evDoc) {
   const ev = evDoc.data();
-  const eventRef = evDoc.ref;
-  const booksLatest = await getBooksLatest(eventRef, "spread");
+  const mktRef = evDoc.ref.collection("markets").doc("spreads"); // <-- plural (as in your screenshot)
+  const booksSnap = await mktRef.collection("books").get();
 
-  // collect fresh spread offers
-  const books = [];
-  for (const b of booksLatest) {
-    const latest = b.latest;
-    if (!isFresh(latest?.updatedAt, cfg.ARB_ODDS_STALENESS_SEC)) continue;
-    const sp = latest?.odds?.spread;
-    if (!sp) continue;
+  const quotes = [];
+  booksSnap.forEach((d) => {
+    const latest = d.data()?.latest;
+    if (!latest || !isFresh(latest.updatedAt, CONFIG.ARB_ODDS_STALENESS_SEC)) return;
 
-    const homeLine = norm(sp?.home?.line);
-    const awayLine = norm(sp?.away?.line);
-    const homePrice = sp?.home?.priceDecimal ?? null;
-    const awayPrice = sp?.away?.priceDecimal ?? null;
+    const homePt = normLine(latest?.odds?.home?.point);
+    const awayPt = normLine(latest?.odds?.away?.point);
+    const homePx = latest?.odds?.home?.priceDecimal;
+    const awayPx = latest?.odds?.away?.priceDecimal;
 
-    // Require both lines exist and are opposite (e.g., -3.5 vs +3.5)
-    if (homeLine == null || awayLine == null) continue;
-    if (!validDecimal(homePrice) || !validDecimal(awayPrice)) continue;
+    if (homePt == null || awayPt == null) return;
+    if (!validDecimal(homePx) || !validDecimal(awayPx)) return;
 
-    books.push({
-      bookId: b.bookId,
+    quotes.push({
+      bookId: d.id,
       updatedAt: latest.updatedAt,
-      home: { line: homeLine, priceDecimal: homePrice },
-      away: { line: awayLine, priceDecimal: awayPrice }
+      home: { point: homePt, priceDecimal: homePx },
+      away: { point: awayPt, priceDecimal: awayPx },
     });
-  }
+  });
 
-  // group by the line (we’ll use the absolute home line; away should be -home)
-  const byLine = new Map();
-  for (const b of books) {
-    const key = String(b.home.line); // e.g., "-3.5"
-    if (!byLine.has(key)) byLine.set(key, []);
-    byLine.get(key).push(b);
+  if (!quotes.length) return 0;
+
+  // group by the **home** point (e.g., "-1.5")
+  const byHomePoint = new Map();
+  for (const q of quotes) {
+    const key = String(q.home.point);
+    if (!byHomePoint.has(key)) byHomePoint.set(key, []);
+    byHomePoint.get(key).push(q);
   }
 
   let created = 0;
   const batch = newBatch();
 
-  for (const [lineKey, group] of byLine.entries()) {
-    // For this line, find best home and best away prices across different books
+  for (const [lineKey, group] of byHomePoint.entries()) {
+    // best home price and best away price for THIS spread line
     let bestHome = { price: 0, bookId: null };
     let bestAway = { price: 0, bookId: null };
 
@@ -68,32 +55,32 @@ export async function scanSpreadForEvent(evDoc, cfg) {
       }
     }
 
-    if (bestHome.price && bestAway.price) {
-      // optional: ensure different books for the legs
-      if (bestHome.bookId !== bestAway.bookId) {
-        const edge = twoWayEdge(bestHome.price, bestAway.price);
-        if (edge >= cfg.ARB_MIN_EDGE) {
-          const { pct1, pct2 } = twoWayStakes(bestHome.price, bestAway.price, cfg.ARB_BANK);
-          const legs = [
-            { outcome: `home(${lineKey})`, bookId: bestHome.bookId, priceDecimal: bestHome.price, stakePct: pct1 },
-            { outcome: `away(${lineKey})`, bookId: bestAway.bookId, priceDecimal: bestAway.price, stakePct: pct2 },
-          ];
-          const arbId = idemArbId(evDoc.id, `spread_${lineKey}`, legs);
-          upsertArbTicket(batch, arbId, {
-            eventId: evDoc.id,
-            marketId: `spread_${lineKey}`,
-            legs,
-            margin: edge,
-            createdAt: firestore.tsNow(),
-            settleDate: ev.startTime || firestore.tsNow(),
-            serverSettled: false
-          });
-          created++;
-        }
-      }
+    if (!bestHome.price || !bestAway.price) continue;
+    if (bestHome.bookId === bestAway.bookId) continue; // optional: ensure cross-book arb
+
+    const edge = twoWayEdge(bestHome.price, bestAway.price);
+    if (edge >= CONFIG.ARB_MIN_EDGE) {
+      const { pct1, pct2 } = twoWayStakes(bestHome.price, bestAway.price, CONFIG.ARB_BANK);
+      const legs = [
+        { outcome: fmt.spreadHome(Number(lineKey)), bookId: bestHome.bookId, priceDecimal: bestHome.price, stakePct: pct1 },
+        { outcome: fmt.spreadAway(-Number(lineKey)), bookId: bestAway.bookId, priceDecimal: bestAway.price, stakePct: pct2 }, // away is opposite sign
+      ];
+
+      const arbId = idemArbId(evDoc.id, `spread_${lineKey}`, legs);
+      upsertArbTicket(batch, arbId, {
+        eventId: evDoc.id,
+        marketId: `spread_${lineKey}`,     // include line in id for clarity
+        legs,
+        margin: edge,
+        createdAt: firestore.tsNow(),
+        settleDate: ev.startTime || firestore.tsNow(),
+        serverSettled: false,
+      });
+      created++;
     }
   }
 
   if (created) await commitBatch(batch);
   return created;
 }
+
