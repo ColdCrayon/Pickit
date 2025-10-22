@@ -1,0 +1,14 @@
+Game Tickets
+
+Fields:
+- Displayed on Tickets:
+    - pickDescription
+    - pickGameInfo
+    - pickPublishDate
+    - pickSportsbook
+    - pickTeam
+    - pickType
+- Server side:
+    - id
+    - serverSettled
+    - settleDate

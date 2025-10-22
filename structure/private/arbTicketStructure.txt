@@ -1,0 +1,17 @@
+Arbitrage Tickets
+
+Fields:
+- Displayed on Ticket:
+    - pickDescription
+    - pickGameInfo
+    - pickOddsSB1
+    - pickOddsSB2
+    - pickPublishDate
+    - pickTeam
+    - pickType
+    - sportsBook1
+    - sportsBook2
+- Server side:
+    - id
+    - serverSettled (bool)
+    - settleDate

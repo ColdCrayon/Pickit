@@ -1,0 +1,42 @@
+
+         (cron) Cloud Scheduler
+                  │  (HTTP every N minutes, with OIDC)
+                  ▼
+         ┌─────────────────────┐
+         │   odds-ingestor     │   Cloud Run
+         │  (Express, Node)    │
+         └─────────┬───────────┘
+                   │ calls The Odds API (sports=icehockey_nhl,
+                   │ regions=us, markets=h2h,spreads,totals)
+                   ▼
+            Normalize response
+                   │
+                   ▼
+        Firestore (Admin SDK writes)
+        ┌────────────────────────────────────────────────────────┐
+        │ /events/{eventId}                                      │
+        │   startTime, teams, sport                              │
+        │   /markets/{marketId}                                  │
+        │     /books/{bookId}                                    │
+        │       latest: { updatedAt, odds {...} }   <-- fast read│
+        │       /snapshots/{tsId}: { updatedAt, odds {...} }     │
+        │                                                        │
+        │ /publicOdds/{eventId_marketId}  <-- (optional denorm)  │
+        │ /arbTickets/{arbId}             <-- written by engine  │
+        └────────────────────────────────────────────────────────┘
+                   ▲
+                   │ (optional trigger)
+                   │ call /scan after ingest
+                   │
+         ┌─────────┴───────────┐
+         │  arbitrage-engine   │   Cloud Run
+         │ (Express, Node)     │
+         └─────────────────────┘
+                │ reads events/*/markets/*/books/*/latest
+                │ computes arbs, writes /arbTickets
+                ▼
+
+Clients
+───────
+- iOS: queries /gameTickets (existing settled/premium rules) and/or /arbTickets
+- Web: reads /publicOdds (best price view) and /arbTickets

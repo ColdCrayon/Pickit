@@ -1,0 +1,16 @@
+Event
+
+Fields:
+- sport
+- startTime (timestamp)
+- teams (map)
+
+Collection:
+- /events/{eventID}/markets/{marketID}/books/{bookID}/latest
+    - latest.updatedAt (timestamp)
+    - latest.odds.home.{ priceDecimal }
+    - latest.odds.away.{ priceDecimal }
+- /events/{eventID}/markets/{marketID}/books/{bookID}/snapshots/{snapshotID}/odds
+    - odds.updatedAt (timestamp)
+    - odds.home.{ priceDecimal }
+    - odds.away.{ priceDecimal }

@@ -1,0 +1,22 @@
+User
+
+Fields:
+- email 
+- id
+- isAdmin (bool)
+- isPremium (bool)
+- joined (number) || (timestamp)
+- name
+- username
+- age
+
+Login Fields:
+- email
+- password (do not store on firebase)
+
+Register Fields:
+- name
+- username
+- age
+- email
+- password
