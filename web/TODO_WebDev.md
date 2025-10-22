@@ -1,17 +1,20 @@
 # To-Do
 
 ## WEBSITE DEVELOPMENT
-- [x] Add Privacy Policy
-    - Privacy policy info @ https://developer.apple.com/app-store/review/guidelines/#privacy
-    - Same footer for all pages
-- [x] Add TOS
-    - Found in Pickit Folder
-- [x] Sidebar
+- [ ] Admin Dashboard
+    - Game Ticket Form
+    - News Article Form (not priority)
+    - Any important stats (ask chat)
+- [ ] Sign in
+    - FUNCTIONAL !!!
+    - Sign in as admin -> access to dashboard
+    - Sign in as premium -> access to all picks
+    - Sign in as standard -> access to free picks (settled tickets)
+- [ ] Sidebar
     - Home
     - About 
+    - Free Picks
     - News
-    - Picks
-    - Arbitrage
 - [x] Account Page
 - [x] Support Page
 - [ ] Upgrade Page
