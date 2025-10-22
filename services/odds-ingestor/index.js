@@ -1,6 +1,7 @@
 import express from "express";
 import fetch from "node-fetch";
 import admin from "firebase-admin";
+import { getFirestore, Timestamp } from "firebase-admin/firestore";
 
 if (!admin.apps.length) admin.initializeApp();
 const db = admin.firestore();
@@ -11,10 +12,11 @@ app.use(express.json());
 
 const API_HOST   = "https://api.the-odds-api.com/v4";
 const API_KEY    = process.env.ODDS_API_KEY;
-const SPORTS_CSV = process.env.ODDS_SPORTS || "icehockey_nhl";
+const SPORTS_CSV = process.env.ODDS_SPORTS || "icehockey_nhl, americanfootball_nfl";
 const REGIONS    = process.env.ODDS_REGIONS || "us";
 const MARKETS    = process.env.ODDS_MARKETS || "h2h,spreads,totals";
 const ODDS_FORMAT = (process.env.ODDS_FORMAT || "decimal").toLowerCase();
+const ARB_ENGINE_URL = process.env.ARB_ENGINE_URL;
 console.log(`[boot] ODDS_FORMAT=${ODDS_FORMAT}`);
 
 function pruneUndefinedDeep(v) {
@@ -156,6 +158,37 @@ app.post("/ingest", async (req, res) => {
   }
 });
 
+app.post("/ingestscan", async (req, res) => {
+  try {
+    const { sports } = req.body;
+
+    console.log(`Starting odds ingestion for sports: ${sports.join(", ")}`);
+    // Run ingestion logic here
+    const ingested = await ingestOddsForSports(sports);
+
+    // WAIT (3 seconds)
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
+    // Trigger arbitrage scan
+    const response = await fetch(`${ARB_ENGINE_URL}/scan`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ trigger: "post-ingest" }),
+    });
+
+    const scanResult = await response.json();
+    console.log("Triggered arbitrage scan:", scanResult);
+
+    res.status(200).json({
+      ok: true,
+      ingested, 
+      scan: scanResult,
+    });
+  } catch (err) {
+    console.error("Error during ingest:", err);
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
 
 app.get("/", (_, res) => res.type("text/plain").send("ok\n"));
 app.get("/healthz", (_, res) => res.type("text/plain").send("ok\n"));
@@ -163,6 +196,93 @@ app.get("/healthz", (_, res) => res.type("text/plain").send("ok\n"));
 app.all("*", (req, res) => {
   res.status(404).type("text/plain").send(`not found: ${req.method} ${req.path}`);
 });
+//
+// async function ingestOddsForSports(sports) {
+//   for (const sport of sports) {
+//     console.log(`Fetching odds for ${sport}`);
+//
+//     // --- Replace this with your actual sportsbook API calls ---
+//     const response = await fetch(`https://api.the-odds-api.com/v4/sports/${sport}/odds?apiKey=${API_KEY}&regions=${REGIONS}`, {
+//       headers: { "x-api-key": process.env.ODDS_API_KEY },
+//     });
+//
+//     const events = await response.json();
+//
+//     for (const event of events) {
+//       const eventId = event.id;
+//       const eventDoc = db.collection("events").doc(eventId);
+//
+//       // Store event summary
+//       await eventDoc.set({
+//         sport: sport,
+//         teams: { home: event.home_team, away: event.away_team },
+//         start_time: event.commence_time,
+//       }, { merge: true });
+//
+//       for (const book of event.bookmakers ?? []) {
+//         const bookId = book.key;
+//         const bookDoc = eventDoc.collection("books").doc(bookId);
+//
+//         for (const market of book.markets ?? []) {
+//           const marketId = market.key;
+//           const marketDoc = bookDoc.collection("markets").doc(marketId);
+//
+//           const odds = {};
+//
+//           for (const outcome of market.outcomes ?? []) {
+//             if (outcome.price == null) 
+//                   continue; // skip if no price
+//
+//             let key = outcome.name;
+//             if (outcome.name === event.home_team) 
+//               key = "home";
+//             else if (outcome.name === event.away_team)
+//               key = "away";
+//             else if (o.name?.toLowerCase() === "draw")  
+//               key = "draw";
+//             else if (o.name?.toLowerCase() === "over")  
+//               key = "over";
+//             else if (o.name?.toLowerCase() === "under") 
+//               key = "under";
+//
+//             let entry;
+//             if (ODDS_FORMAT === "american")
+//               entry = { priceAmerican: outcome.price };
+//             else 
+//               entry = { priceDecimal: outcome.price };
+//
+//             if (outcome.point != null)
+//               entry.point = outcome.point;
+//
+//             odds[key] = entry;
+//
+//             await marketDoc.set({
+//                 letest: {
+//                     updatedAt: Timestamp.now(),
+//                     odds: odds,
+//                 },
+//             }, { merge: true });
+//           }
+//         }
+//       }
+//     }
+//   }
+//
+//   console.log("Finished odds ingestion.");
+// }
+
+async function ingestOddsForSports(sports) {
+  let ingested = 0;
+  for (const sportKey of sports) {
+    const events = await fetchOddsForSport(sportKey);
+    for (const ev of events) {
+      const bundle = normalizeEvent(sportKey, ev);
+      await writeEventBundle(bundle);
+      ingested += bundle.updates.length;
+    }
+  }
+  return ingested;
+}
+
 
 app.listen(process.env.PORT || 8080, () => console.log("odds-ingestor up"));
-
