@@ -196,6 +196,7 @@ app.get("/healthz", (_, res) => res.type("text/plain").send("ok\n"));
 app.all("*", (req, res) => {
   res.status(404).type("text/plain").send(`not found: ${req.method} ${req.path}`);
 });
+
 //
 // async function ingestOddsForSports(sports) {
 //   for (const sport of sports) {
@@ -283,6 +284,5 @@ async function ingestOddsForSports(sports) {
   }
   return ingested;
 }
-
 
 app.listen(process.env.PORT || 8080, () => console.log("odds-ingestor up"));
