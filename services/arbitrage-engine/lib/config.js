@@ -2,10 +2,10 @@ export const CONFIG = {
   REGION: process.env.REGION || "us-central1",
 
   // staleness: ignore book odds older than this many seconds
-  ARB_ODDS_STALENESS_SEC: Number(process.env.ARB_ODDS_STALENESS_SEC || 90),
+  ARB_ODDS_STALENESS_SEC: Number(process.env.ARB_ODDS_STALENESS_SEC || 180),
 
   // minimal edge (1 - sum(1/odds)) to consider an arb
-  ARB_MIN_EDGE: Number(process.env.ARB_MIN_EDGE || 0.004), // 0.4%
+  ARB_MIN_EDGE: Number(process.env.ARB_MIN_EDGE || 0.005), // 0.5%
 
   // bankroll used to compute stakePct
   ARB_BANK: Number(process.env.ARB_BANK || 100),
