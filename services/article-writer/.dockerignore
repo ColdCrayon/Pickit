@@ -1,0 +1,20 @@
+# Node dependencies
+node_modules
+npm-debug.log
+yarn.lock
+
+# Local files
+.env
+.DS_Store
+*.log
+
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose*
+
+# OS files
+Thumbs.db
