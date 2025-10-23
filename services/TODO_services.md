@@ -1,7 +1,6 @@
 # To-Do 
 
 ## Data Management
-- Event cleaner
 - Kicker pattern
 - Admin Dashboard
     - View finds before tickets?
