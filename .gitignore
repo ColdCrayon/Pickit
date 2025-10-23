@@ -17,6 +17,8 @@ Pickit.xcodeproj/
 .env.run.yaml
 ./services/odds-ingestor/.env.run.yaml
 ./services/arbitrage-engine/.env.run.yaml
+./web/.env.run.yaml
+./web/.env
 
 node_modules/
 

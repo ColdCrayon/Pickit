@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Routes, Route, Link} from "react-router-dom";
-import { User, FileText, Shield, TrendingUp, BarChart3, Users, Zap, Award, X as CloseIcon, Home as HomeIcon } from 'lucide-react';
+import { User, FileText, Shield, TrendingUp, BarChart3, Users, Zap, Award, X as CloseIcon, Home as HomeIcon, Book } from 'lucide-react';
 import PrivacyPolicy from "./PrivacyPolicy";
 import Account from "./Account";
 import TermsOfService from "./termsofservice";
@@ -8,7 +8,11 @@ import Support from "./support";
 import About from "./About";
 import Upgrade from "./upgrade";
 import News from "./news";
-import NFL from './NFL';
+import NFL from "./NFL";
+import FreePicks from "./FreePicks";
+import FreePicksAll from "./FreePicksAll";
+import FreePicksLeague from "./FreePicksLeague";
+
 
 
 const logo = "/logo.png";
@@ -122,6 +126,13 @@ function App() {
                <TrendingUp className="w-5 h-5" /> <span>News</span>
              </Link>
              <Link
+               to="/FreePicks"
+               className="flex items-center space-x-3 py-3 px-4 rounded-xl hover:bg-white/10"
+               onClick={() => setIsSidebarOpen(false)}
+            >
+              <Book className="w-5 h-5" /> <span>Free Picks</span>
+            </Link>
+             <Link
                to="/privacy"
                className="flex items-center space-x-3 py-3 px-4 rounded-xl hover:bg-white/10"
                onClick={() => setIsSidebarOpen(false)}
@@ -152,6 +163,10 @@ function App() {
           <Route path="/upgrade" element={<Upgrade />} />
           <Route path="/news" element={<News />} />
           <Route path="/nfl" element={<NFL />} />
+          <Route path="/FreePicks" element={<FreePicks />} />
+          <Route path="/free-picks/all" element={<FreePicksAll />} />
+          <Route path="/free-picks/:league" element={<FreePicksLeague />} />
+        
         </Routes>
 </main>
     </div>
