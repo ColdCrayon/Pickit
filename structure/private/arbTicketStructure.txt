@@ -2,6 +2,26 @@ Arbitrage Tickets
 
 Fields:
 - Displayed on Ticket:
+    - leg 0
+        - bookId
+        - outcome
+        - priceDecimal (number)
+        - stakePct (number)
+    - leg 1
+        - bookId
+        - outcome
+        - priceDecimal (number)
+        - stakePct (number)
+    - margin (number)
+    - marketId
+- Serverside:
+    - createdAt (timestamp)
+    - eventId
+    - serverSettled (bool)
+    - settleDate (timestamp)
+
+--- DEPRECATED ---
+- Displayed on Ticket:
     - pickDescription
     - pickGameInfo
     - pickOddsSB1
