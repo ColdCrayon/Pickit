@@ -1,9 +1,8 @@
 # To-Do 
 
 ## Data Management
-- Arbitrage engine
 - Event cleaner
-- Ticket creator
+- Kicker pattern
 - Admin Dashboard
     - View finds before tickets?
     - User data
