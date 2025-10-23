@@ -6,7 +6,8 @@
     "express": "^4.19.2",
     "firebase-admin": "^12.6.0",
     "@google-cloud/vertexai": "^1.7.0",
-    "slugify": "^1.6.6"
+    "slugify": "^1.6.6",
+    "jsonrepair": "^3.7.0"
   }
 }
 
