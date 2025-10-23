@@ -25,7 +25,7 @@ const FreePicksSection: React.FC<Props> = ({ league, arb, game, seeAllTo }) => {
         <div className="p-6 rounded-2xl border border-white/10 bg-black/10">
           <div className="flex items-center gap-2 mb-4">
             <Zap className="w-5 h-5 text-yellow-400" />
-            <h3 className="text-lg font-semibold">Arbitrage (Settled)</h3>
+            <h3 className="text-lg font-semibold">Arbitrage </h3>
           </div>
 
           {arb.loading ? (
@@ -78,7 +78,7 @@ const FreePicksSection: React.FC<Props> = ({ league, arb, game, seeAllTo }) => {
         <div className="p-6 rounded-2xl border border-white/10 bg-black/10">
           <div className="flex items-center gap-2 mb-4">
             <TrendingUp className="w-5 h-5 text-yellow-400" />
-            <h3 className="text-lg font-semibold">Game Picks (Settled)</h3>
+            <h3 className="text-lg font-semibold">Game Picks </h3>
           </div>
 
           {game.loading ? (
