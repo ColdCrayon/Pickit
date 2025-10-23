@@ -90,19 +90,6 @@ export async function scanEventMoneyline(evDoc, cfg = {}) {
           settleDate: ev.startTime || nowTs,
           serverSettled: false,
         });
-        // batch.set(
-        //   db.collection("arbTickets").doc(arbId),
-        //   {
-        //     eventId: evDoc.id,
-        //     marketId: "moneyline",                // stored label
-        //     legs,
-        //     margin: edge,
-        //     createdAt: admin.firestore.Timestamp.now(),
-        //     settleDate: ev.startTime || admin.firestore.Timestamp.now(),
-        //     serverSettled: false,
-        //   },
-        //   { merge: true }
-        // );
         created++;
       }
       console.log(`[moneyline] candidate edge=${edge.toFixed(4)} A:${A.home} B:${B.away}`);
@@ -135,19 +122,6 @@ export async function scanEventMoneyline(evDoc, cfg = {}) {
           settleDate: ev.startTime || nowTs,
           serverSettled: false,
         });
-        // batch.set(
-        //   db.collection("arbTickets").doc(arbId),
-        //   {
-        //     eventId: evDoc.id,
-        //     marketId: "moneyline_3way",
-        //     legs,
-        //     margin: edge3,
-        //     createdAt: admin.firestore.Timestamp.now(),
-        //     settleDate: ev.startTime || admin.firestore.Timestamp.now(),
-        //     serverSettled: false,
-        //   },
-        //   { merge: true }
-        // );
         created++;
       }
     }
