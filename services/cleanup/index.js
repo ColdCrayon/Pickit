@@ -25,15 +25,15 @@ async function deleteDocRecursiveWithWriter(docRef, writer) {
   writer.delete(docRef);
 }
 
-/* 
-    * pageSize of 50–200 is a good daily cleanup range. 
-    *   Increase if your trees are shallow; decrease if trees are large
-    * Retries: The onWriteError hook above retries up to 3 times for transient 
-    *   errors—tweak as needed
-    * Concurrency: We traverse depth-first and enqueue deletes; BulkWriter 
-    *   parallelizes RPCs internally. If you want to limit pressure, keep pageSize 
-    *   modest.
-*/
+/*
+ * pageSize of 50–200 is a good daily cleanup range.
+ *   Increase if your trees are shallow; decrease if trees are large
+ * Retries: The onWriteError hook above retries up to 3 times for transient
+ *   errors—tweak as needed
+ * Concurrency: We traverse depth-first and enqueue deletes; BulkWriter
+ *   parallelizes RPCs internally. If you want to limit pressure, keep pageSize
+ *   modest.
+ */
 async function cleanupOldEvents(days = 7, pageSize = 50) {
   const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 
@@ -54,7 +54,8 @@ async function cleanupOldEvents(days = 7, pageSize = 50) {
   let last = null;
 
   while (true) {
-    let q = db.collection("events")
+    let q = db
+      .collection("events")
       .where("startTime", "<", admin.firestore.Timestamp.fromDate(cutoff))
       .orderBy("startTime", "asc")
       .limit(pageSize);
@@ -84,6 +85,9 @@ app.post("/cleanup", async (req, res) => {
     const pageSize = Number(req.query.pageSize || 50);
     const n = await cleanupOldEvents(days, pageSize);
     res.json({ ok: true, deletedEvents: n, days, pageSize });
+    console.log(
+      `Cleanup complete: deleted ${n} events older than ${days} days`
+    );
   } catch (e) {
     console.error(e);
     res.status(500).json({ ok: false, error: String(e) });
@@ -92,4 +96,3 @@ app.post("/cleanup", async (req, res) => {
 
 app.get("/healthz", (_, res) => res.send("ok"));
 app.listen(process.env.PORT || 8080, () => console.log("cleanup up"));
-
