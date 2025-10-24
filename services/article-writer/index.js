@@ -17,6 +17,56 @@ function yyyyWeek(d = new Date()) {
   return `${d.getFullYear()}-${String(week).padStart(2, "0")}`;
 }
 
+async function wikiSearch(query) {
+  const url = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrlimit=1&prop=pageimages|info&inprop=url&pilicense=any&pithumbsize=640&format=json&origin=*&gsrsearch=${encodeURIComponent(query)}`;
+  const r = await fetch(url);
+  if (!r.ok) return null;
+  const data = await r.json();
+  const pages = data?.query?.pages;
+  if (!pages) return null;
+  const first = Object.values(pages)[0];
+  if (!first) return null;
+  return {
+    title: first.title,
+    pageUrl: first.fullurl,
+    thumb: first.thumbnail?.source
+  };
+}
+
+async function resolveImagesForArticle(a) {
+  const q = [
+    ...(a.imageQueries || []),
+    a.teams?.home || "",
+    a.teams?.away || "",
+    a.sport || ""
+  ].filter(Boolean);
+
+  const out = [];
+  for (const term of q) {
+    const hit = await wikiSearch(term);
+    if (hit?.thumb) out.push(hit.thumb);
+    if (out.length >= 3) break; // cap at 3 images
+  }
+  return out;
+}
+
+async function resolveSourcesForArticle(a) {
+  const q = [
+    ...(a.sourceQueries || []),
+    `${a.teams?.home} ${a.sport}`,
+    `${a.teams?.away} ${a.sport}`,
+    `${a.sport} Wikipedia`
+  ].filter(Boolean);
+
+  const out = [];
+  for (const term of q) {
+    const hit = await wikiSearch(term);
+    if (hit?.pageUrl && !out.includes(hit.pageUrl)) out.push(hit.pageUrl);
+    if (out.length >= 5) break; // cap at 5 sources
+  }
+  return out;
+}
+
 app.post("/generate", async (req, res) => {
   try {
     const sports = Array.isArray(req.body?.sports) ? req.body.sports : [];
@@ -34,13 +84,24 @@ app.post("/generate", async (req, res) => {
     const articles = [];
     for (const a of plan.articles) {
       const bodyMarkdown = await writeBodyMarkdown(a);
+
+      const [imageUrls, sources] = await Promise.all([
+        resolveImagesForArticle(a),
+        resolveSourcesForArticle(a),
+      ]);
+
+      const mdWithSources = sources.length
+        ? `${bodyMarkdown}\n\n---\n**Sources**\n${sources.map(u => `- ${u}`).join("\n")}\n`
+        : bodyMarkdown;
+
       articles.push({
         title: a.title,
         sport: a.sport,
         teams: a.teams,
         summary: a.summary,
-        bodyMarkdown,
-        imageUrls: []
+        mdWithSources,
+        imageUrls,
+        sources
       });
     }
 
