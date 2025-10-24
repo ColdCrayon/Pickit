@@ -1,49 +1,57 @@
 import express from "express";
-import { weeklyArticlesPrompt } from "./lib/prompts.js";
-import { generateArticlesJSON } from "./lib/llm.js";
-import { pickRecentEvents, writeArticles } from "./lib/firestore.js";
 import admin from "firebase-admin";
+
+import { planPrompt } from "./lib/prompts.js";
+import { generateArticlePlanJSON, writeBodyMarkdown } from "./lib/llm.js";
+import { pickRecentEvents, writeArticles } from "./lib/firestore.js";
+
+if (!admin.apps.length) admin.initializeApp();
 
 const app = express();
 app.use(express.json());
 
-function yyyyWeek() {
-  const d = new Date();
-  const onejan = new Date(d.getFullYear(), 0, 1);
-  const week = Math.ceil((((d - onejan) / 86400000) + onejan.getDay() + 1) / 7);
-  return `${d.getFullYear()}-${String(week).padStart(2,"0")}`;
+function yyyyWeek(d = new Date()) {
+  const jan1 = new Date(d.getFullYear(), 0, 1);
+  const days = Math.floor((d - jan1) / 86400000);
+  const week = Math.ceil((days + jan1.getDay() + 1) / 7);
+  return `${d.getFullYear()}-${String(week).padStart(2, "0")}`;
 }
 
 app.post("/generate", async (req, res) => {
   try {
-    // 1) gather context from Firestore (recent tracked events)
-    const sports = req.body?.sports || ["NFL","NBA","NHL","MLB","NCAAF","NCAAB"];
-    const events = await pickRecentEvents({ sports, daysAhead: 10, limit: 20 });
-    const weekKey = req.body?.weekKey || yyyyWeek();
+    const sports = Array.isArray(req.body?.sports) ? req.body.sports : [];
+    const events  = await pickRecentEvents({ sports });  // Firestore read
+    const weekKey = yyyyWeek();
 
-    // 2) prompt the LLM for 5 articles (strict JSON)
-    const prompt = weeklyArticlesPrompt({ sport: "multi", events, weekKey });
-    const { weekKey: returnedWeek, articles } = await generateArticlesJSON(prompt);
+    // Phase A: plan (small JSON)
+    const plan = await generateArticlePlanJSON(planPrompt({ events, weekKey }));
 
-    if (!Array.isArray(articles) || articles.length < 1) {
-      return res.status(400).json({ ok:false, error:"LLM returned no articles" });
+    if (!Array.isArray(plan?.articles) || plan.articles.length === 0) {
+      throw new Error("Plan returned no articles");
     }
 
-    // 3) basic validation (>=400 words)
-    const valid = articles.filter(a => (a.bodyMarkdown || "").split(/\s+/).filter(Boolean).length >= 400);
-    if (valid.length < articles.length) {
-      console.warn(`Dropped ${articles.length - valid.length} under-length articles`);
+    // Phase B: write each body & persist
+    const articles = [];
+    for (const a of plan.articles) {
+      const bodyMarkdown = await writeBodyMarkdown(a);
+      articles.push({
+        title: a.title,
+        sport: a.sport,
+        teams: a.teams,
+        summary: a.summary,
+        bodyMarkdown,
+        imageUrls: []
+      });
     }
 
-    // 4) write to Firestore
-    const count = await writeArticles({ weekKey: returnedWeek || weekKey, articles: valid });
-
-    res.json({ ok:true, weekKey: returnedWeek || weekKey, written: count });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ ok:false, error:String(e) });
+    const count = await writeArticles({ weekKey, articles }); // batched write
+    res.json({ ok: true, weekKey, written: count });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false, error: String(err) });
   }
 });
 
 app.get("/healthz", (_, res) => res.send("ok"));
 app.listen(process.env.PORT || 8080, () => console.log("article-writer up"));
+
