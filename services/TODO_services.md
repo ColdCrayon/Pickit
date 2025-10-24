@@ -6,5 +6,5 @@
     - View finds before tickets?
     - User data
     - Create tickets
-- News articles
+    - Approve articles before posting
 

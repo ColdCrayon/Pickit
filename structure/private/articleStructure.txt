@@ -1,0 +1,20 @@
+News Articles
+
+Fields:
+- title
+- slug
+- sport
+- teams
+    - home
+    - away
+- summary
+- bodyMarkdown
+- imageUrls
+- author: "Pickit AI"
+- createdAt (timestamp)
+- sources
+- status
+- weekKey
+
+
+

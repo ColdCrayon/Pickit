@@ -10,18 +10,20 @@ db.settings({ ignoreUndefinedProperties: true }); // safety net
 const app = express();
 app.use(express.json());
 
-const API_HOST   = "https://api.the-odds-api.com/v4";
-const API_KEY    = process.env.ODDS_API_KEY;
-const SPORTS_CSV = process.env.ODDS_SPORTS || "icehockey_nhl, americanfootball_nfl";
-const REGIONS    = process.env.ODDS_REGIONS || "us";
-const MARKETS    = process.env.ODDS_MARKETS || "h2h,spreads,totals";
+const API_HOST = "https://api.the-odds-api.com/v4";
+const API_KEY = process.env.ODDS_API_KEY;
+const SPORTS_CSV =
+  process.env.ODDS_SPORTS || "icehockey_nhl, americanfootball_nfl";
+const REGIONS = process.env.ODDS_REGIONS || "us";
+const MARKETS = process.env.ODDS_MARKETS || "h2h,spreads,totals";
 const ODDS_FORMAT = (process.env.ODDS_FORMAT || "decimal").toLowerCase();
 const ARB_ENGINE_URL = process.env.ARB_ENGINE_URL;
 console.log(`[boot] ODDS_FORMAT=${ODDS_FORMAT}`);
 
 function pruneUndefinedDeep(v) {
   if (v === undefined) return undefined;
-  if (Array.isArray(v)) return v.map(pruneUndefinedDeep).filter(x => x !== undefined);
+  if (Array.isArray(v))
+    return v.map(pruneUndefinedDeep).filter((x) => x !== undefined);
   if (v && typeof v === "object") {
     const out = {};
     for (const [k, val] of Object.entries(v)) {
@@ -34,13 +36,21 @@ function pruneUndefinedDeep(v) {
 }
 
 async function fetchOddsForSport(sportKey) {
-  const url = `${API_HOST}/sports/${sportKey}/odds?regions=${encodeURIComponent(REGIONS)}&markets=${encodeURIComponent(MARKETS)}&oddsFormat=${encodeURIComponent(ODDS_FORMAT)}&apiKey=${API_KEY}`;
+  const url = `${API_HOST}/sports/${sportKey}/odds?regions=${encodeURIComponent(
+    REGIONS
+  )}&markets=${encodeURIComponent(MARKETS)}&oddsFormat=${encodeURIComponent(
+    ODDS_FORMAT
+  )}&apiKey=${API_KEY}`;
   const res = await fetch(url, { timeout: 20000 });
 
-  if (!res.ok) 
+  if (!res.ok)
     throw new Error(`Odds API ${sportKey} ${res.status}: ${await res.text()}`);
 
-  console.log(`[odds] sport=${sportKey} used=${res.headers.get("x-requests-used")} remaining=${res.headers.get("x-requests-remaining")}`);
+  console.log(
+    `[odds] sport=${sportKey} used=${res.headers.get(
+      "x-requests-used"
+    )} remaining=${res.headers.get("x-requests-remaining")}`
+  );
 
   return res.json();
 }
@@ -48,39 +58,44 @@ async function fetchOddsForSport(sportKey) {
 // Normalize an event payload to your Firestore schema
 function normalizeEvent(sportKey, ev) {
   const eventId = ev.id;
-  const start   = new Date(ev.commence_time);
+  const start = new Date(ev.commence_time);
+
+  const expiresAt = admin.firestore.Timestamp.fromDate(
+    new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+  );
 
   const base = {
     sport: sportKey,
     teams: { home: ev.home_team, away: ev.away_team },
     startTime: admin.firestore.Timestamp.fromDate(start),
+    expiresAt: expiresAt,
   };
 
   const updates = [];
 
-  for (const bk of (ev.bookmakers || [])) {
+  for (const bk of ev.bookmakers || []) {
     const bookId = bk.key;
-    const last   = bk.last_update ? new Date(bk.last_update) : new Date();
+    const last = bk.last_update ? new Date(bk.last_update) : new Date();
 
-    for (const m of (bk.markets || [])) {
-      const marketId = m.key;      // "h2h" | "spreads" | "totals"
+    for (const m of bk.markets || []) {
+      const marketId = m.key; // "h2h" | "spreads" | "totals"
       const odds = {};
 
-      for (const o of (m.outcomes || [])) {
-        if (o.price == null) continue;   // skip if no price
+      for (const o of m.outcomes || []) {
+        if (o.price == null) continue; // skip if no price
 
         // canonical outcome key
         let key = o.name;
         if (o.name === ev.home_team) key = "home";
         else if (o.name === ev.away_team) key = "away";
-        else if (o.name?.toLowerCase() === "draw")  key = "draw";
-        else if (o.name?.toLowerCase() === "over")  key = "over";
+        else if (o.name?.toLowerCase() === "draw") key = "draw";
+        else if (o.name?.toLowerCase() === "over") key = "over";
         else if (o.name?.toLowerCase() === "under") key = "under";
 
         // build entry without undefined fields
         let entry;
         if (ODDS_FORMAT === "american") entry = { priceAmerican: o.price };
-        else entry = { priceDecimal: o.price };     // default decimal
+        else entry = { priceDecimal: o.price }; // default decimal
 
         if (o.point != null) entry.point = o.point;
 
@@ -105,7 +120,7 @@ async function writeEventBundle(eventBundle) {
 
   for (const u of updates) {
     const marketRef = eventRef.collection("markets").doc(u.marketId);
-    const bookRef   = marketRef.collection("books").doc(u.bookId);
+    const bookRef = marketRef.collection("books").doc(u.bookId);
 
     const cleanedOdds = pruneUndefinedDeep(u.odds);
 
@@ -138,9 +153,12 @@ async function writeEventBundle(eventBundle) {
 
 app.post("/ingest", async (req, res) => {
   try {
-    const sports = (Array.isArray(req.body?.sports) && req.body.sports.length)
-      ? req.body.sports
-      : SPORTS_CSV.split(",").map(s => s.trim()).filter(Boolean);
+    const sports =
+      Array.isArray(req.body?.sports) && req.body.sports.length
+        ? req.body.sports
+        : SPORTS_CSV.split(",")
+            .map((s) => s.trim())
+            .filter(Boolean);
 
     let ingested = 0;
     for (const sportKey of sports) {
@@ -181,7 +199,7 @@ app.post("/ingestscan", async (req, res) => {
 
     res.status(200).json({
       ok: true,
-      ingested, 
+      ingested,
       scan: scanResult,
     });
   } catch (err) {
@@ -194,7 +212,10 @@ app.get("/", (_, res) => res.type("text/plain").send("ok\n"));
 app.get("/healthz", (_, res) => res.type("text/plain").send("ok\n"));
 // optional: a catch-all so you can *see* you hit Express rather than Google 404
 app.all("*", (req, res) => {
-  res.status(404).type("text/plain").send(`not found: ${req.method} ${req.path}`);
+  res
+    .status(404)
+    .type("text/plain")
+    .send(`not found: ${req.method} ${req.path}`);
 });
 
 //
@@ -231,25 +252,25 @@ app.all("*", (req, res) => {
 //           const odds = {};
 //
 //           for (const outcome of market.outcomes ?? []) {
-//             if (outcome.price == null) 
+//             if (outcome.price == null)
 //                   continue; // skip if no price
 //
 //             let key = outcome.name;
-//             if (outcome.name === event.home_team) 
+//             if (outcome.name === event.home_team)
 //               key = "home";
 //             else if (outcome.name === event.away_team)
 //               key = "away";
-//             else if (o.name?.toLowerCase() === "draw")  
+//             else if (o.name?.toLowerCase() === "draw")
 //               key = "draw";
-//             else if (o.name?.toLowerCase() === "over")  
+//             else if (o.name?.toLowerCase() === "over")
 //               key = "over";
-//             else if (o.name?.toLowerCase() === "under") 
+//             else if (o.name?.toLowerCase() === "under")
 //               key = "under";
 //
 //             let entry;
 //             if (ODDS_FORMAT === "american")
 //               entry = { priceAmerican: outcome.price };
-//             else 
+//             else
 //               entry = { priceDecimal: outcome.price };
 //
 //             if (outcome.point != null)
