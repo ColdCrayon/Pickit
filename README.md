@@ -12,8 +12,8 @@ you bet smarter and win more. Stop guessing, start profiting with Pickit!
 - Subscribe for full access to betting opportunities
 
 <p>
-    <img src="https://github.com/ColdCrayon/Pickit/blob/main/Pictures/AccountScreen.png" alt="Account Screen" width=400/>
-    <img src="https://github.com/ColdCrayon/Pickit/blob/main/Pictures/ArbitrageScreen.png" alt="Arbitrage Screen" width=400/>
+    <img src="https://github.com/ColdCrayon/Pickit/blob/main/structure/AccountScreen.png" alt="Account Screen" width=400/>
+    <img src="https://github.com/ColdCrayon/Pickit/blob/main/structure/ArbitrageScreen.png" alt="Arbitrage Screen" width=400/>
 </p>
 
 ---
