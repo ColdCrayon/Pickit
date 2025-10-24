@@ -7,4 +7,8 @@
     - User data
     - Create tickets
     - Approve articles before posting
+- Multi-sportsbook odds comparison
+- Personalized dashboard
+- Custom watchlists & notifications
+
 

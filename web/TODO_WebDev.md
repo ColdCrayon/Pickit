@@ -18,5 +18,17 @@
 - [x] Account Page
 - [x] Support Page
 - [ ] Upgrade Page
+    - Only two tiers (standard & pro)
+    - Free Benefits:
+        - Basic insights & trends
+        - Access to settled tickets
+        - Arbitrage calculator
+        - Email support (48–72h)
+    - Pro Benefits (4.99\Month):
+        - Algorithmic picks (daily)
+        - Arbitrage opportunities
+        - Priority support
 - [ ] Nav bar stays at the top of screen even when scrolling
-- [ ] Pickit logo and text should be a button to go to the home page
+- [ ] Pickit logo should be a button to go to the home page
+- [ ] Side padding on why choose pickit boxes
+- [ ] No credit card required horizontal center (bottom of homepage)
