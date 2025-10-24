@@ -1,0 +1,24 @@
+
+                ┌────────────────────────────┐
+                │ Cloud Scheduler (cron)     │
+                │ every 1 minute             │
+                └────────────┬───────────────┘
+                             │ POST /kick
+                             ▼
+                ┌────────────────────────────┐
+                │ Cloud Run: /kick endpoint  │
+                │ enqueues Cloud Task        │
+                └────────────┬───────────────┘
+                             │ enqueue
+                             ▼
+                ┌────────────────────────────┐
+                │ Cloud Tasks Queue          │
+                │ - rate limit = 0.5/sec     │
+                │ - concurrency = 1          │
+                └────────────┬───────────────┘
+                             │ auto-dispatch
+                             ▼
+                ┌────────────────────────────┐
+                │ Cloud Run: /scan endpoint  │
+                │ does heavy work safely     │
+                └────────────────────────────┘
