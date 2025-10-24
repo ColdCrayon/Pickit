@@ -49,6 +49,8 @@ Schema:
       "sport": "string",
       "teams": { "home": "string", "away": "string" },
       "summary": "string"
+      "imageQueries": ["string"],   // optional, 1-3 short search terms for pictures
+      "sourceQueries": ["string"]   // optional, 1-3 short search terms for reputable info
     }
   ]
 }
@@ -57,6 +59,8 @@ Constraints:
 - 5 items exactly.
 - Summaries <= 40 words.
 - Use only teams/games from the list below (no fabrication).
+- For imageQueries/sourceQueries, prefer team names, league names, or marquee 
+  players. Keep each query short.
 
 Events:
 ${events.map(e => `- ${e.sport} ${e.league} | ${e.teams.home} vs ${e.teams.away} | ${e.startTimeISO}`).join("\n")}
