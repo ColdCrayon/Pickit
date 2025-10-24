@@ -94,6 +94,10 @@ app.post("/generate", async (req, res) => {
         ? `${bodyMarkdown}\n\n---\n**Sources**\n${sources.map(u => `- ${u}`).join("\n")}\n`
         : bodyMarkdown;
 
+      const expiresAt = admin.firestore.Timestamp.fromDate(
+        new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
+      );
+
       articles.push({
         title: a.title,
         sport: a.sport,
@@ -101,7 +105,9 @@ app.post("/generate", async (req, res) => {
         summary: a.summary,
         mdWithSources,
         imageUrls,
-        sources
+        sources,
+        expiresAt,
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
       });
     }
 
