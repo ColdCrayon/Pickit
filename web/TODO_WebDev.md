@@ -18,3 +18,5 @@
 - [x] Account Page
 - [x] Support Page
 - [ ] Upgrade Page
+- [ ] Nav bar stays at the top of screen even when scrolling
+- [ ] Pickit logo and text should be a button to go to the home page
