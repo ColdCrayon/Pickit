@@ -2,6 +2,7 @@
 
 ## Data Management
 - News articles
+    - Add to cleanup
     - Approved before posted
 - Kicker pattern
 - Admin Dashboard
