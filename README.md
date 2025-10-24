@@ -5,7 +5,7 @@ of data. No more gut feelings and 8-leg parlays, use our data-driven insights to
 you bet smarter and win more. Stop guessing, start profiting with Pickit!
 
 ### Key Features
-###### iOS ONLY
+###### iOS & Web 
 - Arbitrage opportunity detection across multiple sportsbooks
 - Algorithmic betting strategies built on historical game data
 - Real-time odds tracking
