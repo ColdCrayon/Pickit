@@ -35,7 +35,9 @@ export async function generateArticlePlanJSON(prompt) {
                   properties: { home: { type: "string" }, away: { type: "string" } },
                   required: ["home","away"]
                 },
-                summary: { type: "string" }
+                summary: { type: "string" },
+                imageQueries: { type: "array", items: { type: "string" } },
+                sourceQueries: { type: "array", items: { type: "string" } }
               },
               required: ["title","sport","teams","summary"]
             }
@@ -51,9 +53,10 @@ export async function generateArticlePlanJSON(prompt) {
   try { return JSON.parse(cleaned); }
   catch {
     const repaired = jsonrepair(cleaned);
-    return JSON.parse(repaired);   // small payload → safe after repair
+    return JSON.parse(repaired);
   }
 }
+
 
 export async function writeBodyMarkdown({ title, sport, teams }) {
   const bodyPrompt =
