@@ -12,6 +12,7 @@ import NFL from "./NFL";
 import FreePicks from "./FreePicks";
 import FreePicksAll from "./FreePicksAll";
 import FreePicksLeague from "./FreePicksLeague";
+import ArticlePage from "./Article";
 
 
 
@@ -166,6 +167,7 @@ function App() {
           <Route path="/FreePicks" element={<FreePicks />} />
           <Route path="/free-picks/all" element={<FreePicksAll />} />
           <Route path="/free-picks/:league" element={<FreePicksLeague />} />
+          <Route path="/news/:slug" element={<ArticlePage />} />
         
         </Routes>
 </main>

@@ -1,47 +1,37 @@
+// source/hooks/useNflTickets.ts (or useNFLTickets.ts)
 import { useEffect, useState } from "react";
-import {
-  collection,
-  query,
-  where,
-  orderBy,
-  limit,
-  onSnapshot,
-} from "firebase/firestore";
+import { collection, query, where, orderBy, limit, onSnapshot } from "firebase/firestore";
 import { db } from "../lib/firebase";
-import { gameTicketConverter } from "../lib/converters";
 import { GameTicket } from "../types/picks";
+import { gameTicketConverter } from "../lib/converters";
 
-export function useNflTickets(opts?: { includeSettled?: boolean; max?: number }) {
-  const { includeSettled = false, max = 20 } = opts || {};
+type Args = { includeSettled?: boolean; max?: number };
+type State = { tickets: GameTicket[]; loading: boolean; error: string | null };
+
+export function useNflTickets({ includeSettled = false, max = 20 }: Args): State {
   const [tickets, setTickets] = useState<GameTicket[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Base: /gameTickets
-    let base = collection(db, "gameTickets").withConverter(gameTicketConverter);
+    setLoading(true);
+    setError(null);
 
-    const qParts: any[] = [];
-    // Add when league is present qParts.push(where("league", "==", "NFL"));
+    const base = collection(db, "gameTickets").withConverter(gameTicketConverter);
+    const parts: any[] = [];
+    if (!includeSettled) parts.push(where("serverSettled", "==", false));
+    // If/when you add league: parts.push(where("league", "==", "NFL"));
+    parts.push(orderBy("pickPublishDate", "desc"), limit(max));
 
-    if (!includeSettled) {
-      qParts.push(where("serverSettled", "==", false));
-    }
-
-    // Sorting by publish date (works best when that field is a Timestamp)
-    qParts.push(orderBy("pickPublishDate", "desc"));
-    qParts.push(limit(max));
-
-    const q = query(base, ...qParts);
-
+    const q = query(base, ...parts);
     const unsub = onSnapshot(
       q,
       (snap) => {
-        setTickets(snap.docs.map((d) => d.data()));
+        setTickets(snap.docs.map(d => d.data()));
         setLoading(false);
       },
       (err) => {
-        console.error("useNflTickets error:", err);
-        setTickets([]);
+        setError(err.message ?? "Failed to load NFL tickets");
         setLoading(false);
       }
     );
@@ -49,5 +39,6 @@ export function useNflTickets(opts?: { includeSettled?: boolean; max?: number })
     return () => unsub();
   }, [includeSettled, max]);
 
-  return { tickets, loading };
+  return { tickets, loading, error };
 }
+
