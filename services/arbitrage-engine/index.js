@@ -1,6 +1,7 @@
 import fs from "fs";
 import express from "express";
 import admin from "firebase-admin";
+import { v2 as CloudTasks } from "@google-cloud/tasks";
 import { CONFIG } from "./lib/config.js";
 
 if (!admin.apps.length) admin.initializeApp();
@@ -8,6 +9,36 @@ const db = admin.firestore();
 
 const app = express();
 app.use(express.json());
+
+const tasksClient = new CloudTasks.CloudTasksClient();
+
+async function enqueueScanTask({ delaySeconds = 0, payload = {} } = {}) {
+  if (!CONFIG.PROJECT_ID || !CONFIG.SERVICE_URL || !CONFIG.KICKER_SA_EMAIL) {
+    console.log(`Current CONFIG:`, CONFIG);
+    throw new Error("Missing PROJECT_ID, SERVICE_URL or KICKER_SA_EMAIL env");
+  }
+
+  const { CloudTasksClient } = await import("@google-cloud/tasks");
+  const client = new CloudTasksClient();
+
+  const parent = tasksClient.queuePath(CONFIG.PROJECT_ID, CONFIG.QUEUE_LOCATION, CONFIG.QUEUE_ID);
+
+  const task = {
+    httpRequest: {
+      httpMethod: "POST",
+      url: `${CONFIG.KICKER_BASE_URL}${CONFIG.KICKER_PATH}`,
+      headers: { "Content-Type": "application/json" },
+      oidcToken: {
+        serviceAccountEmail: CONFIG.KICKER_SA_EMAIL,
+        audience: CONFIG.KICKER_AUDIENCE,
+      },
+      body: Buffer.from(JSON.stringify(payload)).toString("base64"),
+    },
+  };
+
+  const [resp] = await client.createTask({ parent, task });
+  return resp.name;
+}
 
 // --- Early diagnostics: verify files are present in the container
 try {
@@ -34,6 +65,103 @@ try {
 } catch (e) {
   console.error("Admin init failed:", e);
 }
+// --- Lightweight health routes so Cloud Run sees a listener quickly
+app.get("/healthz", (_req, res) => res.status(200).send("ok"));
+app.get("/", (_req, res) =>
+  res.status(200).json({ ok: true, service: "arb-engine" })
+);
+
+// --- Real work happens here; import lazily so boot can’t fail before listen
+app.post("/scan", async (req, res) => {
+  try {
+    console.log("Received /scan request with query:", req.query);
+    // Lazy imports: use the file names you actually have
+    const { CONFIG } = await import("./lib/config.js");
+    const { fetchEvents } = await import("./lib/firestore.js");
+    const { scanEventMoneyline } = await import("./lib/scanMoneyline.js");
+    const { scanEventSpreads } = await import("./lib/scanSpread.js"); // singular
+    const { scanEventTotals } = await import("./lib/scanTotal.js"); // singular
+
+    const p = { ...(req.body || {}), ...(req.query || {}) };
+
+    const sport = req.query.sport || undefined;
+    const market = String(p.market || "all").toLowerCase();
+    const windowHours =
+      Number(p.windowHours || 0) || CONFIG.FUTURE_WINDOW_MS / 3600000;
+    const limit = Number(p.limit || CONFIG.EVENT_LIMIT);
+
+    const snap = await fetchEvents({
+      sport,
+      limit,
+      futureWindowMs: windowHours * 3600 * 1000,
+    });
+
+    console.log(
+      `Fetched ${snap.size} events for scanning (sport=${sport}, limit=${limit}, windowHours=${windowHours})`
+    );
+
+    let created = 0;
+    let scanned = 0;
+
+    for (const ev of snap.docs) {
+      scanned++;
+
+      console.log(`Scanning event ${ev.id}...`);
+      if (market === "all" || market === "moneyline" || market === "h2h") {
+        console.log(`Scanning event ${ev.id} for moneyline/arbs...`);
+        created += await scanEventMoneyline(ev, CONFIG);
+      }
+
+      if (market === "all" || market === "spread" || market === "spreads") {
+        created += await scanEventSpreads(ev);
+      }
+      if (market === "all" || market === "total" || market === "totals") {
+        created += await scanEventTotals(ev);
+      }
+    }
+
+    res.json({ ok: true, created, scanned, market });
+  } catch (err) {
+    console.error("/scan error:", err);
+    res.status(500).json({ ok: false, error: String(err) });
+  }
+});
+
+app.post("/kick", async (req, res) => {
+  try {
+    const sports = (req.query.sport ? req.query.sport.split(",").map(s=>s.trim()) : undefined)
+                  || req.body?.sports
+                  || ["icehockey_nhl","americanfootball_nfl"];
+    const market = (req.query.market || "all").toLowerCase();
+    const windowHours = Number(req.query.windowHours || req.body?.windowHours || 48);
+    const limit = Number(req.query.limit || req.body?.limit || 150);
+    const pauseMs = Number(req.query.pauseMs || req.body?.pauseMs || 2000);
+
+    const taskName = await enqueueScanTask({
+      payload: { sports, market, windowHours, limit, pauseMs }
+    });
+
+    res.json({ ok: true, enqueued: taskName, target: `${CONFIG.KICKER_BASE_URL}${CONFIG.KICKER_PATH}` });
+  } catch (e) {
+    console.error("/kick error:", e);
+    res.status(500).json({ ok: false, error: String(e) });
+  }
+});
+
+app.get("/envz", (_req, res) => {
+  res.json({
+    PROJECT_ID: process.env.PROJECT_ID || null,
+    SERVICE_URL: process.env.SERVICE_URL || null,
+    SERVICE_AUDIENCE: process.env.SERVICE_AUDIENCE || null,
+    KICKER_SA_EMAIL: process.env.KICKER_SA_EMAIL || null,
+    QUEUE_ID: process.env.QUEUE_ID || null,
+    QUEUE_LOCATION: process.env.QUEUE_LOCATION || null,
+  });
+});
+
+app.get("/envzcfg", (_req, res) => {
+  res.json(CONFIG);
+});
 
 app.post("/seedTest", async (_req, res) => {
   try {
@@ -185,66 +313,6 @@ app.post("/seedTest", async (_req, res) => {
   } catch (e) {
     console.error(e);
     res.status(500).json({ ok: false, error: String(e) });
-  }
-});
-
-// --- Lightweight health routes so Cloud Run sees a listener quickly
-app.get("/healthz", (_req, res) => res.status(200).send("ok"));
-app.get("/", (_req, res) =>
-  res.status(200).json({ ok: true, service: "arb-engine" })
-);
-
-// --- Real work happens here; import lazily so boot can’t fail before listen
-app.post("/scan", async (req, res) => {
-  try {
-    console.log("Received /scan request with query:", req.query);
-    // Lazy imports: use the file names you actually have
-    const { CONFIG } = await import("./lib/config.js");
-    const { fetchEvents } = await import("./lib/firestore.js");
-    const { scanEventMoneyline } = await import("./lib/scanMoneyline.js");
-    const { scanEventSpreads } = await import("./lib/scanSpread.js"); // singular
-    const { scanEventTotals } = await import("./lib/scanTotal.js"); // singular
-
-    const sport = req.query.sport || undefined;
-    const market = (req.query.market || "all").toLowerCase();
-    const windowHours =
-      Number(req.query.windowHours || 0) || CONFIG.FUTURE_WINDOW_MS / 3600000;
-    const limit = Number(req.query.limit || CONFIG.EVENT_LIMIT);
-
-    const snap = await fetchEvents({
-      sport,
-      limit,
-      futureWindowMs: windowHours * 3600 * 1000,
-    });
-
-    console.log(
-      `Fetched ${snap.size} events for scanning (sport=${sport}, limit=${limit}, windowHours=${windowHours})`
-    );
-
-    let created = 0;
-    let scanned = 0;
-
-    for (const ev of snap.docs) {
-      scanned++;
-
-      console.log(`Scanning event ${ev.id}...`);
-      if (market === "all" || market === "moneyline" || market === "h2h") {
-        console.log(`Scanning event ${ev.id} for moneyline/arbs...`);
-        created += await scanEventMoneyline(ev, CONFIG);
-      }
-
-      if (market === "all" || market === "spread" || market === "spreads") {
-        created += await scanEventSpreads(ev);
-      }
-      if (market === "all" || market === "total" || market === "totals") {
-        created += await scanEventTotals(ev);
-      }
-    }
-
-    res.json({ ok: true, created, scanned, market });
-  } catch (err) {
-    console.error("/scan error:", err);
-    res.status(500).json({ ok: false, error: String(err) });
   }
 });
 
