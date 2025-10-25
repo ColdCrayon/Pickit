@@ -15,6 +15,8 @@
     - About 
     - Free Picks
     - News
+    - Privacy Policy
+    - ToS
 - [x] Account Page
 - [x] Support Page
 - [ ] Upgrade Page
@@ -32,3 +34,5 @@
 - [ ] Pickit logo should be a button to go to the home page
 - [ ] Side padding on why choose pickit boxes
 - [ ] No credit card required horizontal center (bottom of homepage)
+- [ ] White at top and bottom when scrolling past end of site
+- [ ] Footer links (tos)
