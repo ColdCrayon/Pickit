@@ -60,6 +60,7 @@ function normalizeEvent(sportKey, ev) {
   const eventId = ev.id;
   const start = new Date(ev.commence_time);
 
+  // 7 days from now; adjust if you prefer "event start + 7d"
   const expiresAt = admin.firestore.Timestamp.fromDate(
     new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
   );
@@ -68,11 +69,14 @@ function normalizeEvent(sportKey, ev) {
     sport: sportKey,
     teams: { home: ev.home_team, away: ev.away_team },
     startTime: admin.firestore.Timestamp.fromDate(start),
-    expiresAt: expiresAt,
+    expiresAt, // TTL field
   };
 
-  const updates = [];
+  console.log(
+    `[normalize] ${eventId} expiresAt=${expiresAt.toDate().toISOString()}`
+  );
 
+  const updates = [];
   for (const bk of ev.bookmakers || []) {
     const bookId = bk.key;
     const last = bk.last_update ? new Date(bk.last_update) : new Date();
@@ -82,9 +86,8 @@ function normalizeEvent(sportKey, ev) {
       const odds = {};
 
       for (const o of m.outcomes || []) {
-        if (o.price == null) continue; // skip if no price
+        if (o.price == null) continue;
 
-        // canonical outcome key
         let key = o.name;
         if (o.name === ev.home_team) key = "home";
         else if (o.name === ev.away_team) key = "away";
@@ -92,10 +95,9 @@ function normalizeEvent(sportKey, ev) {
         else if (o.name?.toLowerCase() === "over") key = "over";
         else if (o.name?.toLowerCase() === "under") key = "under";
 
-        // build entry without undefined fields
         let entry;
         if (ODDS_FORMAT === "american") entry = { priceAmerican: o.price };
-        else entry = { priceDecimal: o.price }; // default decimal
+        else entry = { priceDecimal: o.price };
 
         if (o.point != null) entry.point = o.point;
 
@@ -115,40 +117,61 @@ async function writeEventBundle(eventBundle) {
   const eventRef = db.collection("events").doc(eventId);
   const batch = db.batch();
 
-  // ensure event doc exists
-  batch.set(eventRef, base, { merge: true });
+  // Fallback in case base.expiresAt was missing or you are backfilling older docs:
+  const fallbackExpiresAt = admin.firestore.Timestamp.fromDate(
+    new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+  );
 
+  // Always upsert top-level event doc, ensuring expiresAt is present
+  batch.set(
+    eventRef,
+    {
+      ...base,
+      expiresAt: base?.expiresAt ?? fallbackExpiresAt,
+    },
+    { merge: true }
+  );
+
+  // Write markets/books
   for (const u of updates) {
     const marketRef = eventRef.collection("markets").doc(u.marketId);
     const bookRef = marketRef.collection("books").doc(u.bookId);
 
     const cleanedOdds = pruneUndefinedDeep(u.odds);
+    const updatedAt = admin.firestore.Timestamp.fromDate(u.updatedAt);
 
     // latest
     batch.set(
       bookRef,
       {
         latest: {
-          updatedAt: admin.firestore.Timestamp.fromDate(u.updatedAt),
+          updatedAt,
           odds: cleanedOdds,
         },
       },
       { merge: true }
     );
 
-    // history
+    // history (snapshots)
     const tsId = String(u.updatedAt.getTime());
     batch.set(
       bookRef.collection("snapshots").doc(tsId),
       {
-        updatedAt: admin.firestore.Timestamp.fromDate(u.updatedAt),
+        updatedAt,
         odds: cleanedOdds,
+        // If you plan TTL on snapshots too, set their own expiresAt here:
+        // expiresAt: admin.firestore.Timestamp.fromDate(new Date(u.updatedAt.getTime() + 3 * 24 * 60 * 60 * 1000)),
       },
       { merge: true }
     );
   }
 
   await batch.commit();
+
+  // Optional: sanity log to confirm the write
+  console.log(
+    `[writeEventBundle] upserted event ${eventId} (expiresAt ensured) with ${updates.length} book updates`
+  );
 }
 
 app.post("/ingest", async (req, res) => {

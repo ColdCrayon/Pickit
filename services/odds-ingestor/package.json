@@ -1,8 +1,11 @@
 {
   "name": "odds-ingestor",
   "type": "module",
-  "scripts": { "start": "node index.js" },
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
+    "@google-cloud/tasks": "^6.2.1",
     "express": "^4.19.2",
     "firebase-admin": "^12.6.0",
     "node-fetch": "^3.3.2"
