@@ -106,9 +106,7 @@ app.post("/scan", async (req, res) => {
     for (const ev of snap.docs) {
       scanned++;
 
-      console.log(`Scanning event ${ev.id}...`);
       if (market === "all" || market === "moneyline" || market === "h2h") {
-        console.log(`Scanning event ${ev.id} for moneyline/arbs...`);
         created += await scanEventMoneyline(ev, CONFIG);
       }
 

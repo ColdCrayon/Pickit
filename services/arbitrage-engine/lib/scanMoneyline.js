@@ -58,7 +58,6 @@ export async function scanEventMoneyline(evDoc, cfg = {}) {
     }
   });
 
-  console.log(`[moneyline] ${evDoc.id}: books=${books.length}`);
   if (!books.length) return 0;
 
   // const batch = db.batch();
@@ -92,7 +91,6 @@ export async function scanEventMoneyline(evDoc, cfg = {}) {
         });
         created++;
       }
-      console.log(`[moneyline] candidate edge=${edge.toFixed(4)} A:${A.home} B:${B.away}`);
     }
   }
 
