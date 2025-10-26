@@ -1,6 +1,7 @@
 # To-Do 
 
 ## Data Management
+- Arbitrage player props
 - Admin Dashboard
     - View finds before tickets?
     - User data
