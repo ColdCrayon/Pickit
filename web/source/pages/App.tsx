@@ -157,7 +157,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home isSidebarOpen={isSidebarOpen} />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
-          <Route path="/Account" element={<Account />} />
+          <Route path="/Account" element={<Account />} /> 
           <Route path="/termsofservice" element={<TermsOfService />} />
           <Route path="/support" element={<Support />} />
           <Route path="/about" element={<About />} />
