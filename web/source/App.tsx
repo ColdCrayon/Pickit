@@ -32,7 +32,7 @@ function App() {
       />
 
       {/* Navbar */}
-      <nav className="relative z-50 bg-gray-800/90 backdrop-blur-xl border-b border-gray-700/30">
+      <nav className="fixed top-0 left-0 w-full z-50 bg-gray-900/80 backdrop-blur-lg border-b border-white/10">
         <div className="w-full px-6 flex items-center h-16 justify-between">
           {/* Left Group: Brand + Links */}
           <div className="flex items-center space-x-6">
@@ -52,11 +52,9 @@ function App() {
               )}
             </button>
             <div className="flex items-center space-x-2">
-              <img 
-                src={logo} 
-                alt="PickIt Logo" 
-                className="w-10 h-10 rounded-full border border-white/20" 
-              />
+              <Link to="/" className="flex items-center space-x-2">
+                <img src="/logo.png" alt="PickIt Logo" className="w-8 h-8 rounded-full border border-white/20" />
+              </Link>
               <Link
                 to="/"
                 className="text-2xl font-bold">
@@ -209,7 +207,7 @@ function Home({ isSidebarOpen }: { isSidebarOpen: boolean }) {
 
         {/* Features */}
         <section className="pt-10 pb-10 w-full">
-          <div className="text-center mb-20">
+          <div className="text-center mb-20 mx-auto max-w-3xl px-6">
             <h2 className="text-5xl font-bold mb-6">Why Choose Pickit?</h2>
             <p className="text-xl text-gray-300">
               Professional-grade tools designed for serious sports bettors
