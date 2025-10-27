@@ -1,8 +1,7 @@
-// web/src/components/TicketForm.tsx
 import { useState } from "react";
 import { createTicket, TicketInput } from "../../lib/tickets";
 
-const initial: TicketInput = {
+const initial: TicketInput & { settleDate?: string | null } = {
   sportsbook: "",
   league: "",
   market: "moneyline",
@@ -12,14 +11,15 @@ const initial: TicketInput = {
   externalUrl: "",
   description: "",
   pickType: "",
+  settleDate: null,
 };
 
 export default function TicketForm() {
-  const [form, setForm] = useState<TicketInput>(initial);
+  const [form, setForm] = useState(initial);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
 
-  const set = <K extends keyof TicketInput>(k: K, v: TicketInput[K]) =>
+  const set = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
 
   async function onSubmit(e: React.FormEvent) {
@@ -39,7 +39,19 @@ export default function TicketForm() {
     }
 
     try {
-      const id = await createTicket(form);
+      const id = await createTicket({
+        sportsbook: form.sportsbook,
+        league: form.league,
+        market: form.market,
+        selectionTeam: form.selectionTeam,
+        selectionSide: form.selectionSide,
+        oddsAmerican: form.oddsAmerican,
+        externalUrl: form.externalUrl,
+        description: form.description,
+        pickType: form.pickType,
+        ...(form.settleDate ? { settleDate: form.settleDate } : {}),
+      } as any);
+
       setMsg(`Ticket ${id} created`);
       setForm(initial);
     } catch (err: any) {
@@ -49,9 +61,16 @@ export default function TicketForm() {
     }
   }
 
+  function onDateChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = e.target.value; // yyyy-mm-dd
+    if (!val) return set("settleDate", null);
+    const date = new Date(val);
+    date.setHours(23, 59, 59, 0); // local 11:59:59 PM
+    set("settleDate", date.toISOString());
+  }
+
   return (
     <form className="ticket card ticket-form" onSubmit={onSubmit}>
-      {/* header mimics your ticket display header */}
       <div className="ticket__header">
         <div className="ticket__title">Create Ticket</div>
         <div className="ticket__meta">
@@ -60,6 +79,8 @@ export default function TicketForm() {
       </div>
 
       <div className="ticket__body grid-2">
+        {/* --- all the normal fields --- */}
+
         <label className="field">
           <span className="field__label">Sportsbook</span>
           <input
@@ -104,7 +125,7 @@ export default function TicketForm() {
         </label>
 
         <label className="field">
-          <span className="field__label">Side (e.g., Over, +1.5, Home)</span>
+          <span className="field__label">Side (Over, +1.5, Home)</span>
           <input
             className="field__input"
             value={form.selectionSide ?? ""}
@@ -140,6 +161,34 @@ export default function TicketForm() {
             value={form.description ?? ""}
             onChange={(e) => set("description", e.target.value)}
           />
+        </label>
+
+        <label className="field grid-span-2">
+          <span className="field__label">Pick Type (optional)</span>
+          <input
+            className="field__input"
+            placeholder="moneyline / spread / total / prop…"
+            value={form.pickType ?? ""}
+            onChange={(e) => set("pickType", e.target.value)}
+          />
+        </label>
+
+        {/* --- new date field --- */}
+        <label className="field grid-span-2">
+          <span className="field__label">Settle Date</span>
+          <input
+            className="field__input"
+            type="date"
+            value={
+              form.settleDate
+                ? new Date(form.settleDate).toISOString().slice(0, 10)
+                : ""
+            }
+            onChange={onDateChange}
+          />
+          <small className="field__hint">
+            Automatically sets to 11:59 PM local time
+          </small>
         </label>
       </div>
 
