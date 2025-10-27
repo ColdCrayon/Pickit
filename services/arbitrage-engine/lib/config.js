@@ -26,5 +26,8 @@ export const CONFIG = {
   KICKER_BASE_URL: process.env.KICKER_BASE_URL,
   KICKER_PATH: process.env.KICKER_PATH,
   KICKER_AUDIENCE: process.env.KICKER_AUDIENCE,
+
+  PAGE_SIZE: Number(process.env.EVENT_PAGE_SIZE || 50),
+  MAX_PAGES: Number(process.env.EVENT_MAX_PAGES || 5),
 };
 

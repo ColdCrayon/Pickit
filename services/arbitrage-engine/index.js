@@ -92,40 +92,33 @@ app.post("/scan", async (req, res) => {
       Number(p.windowHours || 0) || CONFIG.FUTURE_WINDOW_MS / 3600000;
     const limit = Number(p.limit || CONFIG.EVENT_LIMIT);
 
-    const snap = await fetchEvents({
-      sport,
-      limit,
-      futureWindowMs: windowHours * 3600 * 1000,
-    });
+    let scanned = 0, created = 0, pages = 0;
+    let cursor = null;
+    
+    while (pages < CONFIG.MAX_PAGES) {
+      let q = db.collection("events")
+        .where("startTime", "<=", admin.firestore.Timestamp.fromMillis(Date.now() + windowHours * 3600000))
+        .orderBy("lastOddsUpdate", "desc")
+        .limit(CONFIG.PAGE_SIZE);
+      if (cursor) 
+        q = q.startAfter(cursor);
 
-    console.log(
-      `Fetched ${snap.size} events for scanning (sport=${sport}, limit=${limit}, windowHours=${windowHours})`
-    );
+      const snap = await q.get();
+      if (snap.empty) 
+        break;
 
-    let created = 0;
-    let scanned = 0;
-
-    for (const ev of snap.docs) {
-      scanned++;
-
-      if (market === "all" || market === "moneyline" || market === "h2h") {
+      for (const ev of snap.docs) {
+        // your existing scanning logic:
         created += await scanEventMoneyline(ev, CONFIG);
-      }
-
-      if (market === "all" || market === "spread" || market === "spreads") {
         created += await scanEventSpreads(ev);
-      }
-      if (market === "all" || market === "total" || market === "totals") {
         created += await scanEventTotals(ev);
+
+        await ev.ref.set({ lastScannedAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
+        scanned++;
       }
 
-      // props scanning (route by selections/prop key automatically)
-      if (market === "all" || market === "props") {
-        const propDocs = await listPropDocsForEvent(ev);
-        for (const p of propDocs) {
-          created += await scanPropsForEvent(ev, p);
-        }
-      }
+      cursor = snap.docs[snap.docs.length - 1];
+      pages++;
     }
 
     res.json({ ok: true, created, scanned, market });
