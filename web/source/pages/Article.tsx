@@ -1,7 +1,9 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import { useArticleBySlug } from "./hooks/useArticles";
-import ArticleBody from "./components/news/ArticleBody";
+import { useArticleBySlug } from "../hooks/useArticles";
+import ArticleBody from "../components/news/ArticleBody";
+import Footer from "../components/footer";
+
 
 const ArticlePage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -68,6 +70,7 @@ const ArticlePage: React.FC = () => {
           </>
         )}
       </main>
+      <Footer />
     </div>
   );
 };

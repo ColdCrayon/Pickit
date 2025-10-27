@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import { Routes, Route, Link} from "react-router-dom";
 import { User, FileText, Shield, TrendingUp, BarChart3, Users, Zap, Award, X as CloseIcon, Home as HomeIcon, Book } from 'lucide-react';
-import PrivacyPolicy from "./PrivacyPolicy";
+import PrivacyPolicy from "../pages/PrivacyPolicy";
 import Account from "./Account";
-import TermsOfService from "./termsofservice";
-import Support from "./support";
+import TermsOfService from "../pages/termsofservice";
+import Support from "../pages/support";
 import About from "./About";
-import Upgrade from "./upgrade";
+import Upgrade from "../pages/upgrade";
 import News from "./news";
 import NFL from "./NFL";
 import FreePicks from "./FreePicks";
-import FreePicksAll from "./FreePicksAll";
-import FreePicksLeague from "./FreePicksLeague";
+import FreePicksAll from "../pages/FreePicksAll";
+import FreePicksLeague from "../pages/FreePicksLeague";
 import ArticlePage from "./Article";
+import Footer from "../components/footer";
+
 
 
 
@@ -32,7 +34,7 @@ function App() {
       />
 
       {/* Navbar */}
-      <nav className="relative z-50 bg-gray-800/90 backdrop-blur-xl border-b border-gray-700/30">
+      <nav className="fixed top-0 left-0 w-full z-50 bg-gray-900/80 backdrop-blur-lg border-b border-white/10">
         <div className="w-full px-6 flex items-center h-16 justify-between">
           {/* Left Group: Brand + Links */}
           <div className="flex items-center space-x-6">
@@ -52,11 +54,9 @@ function App() {
               )}
             </button>
             <div className="flex items-center space-x-2">
-              <img 
-                src={logo} 
-                alt="PickIt Logo" 
-                className="w-10 h-10 rounded-full border border-white/20" 
-              />
+              <Link to="/" className="flex items-center space-x-2">
+                <img src="/logo.png" alt="PickIt Logo" className="w-8 h-8 rounded-full border border-white/20" />
+              </Link>
               <Link
                 to="/"
                 className="text-2xl font-bold">
@@ -209,12 +209,13 @@ function Home({ isSidebarOpen }: { isSidebarOpen: boolean }) {
 
         {/* Features */}
         <section className="pt-10 pb-10 w-full">
-          <div className="text-center mb-20">
+          <div className="text-center mb-20 mx-auto max-w-3xl px-6">
             <h2 className="text-5xl font-bold mb-6">Why Choose Pickit?</h2>
             <p className="text-xl text-gray-300">
               Professional-grade tools designed for serious sports bettors
             </p>
           </div>
+          <section className="max-w-7xl mx-auto px-4 md:px-6"> 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               { title: "Real-time Analytics", desc: "Live data streams and instant performance metrics.", icon: <BarChart3 className="w-8 h-8"/> },
@@ -243,6 +244,7 @@ function Home({ isSidebarOpen }: { isSidebarOpen: boolean }) {
               );
             })}
           </div>
+          </section>
         </section>
 
         {/* CTA */}
@@ -258,38 +260,13 @@ function Home({ isSidebarOpen }: { isSidebarOpen: boolean }) {
                 className="px-10 py-4 bg-yellow-500/90 text-gray-900 font-semibold rounded-2xl hover:bg-yellow-400">
                 Start Free Trial
               </Link>
-              <p className="text-sm text-gray-400">No credit card required</p>
+              <p className="text-sm text-gray-400 ">No credit card required</p>
             </div>
           </div>
         </section>
 
         {/* Footer */}
-        <footer className="relative z-10 py-12 px-10 border-t border-white/10 w-full text-center md:text-left">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-3 mb-6 md:mb-0">
-              <div className="flex items-center space-x-2">
-                <img 
-                  src={logo} 
-                  alt="PickIt Logo" 
-                  className="w-10 h-10 rounded-full border border-white/20" 
-                />
-              </div>
-              <span className="text-xl font-bold">PickIt</span>
-            </div>
-            <div className="flex space-x-8 mb-6 md:mb-0">
-              <Link to="/privacy" className="text-gray-400 hover:text-white">
-                 Privacy Policy
-              </Link>
-              <Link to="/termsofservice" className="text-gray-400 hover:text-white">
-                 Terms of Service
-              </Link>
-              <Link to="/Support" className="text-gray-400 hover:text-white">
-                 Support
-              </Link>
-            </div>
-            <p className="text-gray-400 text-sm">© 2025 Pickit. All rights reserved.</p>
-          </div>
-        </footer>
+          <Footer />
       </main>
   );
 }

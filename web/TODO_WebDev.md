@@ -10,7 +10,7 @@
     - Sign in as admin -> access to dashboard
     - Sign in as premium -> access to all picks
     - Sign in as standard -> access to free picks (settled tickets)
-- [ ] Sidebar
+- [x] Sidebar
     - Home
     - About 
     - Free Picks
@@ -19,7 +19,7 @@
     - ToS
 - [x] Account Page
 - [x] Support Page
-- [ ] Upgrade Page
+- [x] Upgrade Page (Probably will add more later)
     - Only two tiers (standard & pro)
     - Free Benefits:
         - Basic insights & trends
@@ -30,9 +30,10 @@
         - Algorithmic picks (daily)
         - Arbitrage opportunities
         - Priority support
-- [ ] Nav bar stays at the top of screen even when scrolling
-- [ ] Pickit logo should be a button to go to the home page
-- [ ] Side padding on why choose pickit boxes
+        - AI-Powered Game Predictions
+- [x] Nav bar stays at the top of screen even when scrolling
+- [x] Pickit logo should be a button to go to the home page
+- [x] Side padding on why choose pickit boxes
 - [ ] No credit card required horizontal center (bottom of homepage)
 - [ ] White at top and bottom when scrolling past end of site
 - [ ] Footer links (tos)
