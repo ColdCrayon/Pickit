@@ -1,0 +1,92 @@
+:root {
+  --pk-bg: var(--bg, #0b0b0d);
+  --pk-surface: var(--surface, #141418);
+  --pk-text: var(--text, #eaeaf0);
+  --pk-muted: var(--muted, #9aa0a6);
+  --pk-accent: var(--accent, #1d3da7);
+  --pk-border: var(--border, #2a2b31);
+  --pk-radius: 16px;
+  font-family: "Lexend Deca", sans-serif;
+}
+
+.page {
+  padding: 48px;
+  padding-top: 80px;
+}
+.page__title {
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+}
+
+.card {
+  background: var(--pk-surface);
+  border: 1px solid var(--pk-border);
+  border-radius: var(--pk-radius);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+}
+
+.ticket {
+  color: var(--pk-text);
+}
+.ticket__header,
+.ticket__footer {
+  padding: 16px;
+  border-bottom: 1px solid var(--pk-border);
+}
+.ticket__footer {
+  border-bottom: none;
+  border-top: 1px solid var(--pk-border);
+}
+.ticket__title {
+  font-weight: 600;
+}
+.ticket__meta {
+  color: var(--pk-muted);
+  font-size: 0.9rem;
+}
+
+.ticket__body {
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+}
+.grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.grid-span-2 {
+  grid-column: 1 / -1;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+.field__label {
+  font-size: 0.9rem;
+  color: var(--pk-muted);
+}
+.field__input {
+  background: var(--pk-bg);
+  color: var(--pk-text);
+  border: 1px solid var(--pk-border);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.btn {
+  border-radius: 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--pk-border);
+  background: var(--pk-bg);
+  color: var(--pk-text);
+}
+.btn-primary {
+  background: var(--pk-accent);
+  border-color: var(--pk-accent);
+  color: white;
+}
+.form-msg {
+  margin-left: 12px;
+  font-size: 0.9rem;
+  color: var(--pk-muted);
+}
