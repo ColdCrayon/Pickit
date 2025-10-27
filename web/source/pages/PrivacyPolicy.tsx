@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import Footer from "../components/footer";
 
 const logo = "/logo.png";
 
@@ -16,7 +17,7 @@ const PrivacyPolicy: React.FC = () => {
       />
 
       {/* Main Content */}
-      <main className="relative z-10 max-w-5xl mx-auto py-20 px-6">
+      <main className="relative z-10 max-w-5xl mx-auto py-28 px-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
           <div className="flex items-center space-x-3">
@@ -194,33 +195,7 @@ const PrivacyPolicy: React.FC = () => {
           </section>
         </div>
       </main>
-
-      <footer className="relative z-10 py-12 px-10 border-t border-white/10 w-full text-center md:text-left">
-                      <div className="flex flex-col md:flex-row justify-between items-center">
-                        <div className="flex items-center space-x-3 mb-6 md:mb-0">
-                          <div className="flex items-center space-x-2">
-                            <img 
-                              src={logo} 
-                              alt="PickIt Logo" 
-                              className="w-10 h-10 rounded-full border border-white/20" 
-                            />
-                          </div>
-                          <span className="text-xl font-bold">PickIt</span>
-                        </div>
-                        <div className="flex space-x-8 mb-6 md:mb-0">
-                          <Link to="/privacy" className="text-gray-400 hover:text-white">
-                             Privacy Policy
-                          </Link>
-                          <Link to="/termsofservice" className="text-gray-400 hover:text-white">
-                               Terms of Service
-                          </Link>
-                          <Link to="/Support" className="text-gray-400 hover:text-white">
-                                Support
-                          </Link>
-                        </div>
-                        <p className="text-gray-400 text-sm">© 2025 Pickit. All rights reserved.</p>
-                      </div>
-                    </footer>
+      <Footer />
     </div>
   );
 };

@@ -1,7 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import FreePicksSection from "./components/free/FreePicksSection";
-import { useFreePicks } from "./hooks/useFreePicks";
+import FreePicksSection from "../components/free/FreePicksSection";
+import { useFreePicks } from "../hooks/useFreePicks";
+import Footer from "../components/footer";
 
 const logo = "/logo.png";
 
@@ -28,7 +29,7 @@ const FreePicks: React.FC = () => {
         }}
       />
 
-      <main className="relative z-10 max-w-6xl mx-auto py-20 px-6">
+      <main className="relative z-10 max-w-6xl mx-auto py-28 px-6">
         <div className="flex items-center justify-between mb-10">
           <div className="flex items-center space-x-3">
             <img src={logo} alt="PickIt Logo" className="w-10 h-10 rounded-full border border-white/20" />
@@ -55,6 +56,7 @@ const FreePicks: React.FC = () => {
           </Link>
         </div>
       </main>
+      <Footer />
     </div>
   );
 };

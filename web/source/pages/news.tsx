@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { useArticles } from "./hooks/useArticles";
+import { useArticles } from "../hooks/useArticles";
+import Footer from "../components/footer";
 
 const News: React.FC = () => {
   const [selectedSport, setSelectedSport] = useState<string | undefined>(undefined);
@@ -31,7 +32,7 @@ const News: React.FC = () => {
         }}
       />
 
-      <main className="relative z-10 max-w-6xl mx-auto py-16 px-6">
+      <main className="relative z-10 max-w-6xl mx-auto py-28 px-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-10">
           <h1 className="text-3xl font-bold mb-4 sm:mb-0">News</h1>
@@ -97,6 +98,7 @@ const News: React.FC = () => {
           </p>
         )}
       </main>
+      <Footer />
     </div>
   );
 };
