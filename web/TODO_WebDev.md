@@ -10,30 +10,16 @@
     - Sign in as admin -> access to dashboard
     - Sign in as premium -> access to all picks
     - Sign in as standard -> access to free picks (settled tickets)
-- [x] Sidebar
-    - Home
-    - About 
-    - Free Picks
-    - News
-    - Privacy Policy
-    - ToS
+- [ ] Sidebar
+    - Add ToS
 - [x] Account Page
 - [x] Support Page
-- [x] Upgrade Page (Probably will add more later)
-    - Only two tiers (standard & pro)
-    - Free Benefits:
-        - Basic insights & trends
-        - Access to settled tickets
-        - Arbitrage calculator
-        - Email support (48–72h)
-    - Pro Benefits (4.99\Month):
-        - Algorithmic picks (daily)
-        - Arbitrage opportunities
-        - Priority support
-        - AI-Powered Game Predictions
+- [ ] Upgrade Page (Probably will add more later)
+    - No Emojis bruv
 - [x] Nav bar stays at the top of screen even when scrolling
 - [x] Pickit logo should be a button to go to the home page
 - [x] Side padding on why choose pickit boxes
 - [ ] No credit card required horizontal center (bottom of homepage)
 - [ ] White at top and bottom when scrolling past end of site
-- [ ] Footer links (tos)
+- [ ] See all free picks button goes to white page (free picks page)
+- [ ] Pickit logo loading issues
