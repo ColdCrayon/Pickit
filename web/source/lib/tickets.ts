@@ -13,21 +13,6 @@ export type TicketInput = {
   pickType?: string; // optional (kept for parity if your UI uses it)
 };
 
-function legacyMirror(id: string, t: TicketInput) {
-  // Keeps compatibility with your existing ticket display while you transition.
-  return {
-    id,
-    pickDescription: t.description ?? "",
-    pickGameInfo: `${t.league}:${t.market}`,
-    pickPublishDate: new Date().toLocaleString(),
-    pickSportsbook: t.sportsbook,
-    pickTeam: t.selectionTeam ?? "",
-    pickType: t.pickType ?? t.market,
-    // intentionally removed fields you asked to drop:
-    // serverSettled, settleDate, stake, eventId
-  };
-}
-
 export async function createTicket(input: TicketInput) {
   const col = collection(db, "gameTickets");
   const id = new Date()
@@ -41,7 +26,6 @@ export async function createTicket(input: TicketInput) {
     ...input,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
-    legacy: legacyMirror(id, input),
   };
 
   await setDoc(ref, record, { merge: true });
