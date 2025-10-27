@@ -9,35 +9,6 @@ export const firestore = {
   tsFromDate: (d) => admin.firestore.Timestamp.fromDate(d),
 };
 
-// export async function fetchEvents({ sport, limit, futureWindowMs }) {
-//   console.log(
-//     `Fetching events with sport=${sport}, limit=${limit}, futureWindowMs=${futureWindowMs}`
-//   );
-//   const now = admin.firestore.Timestamp.now();
-//   const future = admin.firestore.Timestamp.fromDate(
-//     new Date(Date.now() + futureWindowMs)
-//   );
-
-//   let q = db
-//     .collection("events")
-//     .where("startTime", ">=", now)
-//     .where("startTime", "<=", future)
-//     .orderBy("startTime", "asc")
-//     .limit(limit);
-
-//   if (sport) {
-//     q = db
-//       .collection("events")
-//       .where("sport", "==", sport)
-//       .where("startTime", ">=", now)
-//       .where("startTime", "<=", future)
-//       .orderBy("startTime", "asc")
-//       .limit(limit);
-//   }
-
-//   return await q.get();
-// }
-
 /**
  * Fetch events with optional sport filter and optional future window.
  * If futureWindowMs > 0, returns events with startTime in [now-5m, now+futureWindowMs].
@@ -85,6 +56,19 @@ export async function fetchEvents({ sport, limit = 200, futureWindowMs = 0 }) {
   }
 
   return snap;
+}
+
+export async function writeArb(id, doc) {
+  const ref = db.collection("arbTickets").doc(id);
+  await ref.set({
+    ...doc,
+    createdAt: doc.createdAt || now()
+  }, { merge: true });
+}
+
+export async function listPropDocsForEvent(evDoc, { limit = 300 } = {}) {
+  const snap = await evDoc.ref.collection("props").limit(limit).get();
+  return snap.docs;
 }
 
 export function newBatch() {

@@ -211,7 +211,7 @@ app.post("/ingestscan", async (req, res) => {
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
     // Trigger arbitrage scan
-    const response = await fetch(`${ARB_ENGINE_URL}/scan`, {
+    const response = await fetch(`${ARB_ENGINE_URL}/scan?market=all&windowHours=12&limit=50`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ trigger: "post-ingest" }),

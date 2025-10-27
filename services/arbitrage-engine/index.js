@@ -81,6 +81,8 @@ app.post("/scan", async (req, res) => {
     const { scanEventMoneyline } = await import("./lib/scanMoneyline.js");
     const { scanEventSpreads } = await import("./lib/scanSpread.js"); // singular
     const { scanEventTotals } = await import("./lib/scanTotal.js"); // singular
+    const { listPropDocsForEvent } = await import("./lib/firestore.js");
+    const { scanPropsForEvent }   = await import("./lib/scanProps/index.js");
 
     const p = { ...(req.body || {}), ...(req.query || {}) };
 
@@ -115,6 +117,14 @@ app.post("/scan", async (req, res) => {
       }
       if (market === "all" || market === "total" || market === "totals") {
         created += await scanEventTotals(ev);
+      }
+
+      // props scanning (route by selections/prop key automatically)
+      if (market === "all" || market === "props") {
+        const propDocs = await listPropDocsForEvent(ev);
+        for (const p of propDocs) {
+          created += await scanPropsForEvent(ev, p);
+        }
       }
     }
 
@@ -310,6 +320,163 @@ app.post("/seedTest", async (_req, res) => {
     res.json({ ok: true, eventId });
   } catch (e) {
     console.error(e);
+    res.status(500).json({ ok: false, error: String(e) });
+  }
+});
+
+// --- Seed an event with team markets + sample player props (creates arb-friendly prices)
+app.post("/seedProps", async (req, res) => {
+  try {
+    const {
+      eventId = "TEST_EVENT_PROPS_001",
+      sport = "basketball_nba",
+      home = "Home Team",
+      away = "Away Team",
+      // props config
+      playerId = "p_123",
+      playerName = "Sample Player",
+      playerTeam = "HOME",
+      // lines & prices for props (over/under)
+      propKey = "player_points",
+      propLine = 27.5,
+      overA = 2.02,      // bookA over price
+      underA = 1.85,     // bookA under price
+      overB = 1.85,      // bookB over price
+      underB = 2.04,     // bookB under price
+
+      // team markets (moneyline)
+      h2h_home_A = 2.10, h2h_away_A = 1.80,
+      h2h_home_B = 1.80, h2h_away_B = 2.10,
+
+      // team markets (spreads)
+      spread =  -3.5,
+      homeSpreadA = 2.05, awaySpreadA = 1.85,
+      homeSpreadB = 1.85, awaySpreadB = 2.05,
+
+      // team markets (totals)
+      total =  227.5,
+      overTotA = 2.05, underTotA = 1.85,
+      overTotB = 1.85, underTotB = 2.05,
+
+      startOffsetMin = 30  // start time now + 30m
+    } = req.body || {};
+
+    const now = admin.firestore.Timestamp.now();
+    const startTime = admin.firestore.Timestamp.fromMillis(
+      Date.now() + startOffsetMin * 60 * 1000
+    );
+
+    const evRef = db.collection("events").doc(eventId);
+
+    // 1) event shell
+    await evRef.set({
+      sport,
+      teams: { home, away },
+      startTime,
+    }, { merge: true });
+
+    // 2) team markets --------------------------
+
+    // moneyline (h2h)
+    await evRef.collection("markets").doc("h2h").collection("books").doc("bookA").set({
+      latest: {
+        updatedAt: now,
+        odds: {
+          home: { priceDecimal: h2h_home_A },
+          away: { priceDecimal: h2h_away_A },
+        },
+      },
+    }, { merge: true });
+
+    await evRef.collection("markets").doc("h2h").collection("books").doc("bookB").set({
+      latest: {
+        updatedAt: now,
+        odds: {
+          home: { priceDecimal: h2h_home_B },
+          away: { priceDecimal: h2h_away_B },
+        },
+      },
+    }, { merge: true });
+
+    // spreads (aligned point)
+    await evRef.collection("markets").doc("spreads").collection("books").doc("bookA").set({
+      latest: {
+        updatedAt: now,
+        odds: {
+          home: { point: spread,  priceDecimal: homeSpreadA },
+          away: { point: -spread, priceDecimal: awaySpreadA }, // note: away gets opposite sign
+        },
+      },
+    }, { merge: true });
+
+    await evRef.collection("markets").doc("spreads").collection("books").doc("bookB").set({
+      latest: {
+        updatedAt: now,
+        odds: {
+          home: { point: spread,  priceDecimal: homeSpreadB },
+          away: { point: -spread, priceDecimal: awaySpreadB },
+        },
+      },
+    }, { merge: true });
+
+    // totals (aligned total)
+    await evRef.collection("markets").doc("totals").collection("books").doc("bookA").set({
+      latest: {
+        updatedAt: now,
+        odds: {
+          over:  { point: total, priceDecimal: overTotA  },
+          under: { point: total, priceDecimal: underTotA },
+        },
+      },
+    }, { merge: true });
+
+    await evRef.collection("markets").doc("totals").collection("books").doc("bookB").set({
+      latest: {
+        updatedAt: now,
+        odds: {
+          over:  { point: total, priceDecimal: overTotB  },
+          under: { point: total, priceDecimal: underTotB },
+        },
+      },
+    }, { merge: true });
+
+    // 3) player props --------------------------
+    // root prop doc for (player,propKey)
+    const propDocId = `${propKey}:${playerId}`;
+    const propRef = evRef.collection("props").doc(propDocId);
+    await propRef.set({
+      key: propKey,
+      player: { id: playerId, name: playerName, team: playerTeam },
+      selections: ["over","under"],
+    }, { merge: true });
+
+    // two books with same line but inverted prices to guarantee arb
+    await propRef.collection("books").doc("bookA").set({
+      latest: {
+        updatedAt: now,
+        over:  { line: propLine, priceDecimal: overA  },
+        under: { line: propLine, priceDecimal: underA },
+      },
+    }, { merge: true });
+
+    await propRef.collection("books").doc("bookB").set({
+      latest: {
+        updatedAt: now,
+        over:  { line: propLine, priceDecimal: overB  },
+        under: { line: propLine, priceDecimal: underB },
+      },
+    }, { merge: true });
+
+    res.json({
+      ok: true,
+      eventId,
+      created: {
+        markets: ["h2h","spreads","totals"],
+        props: [{ key: propKey, playerId, line: propLine }],
+      },
+    });
+  } catch (e) {
+    console.error("seedProps error:", e);
     res.status(500).json({ ok: false, error: String(e) });
   }
 });
