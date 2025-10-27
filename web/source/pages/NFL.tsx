@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Zap, TrendingUp } from "lucide-react";
 import { useNflArbTickets } from "../hooks/useNFLArbTickets";
-import { useNflTickets } from "../hooks/useNFLTickets";
+import { useNflTickets } from "../hooks/useNFLtickets";
 import ArbTicketCard from "../components/tickets/ArbTicketCard";
 import Footer from "../components/footer";
 
