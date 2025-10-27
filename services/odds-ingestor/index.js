@@ -132,6 +132,14 @@ async function writeEventBundle(eventBundle) {
     { merge: true }
   );
 
+  // Record lastOddsUpdate for prioritization during scanning
+  await db.doc(`events/${eventId}`).set({
+    sport: base.sport,
+    startTime: base.startTime,
+    lastOddsUpdate: admin.firestore.FieldValue.serverTimestamp(),
+  }, { merge: true });
+
+
   // Write markets/books
   for (const u of updates) {
     const marketRef = eventRef.collection("markets").doc(u.marketId);
