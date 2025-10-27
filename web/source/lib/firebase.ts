@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -10,8 +11,35 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Export Firestore instance
+// Auth & DB
+export const auth = getAuth(app);
+export const googleProvider = new GoogleAuthProvider();
 export const db = getFirestore(app);
+
+// Upsert user doc in Firestore
+export async function upsertUserDoc(
+  uid: string,
+  data: {
+    email: string;
+    name?: string;
+    username?: string;
+    isAdmin?: boolean;
+    isPremium?: boolean;
+  }
+) {
+  await setDoc(
+    doc(db, "users", uid),
+    {
+      id: uid,
+      email: data.email,
+      name: data.name ?? null,
+      username: data.username ?? null,
+      isAdmin: data.isAdmin ?? false,
+      isPremium: data.isPremium ?? false,
+      joined: serverTimestamp(),
+    },
+    { merge: true }
+  );
+}
