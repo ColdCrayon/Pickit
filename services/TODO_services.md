@@ -1,11 +1,10 @@
 # To-Do 
 
 ## Data Management
-- Arbitrage player props
 - Admin Dashboard
+    - Create tickets
     - View finds before tickets?
     - User data
-    - Create tickets
     - Approve articles before posting
 - Multi-sportsbook odds comparison
 - Personalized dashboard
