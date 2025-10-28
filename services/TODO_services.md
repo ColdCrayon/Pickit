@@ -1,6 +1,7 @@
 # To-Do 
 
 ## Data Management
+- Format arb ticket data (book names ect.)
 - Admin Dashboard
     - Create tickets
     - View finds before tickets?
