@@ -9,7 +9,7 @@ import {
   signInWithPopup,
   signOut,
   updateProfile,
-  sendPasswordResetEmail,     // 👈 NEW
+  sendPasswordResetEmail, // NEW
   User as FirebaseUser,
 } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
@@ -26,15 +26,23 @@ type TabsProps = {
 };
 
 // Wider, centered, glassy card
-const Card: React.FC<{ children: React.ReactNode; title: string; subtitle?: string; wide?: boolean }> = ({
-  children,
-  title,
-  subtitle,
-  wide,
-}) => (
-  <div className={`bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-10 w-full ${wide ? "max-w-2xl" : "max-w-xl"} mx-auto shadow-2xl`}>
+const Card: React.FC<{
+  children: React.ReactNode;
+  title: string;
+  subtitle?: string;
+  wide?: boolean;
+}> = ({ children, title, subtitle, wide }) => (
+  <div
+    className={`bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-10 w-full ${
+      wide ? "max-w-2xl" : "max-w-xl"
+    } mx-auto shadow-2xl`}
+  >
     <div className="flex flex-col items-center mb-6">
-      <img src={logo} alt="PickIt" className="w-14 h-14 rounded-full border border-white/20 mb-3" />
+      <img
+        src={logo}
+        alt="PickIt"
+        className="w-14 h-14 rounded-full border border-white/20 mb-3"
+      />
       <h1 className="text-3xl font-bold">{title}</h1>
       {subtitle && <p className="text-gray-400 mt-1">{subtitle}</p>}
     </div>
@@ -46,7 +54,11 @@ const Tabs: React.FC<TabsProps> = ({ view, setView, setMessage, setError }) => (
   <div className="flex justify-center gap-3 mb-6">
     <button
       type="button"
-      className={`px-4 py-2 rounded-xl border ${view === "signin" ? "bg-white/10 border-white/30" : "border-white/10 hover:bg-white/5"}`}
+      className={`px-4 py-2 rounded-xl border ${
+        view === "signin"
+          ? "bg-white/10 border-white/30"
+          : "border-white/10 hover:bg-white/5"
+      }`}
       onClick={() => {
         setView("signin");
         setMessage(null);
@@ -57,7 +69,11 @@ const Tabs: React.FC<TabsProps> = ({ view, setView, setMessage, setError }) => (
     </button>
     <button
       type="button"
-      className={`px-4 py-2 rounded-xl border ${view === "signup" ? "bg-white/10 border-white/30" : "border-white/10 hover:bg-white/5"}`}
+      className={`px-4 py-2 rounded-xl border ${
+        view === "signup"
+          ? "bg-white/10 border-white/30"
+          : "border-white/10 hover:bg-white/5"
+      }`}
       onClick={() => {
         setView("signup");
         setMessage(null);
@@ -68,7 +84,11 @@ const Tabs: React.FC<TabsProps> = ({ view, setView, setMessage, setError }) => (
     </button>
     <button
       type="button"
-      className={`px-4 py-2 rounded-xl border ${view === "forgot" ? "bg-white/10 border-white/30" : "border-white/10 hover:bg-white/5"}`}
+      className={`px-4 py-2 rounded-xl border ${
+        view === "forgot"
+          ? "bg-white/10 border-white/30"
+          : "border-white/10 hover:bg-white/5"
+      }`}
       onClick={() => {
         setView("forgot");
         setMessage(null);
@@ -102,7 +122,11 @@ const Account: React.FC = () => {
     setError(null);
     setBusy(true);
     try {
-      const cred = await signInWithEmailAndPassword(auth, email.trim(), password);
+      const cred = await signInWithEmailAndPassword(
+        auth,
+        email.trim(),
+        password
+      );
       // Don't call upsertUserDoc here - it would overwrite existing premium status
       // The user document should already exist from sign-up
       setMessage("Signed in!");
@@ -119,7 +143,11 @@ const Account: React.FC = () => {
     setError(null);
     setBusy(true);
     try {
-      const cred = await createUserWithEmailAndPassword(auth, email.trim(), password);
+      const cred = await createUserWithEmailAndPassword(
+        auth,
+        email.trim(),
+        password
+      );
       if (name) {
         await updateProfile(cred.user, { displayName: name });
       }
@@ -148,7 +176,7 @@ const Account: React.FC = () => {
       // Don't overwrite existing premium status for returning users
       const userDocRef = doc(db, "users", cred.user.uid);
       const userDoc = await getDoc(userDocRef);
-      
+
       if (!userDoc.exists()) {
         // New user - create document
         await upsertUserDoc(cred.user.uid, {
@@ -212,18 +240,32 @@ const Account: React.FC = () => {
         <div className={`w-full ${user ? "max-w-3xl" : "max-w-2xl"} mx-auto`}>
           <div className="text-center mb-8">
             <h1 className="text-4xl md:text-5xl font-bold">
-              {user ? "Your Account" : view === "signup" ? "Create your account" : view === "forgot" ? "Reset your password" : "Sign in to PickIt"}
+              {user
+                ? "Your Account"
+                : view === "signup"
+                ? "Create your account"
+                : view === "forgot"
+                ? "Reset your password"
+                : "Sign in to PickIt"}
             </h1>
-            <p className="text-gray-400 mt-2">Manage your PickIt profile and access</p>
+            <p className="text-gray-400 mt-2">
+              Manage your PickIt profile and access
+            </p>
           </div>
 
           {/* Signed-in profile view */}
           {user ? (
-            <Card wide title="Your Profile" subtitle="Manage your membership and details">
+            <Card
+              wide
+              title="Your Profile"
+              subtitle="Manage your membership and details"
+            >
               <div className="space-y-4 text-gray-300">
                 <div className="bg-white/5 p-4 rounded-2xl flex items-center justify-between">
                   <span>Name</span>
-                  <span className="font-semibold">{user.displayName || "—"}</span>
+                  <span className="font-semibold">
+                    {user.displayName || "—"}
+                  </span>
                 </div>
                 <div className="bg-white/5 p-4 rounded-2xl flex items-center justify-between">
                   <span>Email</span>
@@ -232,7 +274,11 @@ const Account: React.FC = () => {
                 <div className="bg-white/5 p-4 rounded-2xl flex items-center justify-between">
                   <span>Plan</span>
                   <span className="font-semibold">
-                    {userPlanLoading ? "Loading..." : isPremium ? "Premium" : "Standard"}
+                    {userPlanLoading
+                      ? "Loading..."
+                      : isPremium
+                      ? "Premium"
+                      : "Standard"}
                   </span>
                 </div>
                 <div className="flex gap-3 pt-2">
@@ -252,13 +298,24 @@ const Account: React.FC = () => {
                     Sign Out
                   </button>
                 </div>
-                {error && <p className="text-sm text-red-400">{error}</p>}
-                {message && <p className="text-sm text-yellow-400">{message}</p>}
+                {error && (
+                  <p className="text-sm text-red-400 text-center">{error}</p>
+                )}
+                {message && (
+                  <p className="text-sm text-yellow-400 text-center">
+                    {message}
+                  </p>
+                )}
               </div>
             </Card>
           ) : (
             <>
-              <Tabs view={view} setView={setView} setMessage={setMessage} setError={setError} />
+              <Tabs
+                view={view}
+                setView={setView}
+                setMessage={setMessage}
+                setError={setError}
+              />
 
               {/* SIGN IN */}
               {view === "signin" && (
@@ -320,7 +377,9 @@ const Account: React.FC = () => {
                       </button>
                     </div>
                     {error && <p className="text-sm text-red-400">{error}</p>}
-                    {message && <p className="text-sm text-yellow-400">{message}</p>}
+                    {message && (
+                      <p className="text-sm text-yellow-400">{message}</p>
+                    )}
                   </form>
                 </Card>
               )}
@@ -389,14 +448,19 @@ const Account: React.FC = () => {
                       </button>
                     </div>
                     {error && <p className="text-sm text-red-400">{error}</p>}
-                    {message && <p className="text-sm text-yellow-400">{message}</p>}
+                    {message && (
+                      <p className="text-sm text-yellow-400">{message}</p>
+                    )}
                   </form>
                 </Card>
               )}
 
               {/* FORGOT PASSWORD (REAL) */}
               {view === "forgot" && (
-                <Card title="Reset your password" subtitle="We'll email you a reset link">
+                <Card
+                  title="Reset your password"
+                  subtitle="We'll email you a reset link"
+                >
                   <form onSubmit={handlePasswordReset} className="space-y-4">
                     <input
                       type="email"
@@ -438,7 +502,9 @@ const Account: React.FC = () => {
                       </button>
                     </div>
                     {error && <p className="text-sm text-red-400">{error}</p>}
-                    {message && <p className="text-sm text-yellow-400">{message}</p>}
+                    {message && (
+                      <p className="text-sm text-yellow-400">{message}</p>
+                    )}
                   </form>
                 </Card>
               )}

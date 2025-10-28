@@ -223,7 +223,7 @@ function Home({ isSidebarOpen }: { isSidebarOpen: boolean }) {
       <section className="min-h-screen flex items-center justify-center px-6 text-center">
         <div className="w-full">
           <h1 className="text-6xl font-bold mb-8">
-            Pickit
+            PickIt
             <br />
             <span className="text-gray-200">Betting Solutions</span>
           </h1>
@@ -251,7 +251,7 @@ function Home({ isSidebarOpen }: { isSidebarOpen: boolean }) {
       {/* Features */}
       <section className="pt-10 pb-10 w-full">
         <div className="text-center mb-20 mx-auto max-w-3xl px-6">
-          <h2 className="text-5xl font-bold mb-6">Why Choose Pickit?</h2>
+          <h2 className="text-5xl font-bold mb-6">Why Choose PickIt?</h2>
           <p className="text-xl text-gray-300">
             Professional-grade tools designed for serious sports bettors
           </p>
@@ -319,7 +319,7 @@ function Home({ isSidebarOpen }: { isSidebarOpen: boolean }) {
         <div className="bg-white/5 p-12 rounded-3xl max-w-4xl mx-auto">
           <h2 className="text-5xl font-bold mb-6">Ready to Win Smarter?</h2>
           <p className="text-xl text-gray-300 mb-12">
-            Join our team of successful bettors who trust Pickit.
+            Join our team of successful bettors who trust PickIt.
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <Link
