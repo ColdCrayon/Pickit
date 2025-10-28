@@ -23,6 +23,9 @@ import About from "./About";
 import Upgrade from "../pages/upgrade";
 import News from "./news";
 import NFL from "./NFL";
+import NBA from "./NBA";
+import MLB from "./MLB";
+import NHL from "./NHL";
 import FreePicks from "./FreePicks";
 import FreePicksAll from "../pages/FreePicksAll";
 import FreePicksLeague from "../pages/FreePicksLeague";
@@ -195,6 +198,9 @@ function App() {
           <Route path="/upgrade" element={<Upgrade />} />
           <Route path="/news" element={<News />} />
           <Route path="/nfl" element={<NFL />} />
+          <Route path="/nba" element={<NBA />} />
+          <Route path="/mlb" element={<MLB />} />
+          <Route path="/nhl" element={<NHL />} />
           <Route path="/FreePicks" element={<FreePicks />} />
           <Route path="/free-picks/all" element={<FreePicksAll />} />
           <Route path="/free-picks/:league" element={<FreePicksLeague />} />
