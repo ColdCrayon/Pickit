@@ -5,7 +5,7 @@ import Footer from "../components/footer";
 
 const tiers = [
   {
-    name: "Standard (Free)",
+    name: "Standard",
     price: "$0/month",
     benefits: [
       "Basic insights & trends",
@@ -19,11 +19,11 @@ const tiers = [
     name: "Pro",
     price: "$4.99/month",
     benefits: [
-      "Ad-Free Experience",  
-      "Algorithmic picks (daily)",
       "Arbitrage opportunities",
-      "Priority support (24–48h)",
+      "Algorithmic picks",
       "AI-Powered Game Predictions",
+      "Ad-Free Experience",
+      "Priority support (24–48h)",
     ],
     highlighted: true,
   },
@@ -42,7 +42,9 @@ const Upgrade: React.FC = () => {
       />
 
       <main className="relative z-10 max-w-5xl mx-auto py-40 px-6">
-        <h1 className="text-4xl font-bold text-center mb-12">Upgrade Your PickIt Experience</h1>
+        <h1 className="text-4xl font-bold text-center mb-12">
+          Upgrade Your PickIt Experience
+        </h1>
 
         <div className="grid md:grid-cols-2 gap-8">
           {tiers.map((tier, index) => (
@@ -59,7 +61,7 @@ const Upgrade: React.FC = () => {
               <ul className="space-y-3 text-gray-300">
                 {tier.benefits.map((b, i) => (
                   <li key={i} className="flex items-start">
-                    <span className="text-yellow-400 mr-2">✔</span> {b}
+                    <span className="text-white-400 mr-2">•</span> {b}
                   </li>
                 ))}
               </ul>
