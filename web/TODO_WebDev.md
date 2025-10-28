@@ -19,6 +19,7 @@
     - Transactions
 - All button conditionallity (if premium)
     - Upgrade button (nav bar)
+    - Admin button only if admin (nav bar)
     - Get started button should become personal dashboard (homepage)
     - Remove CTA section (homepage)
     - Get premium (free picks)
