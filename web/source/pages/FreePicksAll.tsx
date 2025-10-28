@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useUserPlan } from "../hooks/useUserPlan";
 import { useFreeArbPaginated, useFreeGamePaginated } from "../hooks/useFreePicksPaginated";
 import Footer from "../components/footer";
+import { formatPickDate } from "../lib/dateUtils";
 
 const logo = "/logo.png";
 
@@ -16,7 +17,7 @@ const FreePicksAll: React.FC = () => {
     <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
       <div
         className="absolute inset-0 bg-cover bg-center pointer-events-none"
-        style={{ backgroundImage: "linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)), url('Background.jpeg')" }}
+        style={{ backgroundImage: "linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)), url('/Background.jpeg')" }}
       />
       <main className="relative z-10 max-w-6xl mx-auto py-28 px-6">
         <div className="flex items-center justify-between mb-10">
@@ -54,7 +55,7 @@ const FreePicksAll: React.FC = () => {
                             </div>
                           ))}
                         </div>
-                        <div className="text-xs text-gray-400 mt-2">{String(a.createdAt ?? a.pickPublishDate ?? "")}</div>
+                        <div className="text-xs text-gray-400 mt-2">{formatPickDate(a.createdAt ?? a.pickPublishDate)}</div>
                       </div>
                     ))}
                   </div>
@@ -80,7 +81,7 @@ const FreePicksAll: React.FC = () => {
                       <div key={g.id} className="p-4 rounded-xl border border-white/10 bg-white/5">
                         <div className="flex items-center justify-between">
                           <div className="font-semibold">{g.pickGameInfo}</div>
-                          <div className="text-xs text-gray-400">{String(g.pickPublishDate ?? "")}</div>
+                          <div className="text-xs text-gray-400">{formatPickDate(g.pickPublishDate)}</div>
                         </div>
                         <p className="text-yellow-400 text-sm mt-1">{g.pickTeam} ({g.pickType})</p>
                         <p className="text-gray-300 text-sm mt-1">{g.pickDescription}</p>

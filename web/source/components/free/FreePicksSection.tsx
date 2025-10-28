@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Zap, TrendingUp, Percent } from "lucide-react";
 import { ArbTicket, GameTicket } from "../../types/picks";
+import { formatPickDate } from "../../lib/dateUtils";
 
 type Props = {
   league: "NFL" | "NBA" | "MLB" | "NHL";
@@ -63,10 +64,10 @@ const FreePicksSection: React.FC<Props> = ({ league, arb, game, seeAllTo }) => {
                     ))}
                   </div>
 
-                  {/* Dates – keep raw values to avoid “fixing” */}
+                  {/* Dates */}
                   <div className="text-xs text-gray-400 mt-2">
-                    <span>Created: {String(a.createdAt ?? a.pickPublishDate ?? "")}</span>
-                    {a.settleDate && <span className="ml-2">• Settled: {String(a.settleDate)}</span>}
+                    <span>Created: {formatPickDate(a.createdAt ?? a.pickPublishDate)}</span>
+                    {a.settleDate && <span className="ml-2">• Settled: {formatPickDate(a.settleDate)}</span>}
                   </div>
                 </div>
               ))}
@@ -93,7 +94,7 @@ const FreePicksSection: React.FC<Props> = ({ league, arb, game, seeAllTo }) => {
                 <div key={g.id} className="p-4 rounded-xl border border-white/10 bg-white/5">
                   <div className="flex items-center justify-between">
                     <div className="font-semibold">{g.pickGameInfo}</div>
-                    <div className="text-xs text-gray-400">{String(g.pickPublishDate ?? "")}</div>
+                    <div className="text-xs text-gray-400">{formatPickDate(g.pickPublishDate)}</div>
                   </div>
                   <p className="text-yellow-400 text-sm mt-1">
                     {g.pickTeam} ({g.pickType})
