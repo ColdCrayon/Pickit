@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Footer from "../components/footer";
-import { auth, googleProvider, upsertUserDoc } from "../lib/firebase";
+import { auth, googleProvider, upsertUserDoc, db } from "../lib/firebase";
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -12,6 +12,8 @@ import {
   sendPasswordResetEmail,     // 👈 NEW
   User as FirebaseUser,
 } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { useUserPlan } from "../hooks/useUserPlan";
 
 type View = "signin" | "signup" | "forgot" | "profile";
 const logo = "/logo.png";
@@ -24,12 +26,13 @@ type TabsProps = {
 };
 
 // Wider, centered, glassy card
-const Card: React.FC<{ children: React.ReactNode; title: string; subtitle?: string }> = ({
+const Card: React.FC<{ children: React.ReactNode; title: string; subtitle?: string; wide?: boolean }> = ({
   children,
   title,
   subtitle,
+  wide,
 }) => (
-  <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-10 w-full max-w-xl mx-auto shadow-2xl">
+  <div className={`bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-10 w-full ${wide ? "max-w-2xl" : "max-w-xl"} mx-auto shadow-2xl`}>
     <div className="flex flex-col items-center mb-6">
       <img src={logo} alt="PickIt" className="w-14 h-14 rounded-full border border-white/20 mb-3" />
       <h1 className="text-3xl font-bold">{title}</h1>
@@ -87,6 +90,7 @@ const Account: React.FC = () => {
   const [message, setMessage] = useState<string | null>(null);
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [busy, setBusy] = useState(false);
+  const { isPremium, isAdmin, loading: userPlanLoading } = useUserPlan();
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => setUser(u));
@@ -99,11 +103,8 @@ const Account: React.FC = () => {
     setBusy(true);
     try {
       const cred = await signInWithEmailAndPassword(auth, email.trim(), password);
-      await upsertUserDoc(cred.user.uid, {
-        email: cred.user.email || "",
-        name: cred.user.displayName || "",
-        username,
-      });
+      // Don't call upsertUserDoc here - it would overwrite existing premium status
+      // The user document should already exist from sign-up
       setMessage("Signed in!");
       // onAuthStateChanged will show profile
     } catch (err: any) {
@@ -143,11 +144,19 @@ const Account: React.FC = () => {
     setBusy(true);
     try {
       const cred = await signInWithPopup(auth, googleProvider);
-      await upsertUserDoc(cred.user.uid, {
-        email: cred.user.email || "",
-        name: cred.user.displayName || "",
-        username: (cred.user.email || "").split("@")[0],
-      });
+      // Only create user doc if it doesn't exist (for new Google users)
+      // Don't overwrite existing premium status for returning users
+      const userDocRef = doc(db, "users", cred.user.uid);
+      const userDoc = await getDoc(userDocRef);
+      
+      if (!userDoc.exists()) {
+        // New user - create document
+        await upsertUserDoc(cred.user.uid, {
+          email: cred.user.email || "",
+          name: cred.user.displayName || "",
+          username: (cred.user.email || "").split("@")[0],
+        });
+      }
       setMessage("Signed in with Google!");
       setView("profile");
     } catch (err: any) {
@@ -200,7 +209,7 @@ const Account: React.FC = () => {
 
       {/* Center everything under the fixed navbar height */}
       <main className="relative z-10 max-w-5xl mx-auto flex-1 py-28 px-6">
-        <div className="w-full max-w-2xl mx-auto">
+        <div className={`w-full ${user ? "max-w-3xl" : "max-w-2xl"} mx-auto`}>
           <div className="text-center mb-8">
             <h1 className="text-4xl md:text-5xl font-bold">
               {user ? "Your Account" : view === "signup" ? "Create your account" : view === "forgot" ? "Reset your password" : "Sign in to PickIt"}
@@ -210,7 +219,7 @@ const Account: React.FC = () => {
 
           {/* Signed-in profile view */}
           {user ? (
-            <Card title="Your Profile" subtitle="Manage your membership and details">
+            <Card wide title="Your Profile" subtitle="Manage your membership and details">
               <div className="space-y-4 text-gray-300">
                 <div className="bg-white/5 p-4 rounded-2xl flex items-center justify-between">
                   <span>Name</span>
@@ -222,15 +231,19 @@ const Account: React.FC = () => {
                 </div>
                 <div className="bg-white/5 p-4 rounded-2xl flex items-center justify-between">
                   <span>Plan</span>
-                  <span className="font-semibold">Standard</span>
+                  <span className="font-semibold">
+                    {userPlanLoading ? "Loading..." : isPremium ? "Premium" : "Standard"}
+                  </span>
                 </div>
                 <div className="flex gap-3 pt-2">
-                  <Link
-                    to="/upgrade"
-                    className="px-5 py-2 rounded-xl bg-yellow-500/90 text-gray-900 font-semibold hover:bg-yellow-400"
-                  >
-                    Upgrade
-                  </Link>
+                  {!userPlanLoading && !isPremium && (
+                    <Link
+                      to="/upgrade"
+                      className="px-5 py-2 rounded-xl bg-yellow-500/90 text-gray-900 font-semibold hover:bg-yellow-400"
+                    >
+                      Upgrade
+                    </Link>
+                  )}
                   <button
                     type="button"
                     onClick={handleSignOut}
