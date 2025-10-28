@@ -90,3 +90,21 @@
   font-size: 0.9rem;
   color: var(--pk-muted);
 }
+
+/* --- Fix the date input contrast --- */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+/* Optional: hover effect for better UX */
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+/* Ensure background & text match your theme tokens */
+input[type="date"] {
+  background-color: var(--pk-bg, #111);
+  color: var(--pk-text, #eee);
+}
