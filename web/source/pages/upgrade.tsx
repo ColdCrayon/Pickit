@@ -46,11 +46,11 @@ const Upgrade: React.FC = () => {
           Upgrade Your PickIt Experience
         </h1>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-8 items-stretch">
           {tiers.map((tier, index) => (
             <div
               key={index}
-              className={`p-8 rounded-3xl border transition ${
+              className={`p-8 rounded-3xl border transition flex flex-col h-full ${
                 tier.highlighted
                   ? "bg-yellow-500/90 text-black border-yellow-400/80 shadow-lg shadow-yellow-500/40"
                   : "bg-white/5 border-white/10"
@@ -58,22 +58,28 @@ const Upgrade: React.FC = () => {
             >
               <h2 className="text-2xl font-semibold mb-2">{tier.name}</h2>
               <p className="text-lg mb-6">{tier.price}</p>
-              <ul className="space-y-3 text-gray-300">
+
+              {/* Make the content flex-1 so the button can be pushed to the bottom */}
+              <ul className="space-y-3 text-gray-300 mb-8 flex-1">
                 {tier.benefits.map((b, i) => (
                   <li key={i} className="flex items-start">
                     <span className="text-white-400 mr-2">•</span> {b}
                   </li>
                 ))}
               </ul>
-              {tier.highlighted ? (
-                <button className="mt-8 w-full py-3 bg-black text-yellow-500/90 font-semibold rounded-xl hover:bg-gray-800">
-                  Upgrade to Pro
-                </button>
-              ) : (
-                <button className="mt-8 w-full py-3 bg-gray-800 text-white font-semibold rounded-xl hover:bg-gray-700">
-                  Current Plan
-                </button>
-              )}
+
+              {/* Button wrapper sits at the bottom */}
+              <div className="mt-auto">
+                {tier.highlighted ? (
+                  <button className="w-full py-3 bg-black text-yellow-500/90 font-semibold rounded-xl hover:bg-gray-800">
+                    Upgrade to Pro
+                  </button>
+                ) : (
+                  <button className="w-full py-3 bg-gray-800 text-white font-semibold rounded-xl hover:bg-gray-700">
+                    Current Plan
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -90,7 +96,7 @@ const Upgrade: React.FC = () => {
               Account
             </button>
             . Responsible betting only — see{" "}
-            <Link to="/terms" className="underline hover:text-white">
+            <Link to="/termsofservice" className="underline hover:text-white">
               Terms of Service
             </Link>{" "}
             and{" "}

@@ -4,39 +4,57 @@ import { useArticleBySlug } from "../hooks/useArticles";
 import ArticleBody from "../components/news/ArticleBody";
 import Footer from "../components/footer";
 
-
 const ArticlePage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const { article, loading, error } = useArticleBySlug(slug);
 
   const fmt = (v: any) => {
     try {
-      const d = v?.toDate ? v.toDate() : (typeof v === "string" ? new Date(v) : v);
+      const d = v?.toDate
+        ? v.toDate()
+        : typeof v === "string"
+        ? new Date(v)
+        : v;
       return d instanceof Date && !isNaN(d.getTime())
-        ? d.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric" })
+        ? d.toLocaleString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })
         : "";
-    } catch { return ""; }
+    } catch {
+      return "";
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
       <div
         className="absolute inset-0 bg-cover bg-center pointer-events-none"
-        style={{ backgroundImage: "linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)), url('Background.jpeg')" }}
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)), url('Background.jpeg')",
+        }}
       />
 
       <main className="relative z-10 max-w-3xl mx-auto py-16 px-6">
         {loading && <p className="text-gray-400">Loading…</p>}
         {error && <p className="text-red-400">{error}</p>}
-        {!loading && !article && <p className="text-gray-400">Article not found.</p>}
+        {!loading && !article && (
+          <p className="text-gray-400">Article not found.</p>
+        )}
 
         {article && (
           <>
             {/* Header */}
-            <div className="mb-6">
-              <div className="text-sm text-gray-400">{article.sport ?? "Sports"} • {fmt(article.createdAt)}</div>
+            <div className="mb-6 mt-6">
+              <div className="text-sm text-gray-400">
+                {article.sport ?? "Sports"} • {fmt(article.createdAt)}
+              </div>
               <h1 className="text-3xl font-bold mt-1">{article.title}</h1>
-              {article.summary && <p className="text-gray-300 mt-2">{article.summary}</p>}
+              {article.summary && (
+                <p className="text-gray-300 mt-2">{article.summary}</p>
+              )}
             </div>
 
             {/* Hero */}
@@ -59,7 +77,12 @@ const ArticlePage: React.FC = () => {
                 <ul className="list-disc pl-6 space-y-1">
                   {article.sources.map((u, i) => (
                     <li key={i}>
-                      <a className="text-yellow-400 underline" href={u} target="_blank" rel="noopener noreferrer">
+                      <a
+                        className="text-yellow-400 underline"
+                        href={u}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         {u}
                       </a>
                     </li>

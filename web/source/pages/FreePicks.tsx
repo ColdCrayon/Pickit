@@ -6,7 +6,9 @@ import Footer from "../components/footer";
 
 const logo = "/logo.png";
 
-const LeagueBlock: React.FC<{ league: "NFL" | "NBA" | "MLB" | "NHL" }> = ({ league }) => {
+const LeagueBlock: React.FC<{ league: "NFL" | "NBA" | "MLB" | "NHL" }> = ({
+  league,
+}) => {
   const { arb, game } = useFreePicks(league, 4);
   return (
     <FreePicksSection
@@ -32,11 +34,17 @@ const FreePicks: React.FC = () => {
       <main className="relative z-10 max-w-6xl mx-auto py-28 px-6">
         <div className="flex items-center justify-between mb-10">
           <div className="flex items-center space-x-3">
-            <img src={logo} alt="PickIt Logo" className="w-10 h-10 rounded-full border border-white/20" />
+            <img
+              src={logo}
+              alt="PickIt Logo"
+              className="w-10 h-10 rounded-full border border-white/20"
+            />
             <h1 className="text-3xl font-bold">Free Picks</h1>
           </div>
           <div className="hidden md:flex items-center gap-4 text-sm text-gray-300">
-            <Link to="/upgrade" className="hover:text-white">Get Premium</Link>
+            <Link to="/upgrade" className="hover:text-white">
+              Get Premium
+            </Link>
           </div>
         </div>
 

@@ -42,16 +42,17 @@ const PrivacyPolicy: React.FC = () => {
         {/* Policy Content Bubble */}
         <div className="bg-white/5 border border-white/10 rounded-3xl p-8 md:p-10 leading-7 text-gray-300 space-y-10">
           <p className="text-sm text-gray-400">
-            <span className="font-semibold">Effective Date:</span> September 2025
+            <span className="font-semibold">Effective Date:</span> September
+            2025
           </p>
 
           <section>
             <h2 className="text-xl font-semibold mb-3">1. Introduction</h2>
             <p>
-              PickIt (“we”, “our”, “us”) values your privacy. This Privacy Policy
-              explains how we collect, use, share, retain, and protect your
-              personal data in compliance with applicable laws and industry best
-              practices, and in line with{" "}
+              PickIt values your privacy. This Privacy Policy explains how we
+              collect, use, share, retain, and protect your personal data in
+              compliance with applicable laws and industry best practices, and
+              in line with{" "}
               <a
                 className="text-yellow-400 hover:underline"
                 href="https://developer.apple.com/app-store/review/guidelines/#privacy"
@@ -71,18 +72,19 @@ const PrivacyPolicy: React.FC = () => {
             <p>We may collect the following types of data:</p>
             <ul className="list-disc pl-6 space-y-2">
               <li>
-                <strong>Account Information:</strong> name, email, and login details.
+                <strong>Account Information:</strong> name, email, and login
+                details.
               </li>
               <li>
                 <strong>Usage Data:</strong> interactions, preferences, logs.
               </li>
               <li>
-                <strong>Device &amp; Analytics Data:</strong> device model, OS version,
-                performance/analytics metrics.
+                <strong>Device &amp; Analytics Data:</strong> device model, OS
+                version, performance/analytics metrics.
               </li>
               <li>
-                <strong>Cookies &amp; Tracking:</strong> cookies, local storage, and
-                similar technologies to personalize and measure performance.
+                <strong>Cookies &amp; Tracking:</strong> cookies, local storage,
+                and similar technologies to personalize and measure performance.
               </li>
             </ul>
             <p>
@@ -114,9 +116,9 @@ const PrivacyPolicy: React.FC = () => {
               your information.
             </p>
             <p>
-              In accordance with Apple’s guidelines, any third party with whom we
-              share data must provide at least the same level of protection as we
-              do. See{" "}
+              In accordance with Apple’s guidelines, any third party with whom
+              we share data must provide at least the same level of protection
+              as we do. See{" "}
               <a
                 className="text-yellow-400 hover:underline"
                 href="https://developer.apple.com/app-store/review/guidelines/#privacy"
@@ -135,8 +137,8 @@ const PrivacyPolicy: React.FC = () => {
             </h2>
             <p>
               We retain personal data only as long as necessary for the purposes
-              described or as required by law. When no longer needed, we delete or
-              anonymize it securely.
+              described or as required by law. When no longer needed, we delete
+              or anonymize it securely.
             </p>
           </section>
 
@@ -154,29 +156,34 @@ const PrivacyPolicy: React.FC = () => {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-3">7. Children &amp; Minors</h2>
+            <h2 className="text-xl font-semibold mb-3">
+              7. Children &amp; Minors
+            </h2>
             <p>
-              Our services are not directed to children under 13. We do not knowingly
-              collect personal data from children. If you believe we have collected
-              such data, contact us to request deletion.
+              Our services are not directed to children under 13. We do not
+              knowingly collect personal data from children. If you believe we
+              have collected such data, contact us to request deletion.
             </p>
           </section>
 
           <section>
             <h2 className="text-xl font-semibold mb-3">8. Security</h2>
             <p>
-              We implement technical and administrative safeguards (e.g., encryption,
-              access controls, monitoring) to protect your data from unauthorized
-              access, alteration, or disclosure.
+              We implement technical and administrative safeguards (e.g.,
+              encryption, access controls, monitoring) to protect your data from
+              unauthorized access, alteration, or disclosure.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-3">9. Changes to This Policy</h2>
+            <h2 className="text-xl font-semibold mb-3">
+              9. Changes to This Policy
+            </h2>
             <p>
-              We may update this Privacy Policy from time to time. We will update the
-              “Effective Date” and notify you through the app or website where
-              appropriate. Continued use after changes indicates acceptance.
+              We may update this Privacy Policy from time to time. We will
+              update the “Effective Date” and notify you through the app or
+              website where appropriate. Continued use after changes indicates
+              acceptance.
             </p>
           </section>
 
@@ -201,4 +208,3 @@ const PrivacyPolicy: React.FC = () => {
 };
 
 export default PrivacyPolicy;
-

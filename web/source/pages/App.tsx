@@ -3,6 +3,7 @@ import { Routes, Route, Link } from "react-router-dom";
 import {
   User,
   FileText,
+  Info,
   Shield,
   TrendingUp,
   BarChart3,
@@ -12,6 +13,7 @@ import {
   X as CloseIcon,
   Home as HomeIcon,
   Book,
+  Scroll,
 } from "lucide-react";
 import PrivacyPolicy from "../pages/PrivacyPolicy";
 import Account from "./Account";
@@ -37,7 +39,7 @@ function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
+    <div className="main-scroll min-h-screen bg-gray-900 text-white relative overflow-hidden overscroll-none">
       {/* Background Image */}
       <div
         className="absolute inset-0 bg-cover bg-center"
@@ -137,7 +139,7 @@ function App() {
               className="flex items-center space-x-3 py-3 px-4 rounded-xl hover:bg-white/10"
               onClick={() => setIsSidebarOpen(false)}
             >
-              <FileText className="w-5 h-5" /> <span>About</span>
+              <Info className="w-5 h-5" /> <span>About</span>
             </Link>
             <Link
               to="/news"
@@ -160,6 +162,13 @@ function App() {
             >
               <Shield className="w-5 h-5" /> <span>Privacy Policy</span>
             </Link>
+            <Link
+              to="/termsofservice"
+              className="flex items-center space-x-3 py-3 px-4 rounded-xl hover:bg-white/10"
+              onClick={() => setIsSidebarOpen(false)}
+            >
+              <FileText className="w-5 h-5" /> <span>Terms of Service</span>
+            </Link>
           </nav>
         </div>
       </aside>
@@ -179,7 +188,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home isSidebarOpen={isSidebarOpen} />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
-          <Route path="/Account" element={<Account />} /> 
+          <Route path="/Account" element={<Account />} />
           <Route path="/termsofservice" element={<TermsOfService />} />
           <Route path="/support" element={<Support />} />
           <Route path="/about" element={<About />} />
@@ -304,14 +313,14 @@ function Home({ isSidebarOpen }: { isSidebarOpen: boolean }) {
         <div className="bg-white/5 p-12 rounded-3xl max-w-4xl mx-auto">
           <h2 className="text-5xl font-bold mb-6">Ready to Win Smarter?</h2>
           <p className="text-xl text-gray-300 mb-12">
-            Join thousands of successful bettors who trust Pickit.
+            Join our team of successful bettors who trust Pickit.
           </p>
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <Link
               to="/upgrade"
               className="px-10 py-4 bg-yellow-500/90 text-gray-900 font-semibold rounded-2xl hover:bg-yellow-400"
             >
-              Start Free Trial
+              Upgrade Now
             </Link>
             <p className="text-sm text-gray-400 ">No credit card required</p>
           </div>

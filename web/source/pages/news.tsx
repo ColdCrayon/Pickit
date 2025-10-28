@@ -4,7 +4,9 @@ import { useArticles } from "../hooks/useArticles";
 import Footer from "../components/footer";
 
 const News: React.FC = () => {
-  const [selectedSport, setSelectedSport] = useState<string | undefined>(undefined);
+  const [selectedSport, setSelectedSport] = useState<string | undefined>(
+    undefined
+  );
   const { articles, loading, error } = useArticles({
     sport: selectedSport as any,
     limitTo: 8,
@@ -13,14 +15,24 @@ const News: React.FC = () => {
 
   const fmt = (v: any) => {
     try {
-      const d = v?.toDate ? v.toDate() : (typeof v === "string" ? new Date(v) : v);
+      const d = v?.toDate
+        ? v.toDate()
+        : typeof v === "string"
+        ? new Date(v)
+        : v;
       return d instanceof Date && !isNaN(d.getTime())
-        ? d.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric" })
+        ? d.toLocaleString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })
         : "";
-    } catch { return ""; }
+    } catch {
+      return "";
+    }
   };
 
-  const sports = ["All", "NFL", "NBA", "MLB", "NHL"];
+  const sports = ["All", "MLB", "NFL", "NBA", "NHL"];
 
   return (
     <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
@@ -28,7 +40,8 @@ const News: React.FC = () => {
       <div
         className="absolute inset-0 bg-cover bg-center pointer-events-none"
         style={{
-          backgroundImage: "linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)), url('Background.jpeg')",
+          backgroundImage:
+            "linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)), url('Background.jpeg')",
         }}
       />
 
@@ -36,7 +49,9 @@ const News: React.FC = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-10">
           <h1 className="text-3xl font-bold mb-4 sm:mb-0">News</h1>
-          <p className="text-sm text-gray-400">Latest articles across all sports</p>
+          <p className="text-sm text-gray-400">
+            Latest articles across all sports
+          </p>
         </div>
 
         {/* Filter bar */}
@@ -83,9 +98,13 @@ const News: React.FC = () => {
                 <div className="text-xs text-gray-400 mb-1">
                   {a.sport ?? "Sports"} • {fmt(a.createdAt)}
                 </div>
-                <h2 className="text-lg font-semibold group-hover:underline">{a.title}</h2>
+                <h2 className="text-lg font-semibold group-hover:underline">
+                  {a.title}
+                </h2>
                 {a.summary && (
-                  <p className="text-gray-300 text-sm mt-2 line-clamp-3">{a.summary}</p>
+                  <p className="text-gray-300 text-sm mt-2 line-clamp-3">
+                    {a.summary}
+                  </p>
                 )}
               </div>
             </Link>
@@ -104,4 +123,3 @@ const News: React.FC = () => {
 };
 
 export default News;
-
