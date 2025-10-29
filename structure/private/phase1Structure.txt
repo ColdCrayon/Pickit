@@ -1,0 +1,73 @@
+web/
+├─ index.html
+├─ package.json
+├─ tailwind.config.js
+├─ postcss.config.js
+├─ vite.config.ts
+├─ src/
+│  ├─ main.tsx
+│  ├─ App.tsx
+│  ├─ routes/
+│  │  ├─ index.tsx                 # Router and route definitions
+│  │  └─ protected.tsx             # Gate for Pro users (checks custom claims/subscription)
+│  ├─ pages/
+│  │  ├─ DashboardPage/
+│  │  │  ├─ DashboardPage.tsx      # Parent layout: header + widget grid + sections
+│  │  │  └─ index.ts               # Barrel export
+│  │  ├─ WatchlistPage/
+│  │  │  ├─ WatchlistPage.tsx      # Dedicated watchlist view (same table component)
+│  │  │  └─ index.ts
+│  │  ├─ AlertsPage/
+│  │  │  ├─ AlertsPage.tsx         # Manage/create alert rules
+│  │  │  └─ index.ts
+│  │  └─ SettingsPage/
+│  │     ├─ SettingsPage.tsx
+│  │     └─ index.ts
+│  ├─ components/
+│  │  ├─ dashboard/
+│  │  │  ├─ TopWidgets.tsx         # NextGames, RecentArbs, LineMovers (MVP as placeholders)
+│  │  │  ├─ WatchlistTable.tsx     # Core table: Team | Market | Best | Consensus | Move | ⋯
+│  │  │  ├─ OddsCompareDrawer.tsx  # Row-expand drawer: full book matrix + chips
+│  │  │  ├─ LineSpark.tsx          # Sparkline for odds history (Recharts)
+│  │  │  ├─ AlertButton.tsx        # Opens alert modal pre-filled with row context
+│  │  │  └─ index.ts
+│  │  ├─ alerts/
+│  │  │  ├─ AlertModal.tsx         # Create/edit alert rule (price/edge thresholds)
+│  │  │  └─ AlertsList.tsx         # List user alerts with enable/disable
+│  │  ├─ common/
+│  │  │  ├─ Card.tsx               # Generic rounded card
+│  │  │  ├─ Badge.tsx              # Small chips (Best, Fair, Hold%)
+│  │  │  ├─ BookIcon.tsx           # Favicon/logo per book (sprite map)
+│  │  │  ├─ Loader.tsx
+│  │  │  └─ EmptyState.tsx
+│  │  └─ nav/
+│  │     ├─ Sidebar.tsx
+│  │     └─ Navbar.tsx
+│  ├─ hooks/
+│  │  ├─ useWatchlist.ts           # Subscribe to users/{uid}/watchlist
+│  │  ├─ useOddsCompare.ts         # Compose market data + best price + consensus + hold
+│  │  ├─ useLineHistory.ts         # Query snapshots for sparkline
+│  │  └─ useAlerts.ts              # CRUD alert rules
+│  ├─ context/
+│  │  ├─ AuthContext.tsx           # Firebase auth user + claims
+│  │  └─ UIContext.tsx             # Drawer/modals, theme
+│  ├─ lib/
+│  │  ├─ firebase.ts               # App/init, auth, firestore, storage
+│  │  ├─ oddsMath.ts               # implied prob, hold, no-vig, formatters
+│  │  └─ format.ts                 # odds/text helpers
+│  ├─ services/
+│  │  ├─ markets.ts                # Firestore queries for events/markets/books
+│  │  ├─ snapshots.ts              # Fetch latest N snapshots for a market
+│  │  └─ alerts.ts                 # Create/update/delete user alerts
+│  ├─ types/
+│  │  ├─ odds.ts                   # Market/Book/Price interfaces
+│  │  ├─ user.ts                   # Pro subscription, preferences, watchlist item
+│  │  └─ alerts.ts                 # Alert rule schemas
+│  ├─ styles/
+│  │  └─ globals.css
+│  └─ assets/
+│     ├─ logos/
+│     └─ icons/
+└─ README.md
+
+

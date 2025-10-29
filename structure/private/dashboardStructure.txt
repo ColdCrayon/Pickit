@@ -1,0 +1,65 @@
+PICKIT PRO — USER DASHBOARD (Phase 1 MVP)
+=========================================
+
++--------------------------------------------------------------+
+| Navbar                                                       |
+| [Pickit Logo]   [Sports Filter] [Date Range]    [Profile ⌄]  |
++--------------------------------------------------------------+
+| Sidebar                             | Main Content           |
+|-------------------------------------+------------------------|
+| • Dashboard (active)                |  Header Row            |
+| • Watchlist                         |  --------------------  |
+| • Odds Comparison                   |  "Welcome back, Cadel" |
+| • Alerts                            |  [Add Alert] [Settings]|
+| • Settings                          |                        |
+|                                     |                        |
+|                                     |  Top Widgets (3-up)    |
+|                                     |  +------------------+  |
+|                                     |  | Next Games      |  |
+|                                     |  +------------------+  |
+|                                     |  +------------------+  |
+|                                     |  | Recent Arbs     |  |
+|                                     |  +------------------+  |
+|                                     |  +------------------+  |
+|                                     |  | Line Movers     |  |
+|                                     |  +------------------+  |
+|                                     |                        |
+|                                     |  Watchlist Table       |
+|                                     |  +------------------------------------------------------+
+|                                     |  | Team | Market | Best Price | Consensus | Move | ⋯  |
+|                                     |  +------------------------------------------------------+
+|                                     |  | .... rows with quick actions (View, Alert, Pin)     |
+|                                     |  +------------------------------------------------------+
+|                                     |                        |
+|                                     |  Odds Comparison (detail drawer on row expand)          |
+|                                     |  +------------------------------------------------------+
+|                                     |  | Books: DK | FD | MGM | Caesars | PB | ...           |
+|                                     |  | Outcome:  Home | Away (or Over | Under)             |
+|                                     |  | Grid:   -110  -115  -108   -112    -111             |
+|                                     |  | Best Price highlighted; Hold & No-Vig chips         |
+|                                     |  +------------------------------------------------------+
+|                                     |                        |
+|                                     |  Line History (sparkline)                               |
+|                                     |  +------------------------------------------------------+
+|                                     |  |  ──╮_╭───╮__     (last 24h odds)                    |
+|                                     |  +------------------------------------------------------+
++-------------------------------------+------------------------+
+
+NOTES:
+- MVP scope: Watchlist, Odds Comparison table, Alerts (create/view), Line History sparkline.
+- Detail drawer opens from Watchlist row to show full book matrix + charts + alert form.
+- Keep consistent Tailwind spacing, rounded cards, subtle borders.
+
+
+
+Phase 1 — Suggested File Tree (aligned to current React/Tailwind + Firebase web/ project)
+NOTES:
+- Reuse existing `web/` structure; the above nests cleanly into your React + Tailwind app.
+- MVP focus files to implement first:
+  • components/dashboard/WatchlistTable.tsx
+  • components/dashboard/OddsCompareDrawer.tsx
+  • components/dashboard/LineSpark.tsx
+  • hooks/useWatchlist.ts, hooks/useOddsCompare.ts, hooks/useLineHistory.ts
+  • lib/oddsMath.ts (implied prob, hold, no-vig converters)
+
+
