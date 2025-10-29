@@ -21,6 +21,8 @@ const LeagueBlock: React.FC<{ league: "NFL" | "NBA" | "MLB" | "NHL" }> = ({
 };
 
 const FreePicks: React.FC = () => {
+  const [isPremium, setIsPremium] = React.useState<boolean | null>(null);
+
   return (
     <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
       <div
@@ -42,9 +44,11 @@ const FreePicks: React.FC = () => {
             <h1 className="text-3xl font-bold">Free Picks</h1>
           </div>
           <div className="hidden md:flex items-center gap-4 text-sm text-gray-300">
-            <Link to="/upgrade" className="hover:text-white">
-              Get Premium
-            </Link>
+            {isPremium === false && (
+              <Link to="/upgrade" className="hover:text-white">
+                Get Premium
+              </Link>
+            )}
           </div>
         </div>
 
