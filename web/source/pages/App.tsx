@@ -15,21 +15,29 @@ import {
   Book,
   Scroll,
 } from "lucide-react";
+
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "../lib/firebase";
+
 import PrivacyPolicy from "../pages/PrivacyPolicy";
 import Account from "./Account";
 import TermsOfService from "../pages/termsofservice";
 import Support from "../pages/support";
 import About from "./About";
 import Upgrade from "../pages/upgrade";
-import News from "./news";
+
 import NFL from "./NFL";
 import NBA from "./NBA";
 import MLB from "./MLB";
 import NHL from "./NHL";
+
 import FreePicks from "./FreePicks";
 import FreePicksAll from "../pages/FreePicksAll";
 import FreePicksLeague from "../pages/FreePicksLeague";
 import ArticlePage from "./Article";
+import News from "./news";
+
 import Footer from "../components/footer";
 
 import AdminDashboard from "./AdminDashboard";
@@ -40,6 +48,30 @@ const logo = "/logo.png";
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [userRole, setUserRole] = React.useState({
+    isPremium: false,
+    isAdmin: false,
+  });
+
+  React.useEffect(() => {
+    const unsub = onAuthStateChanged(auth, async (u) => {
+      if (!u) {
+        setUserRole({ isPremium: false, isAdmin: false });
+        return;
+      }
+      try {
+        const snap = await getDoc(doc(db, "users", u.uid));
+        const data = snap.data() || {};
+        setUserRole({
+          isPremium: !!data.isPremium,
+          isAdmin: !!data.isAdmin,
+        });
+      } catch {
+        setUserRole({ isPremium: false, isAdmin: false });
+      }
+    });
+    return () => unsub();
+  }, []);
 
   return (
     <div className="main-scroll min-h-screen bg-gray-900 text-white relative overflow-hidden overscroll-none">
@@ -99,13 +131,15 @@ function App() {
 
           {/* Right */}
           <div className="flex items-center space-x-3">
-            <Link
-              to="/upgrade"
-              className="hidden sm:inline-flex px-6 py-2.5 bg-yellow-500/90 text-gray-900 font-bold rounded-xl hover:bg-yellow-400"
-            >
-              UPGRADE
-            </Link>
-            <NavAdminLink />
+            {!userRole.isPremium && (
+              <Link
+                to="/upgrade"
+                className="hidden sm:inline-flex px-6 py-2.5 bg-yellow-500/90 text-gray-900 font-bold rounded-xl hover:bg-yellow-400"
+              >
+                UPGRADE
+              </Link>
+            )}
+            {userRole.isAdmin && <NavAdminLink />}
             <Link
               to="/Account"
               className="hidden sm:inline-flex px-6 py-2.5 bg-gray-700/80 text-white font-bold rounded-xl hover:bg-gray-600/80"
@@ -213,6 +247,8 @@ function App() {
 }
 
 function Home({ isSidebarOpen }: { isSidebarOpen: boolean }) {
+  const [isPremium, setIsPremium] = React.useState<boolean | null>(null);
+
   return (
     <main
       className={`relative z-10 transition-all duration-300 ${
@@ -232,12 +268,14 @@ function Home({ isSidebarOpen }: { isSidebarOpen: boolean }) {
             betting strategy
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Link
-              to="/upgrade"
-              className="px-8 py-4 border-2 border-white/30 text-white font-semibold rounded-2xl hover:bg-white hover:text-gray-900"
-            >
-              Get Started
-            </Link>
+            {isPremium === false && (
+              <Link
+                to="/upgrade"
+                className="px-8 py-4 border-2 border-white/30 text-white font-semibold rounded-2xl hover:bg-white hover:text-gray-900"
+              >
+                Get Started
+              </Link>
+            )}
             <Link
               to="/about"
               className="px-8 py-4 border-2 border-white/30 text-white font-semibold rounded-2xl hover:bg-white hover:text-gray-900"
@@ -319,16 +357,23 @@ function Home({ isSidebarOpen }: { isSidebarOpen: boolean }) {
         <div className="bg-white/5 p-12 rounded-3xl max-w-4xl mx-auto">
           <h2 className="text-5xl font-bold mb-6">Ready to Win Smarter?</h2>
           <p className="text-xl text-gray-300 mb-12">
-            Join our team of successful bettors who trust PickIt.
+            Join our team of successful bettors who trust Pickit.
           </p>
+
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-            <Link
-              to="/upgrade"
-              className="px-10 py-4 bg-yellow-500/90 text-gray-900 font-semibold rounded-2xl hover:bg-yellow-400"
-            >
-              Upgrade Now
-            </Link>
-            <p className="text-sm text-gray-400 ">No credit card required</p>
+            {isPremium === false && (
+              <Link
+                to="/upgrade"
+                className="px-10 py-4 bg-yellow-500/90 text-gray-900 font-semibold rounded-2xl hover:bg-yellow-400"
+              >
+                Upgrade Now
+              </Link>
+            )}
+            <p className="text-sm text-gray-400">
+              {isPremium
+                ? "No credit card required"
+                : "Thanks for being a Pro member!"}
+            </p>
           </div>
         </div>
       </section>
