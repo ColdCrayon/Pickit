@@ -281,7 +281,7 @@ const Account: React.FC = () => {
                       : "Standard"}
                   </span>
                 </div>
-                <div className="flex gap-3 pt-2">
+                <div className="flex gap-3 pt-2 justify-center">
                   {!userPlanLoading && !isPremium && (
                     <Link
                       to="/upgrade"
