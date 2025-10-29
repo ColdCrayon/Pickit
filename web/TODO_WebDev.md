@@ -1,6 +1,7 @@
 # To-Do
 
 ## WEBSITE DEVELOPMENT
+- [ ] REFACTOR AND RESTRUCTURE !!!
 - [ ] Admin Dashboard
     - News Article Form (not priority)
     - Any important stats (ask chat)
@@ -14,6 +15,13 @@
         - Canceling subscription
         - Payment History
     - Account information if signed in
+- [ ] Home Page (Pro users)
+    - Add dashboard
+        - Watchlists
+        - Odds comparisons
+        - Quick links to arbitrage
+        - Customize alerts
+        - Ai insights
 - [ ] Updgarde Page
     - Transactions
 - All button conditionallity (if premium)
