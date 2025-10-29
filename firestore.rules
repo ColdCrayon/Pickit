@@ -1,0 +1,61 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ----- Helpers -----
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function mePath() {
+      return /databases/$(database)/documents/users/$(request.auth.uid);
+    }
+    function hasMe() {
+      return isSignedIn() && exists(mePath());
+    }
+    function getMe() {
+      return get(mePath());
+    }
+    function isAdmin() {
+      return hasMe() && getMe().data.isAdmin == true;
+    }
+    function isPremium() {
+      return hasMe() && getMe().data.isPremium == true;
+    }
+    // Ensure sensitive flags can't be changed by regular users
+    function unchanged(field) {
+      // If field not present in new data, treat as unchanged
+      return !(field in request.resource.data) ||
+             (field in resource.data && request.resource.data[field] == resource.data[field]);
+    }
+
+    // ----- Users: self read/write only; only admins can change flags -----
+    match /users/{userId} {
+      allow read:  if isSignedIn() && request.auth.uid == userId;
+      allow write: if
+        // User can update their own safe fields (email/username/etc.)
+        (isSignedIn() && request.auth.uid == userId &&
+         unchanged('isAdmin') && unchanged('isPremium'))
+        ||
+        // Admins can write any user doc (including setting flags)
+        isAdmin();
+    }
+
+    // ----- Game Tickets -----
+    match /gameTickets/{id} {
+      // Read: admin OR premium OR (standard & settled)
+      allow read: if isAdmin() || isPremium() || (isSignedIn() && resource.data.serverSettled == true);
+      // Write: admin only
+      allow write: if isAdmin();
+    }
+
+    // ----- Arbitrage Tickets -----
+    match /arbTickets/{id} {
+      // Read: admin OR premium OR (standard & settled)
+      allow read: if isAdmin() || isPremium() || (isSignedIn() && resource.data.serverSettled == true);
+      // Write: admin only
+      allow write: if isAdmin();
+    }
+
+    // (No catch-all allows — default deny)
+  }
+}
