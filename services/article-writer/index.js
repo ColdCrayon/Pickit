@@ -18,7 +18,9 @@ function yyyyWeek(d = new Date()) {
 }
 
 async function wikiSearch(query) {
-  const url = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrlimit=1&prop=pageimages|info&inprop=url&pilicense=any&pithumbsize=640&format=json&origin=*&gsrsearch=${encodeURIComponent(query)}`;
+  const url = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrlimit=1&prop=pageimages|info&inprop=url&pilicense=any&pithumbsize=640&format=json&origin=*&gsrsearch=${encodeURIComponent(
+    query
+  )}`;
   const r = await fetch(url);
   if (!r.ok) return null;
   const data = await r.json();
@@ -29,7 +31,7 @@ async function wikiSearch(query) {
   return {
     title: first.title,
     pageUrl: first.fullurl,
-    thumb: first.thumbnail?.source
+    thumb: first.thumbnail?.source,
   };
 }
 
@@ -38,7 +40,7 @@ async function resolveImagesForArticle(a) {
     ...(a.imageQueries || []),
     a.teams?.home || "",
     a.teams?.away || "",
-    a.sport || ""
+    a.sport || "",
   ].filter(Boolean);
 
   const out = [];
@@ -55,7 +57,7 @@ async function resolveSourcesForArticle(a) {
     ...(a.sourceQueries || []),
     `${a.teams?.home} ${a.sport}`,
     `${a.teams?.away} ${a.sport}`,
-    `${a.sport} Wikipedia`
+    `${a.sport} Wikipedia`,
   ].filter(Boolean);
 
   const out = [];
@@ -70,7 +72,7 @@ async function resolveSourcesForArticle(a) {
 app.post("/generate", async (req, res) => {
   try {
     const sports = Array.isArray(req.body?.sports) ? req.body.sports : [];
-    const events  = await pickRecentEvents({ sports });  // Firestore read
+    const events = await pickRecentEvents({ sports }); // Firestore read
     const weekKey = yyyyWeek();
 
     // Phase A: plan (small JSON)
@@ -83,15 +85,27 @@ app.post("/generate", async (req, res) => {
     // Phase B: write each body & persist
     const articles = [];
     for (const a of plan.articles) {
-      const bodyMarkdown = await writeBodyMarkdown(a);
+      const bodyMarkdownRaw = await writeBodyMarkdown(a);
+
+      const bodyMarkdown = bodyMarkdownRaw
+        .replace(/^\s*#{1,2}\s+.*$/m, "") // drop first H1/H2 line
+        .trim();
 
       const [imageUrls, sources] = await Promise.all([
         resolveImagesForArticle(a),
         resolveSourcesForArticle(a),
       ]);
 
+      if (imageUrls.length === 0) {
+        imageUrls.push(
+          "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Sports_Ball_Collection.jpg/640px-Sports_Ball_Collection.jpg"
+        );
+      }
+
       const mdWithSources = sources.length
-        ? `${bodyMarkdown}\n\n---\n**Sources**\n${sources.map(u => `- ${u}`).join("\n")}\n`
+        ? `${bodyMarkdown}\n\n---\n**Sources**\n${sources
+            .map((u) => `- ${u}`)
+            .join("\n")}\n`
         : bodyMarkdown;
 
       const expiresAt = admin.firestore.Timestamp.fromDate(
@@ -107,7 +121,7 @@ app.post("/generate", async (req, res) => {
         imageUrls,
         sources,
         expiresAt,
-        createdAt: admin.firestore.FieldValue.serverTimestamp()
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
       });
     }
 
@@ -121,4 +135,3 @@ app.post("/generate", async (req, res) => {
 
 app.get("/healthz", (_, res) => res.send("ok"));
 app.listen(process.env.PORT || 8080, () => console.log("article-writer up"));
-
