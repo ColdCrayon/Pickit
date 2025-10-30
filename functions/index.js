@@ -1,77 +1,100 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * const {onCall} = require("firebase-functions/v2/https");
- * const {onDocumentWritten} = require("firebase-functions/v2/firestore");
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
+const {setGlobalOptions} = require('firebase-functions/v2/options');
+const {onCall} = require('firebase-functions/v2/https');
+const {onSchedule} = require('firebase-functions/v2/scheduler');
+const logger = require('firebase-functions/logger');
 
-const {setGlobalOptions} = require("firebase-functions");
-// const { onRequest } = require("firebase-functions/https");
-// const logger = require("firebase-functions/logger");
+const admin = require('firebase-admin');
+const {getFirestore, Timestamp} = require('firebase-admin/firestore');
 
-// For cost control, you can set the maximum number of containers that can be
-// running at the same time. This helps mitigate the impact of unexpected
-// traffic spikes by instead downgrading performance. This limit is a
-// per-function limit. You can override the limit for each function using the
-// `maxInstances` option in the function's options, e.g.
-// `onRequest({ maxInstances: 5 }, (req, res) => { ... })`.
-// NOTE: setGlobalOptions does not apply to functions using the v1 API. V1
-// functions should each use functions.runWith({ maxInstances: 10 }) instead.
-// In the v1 API, each function can only serve one request per container, so
-// this will be the maximum concurrent request count.
 setGlobalOptions({maxInstances: 10});
 
-// Create and deploy your first functions
-// https://firebase.google.com/docs/functions/get-started
+if (!admin.apps.length) {
+  admin.initializeApp();
+}
 
-// exports.helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
-//
+/**
+ * Callable: set custom claims (admins only).
+ * Usage (client):
+ *   const setUserRoles = httpsCallable(functions, "setUserRoles");
+ *   await setUserRoles({ uid, isAdmin: true/false, isPremium: true/false });
+ */
+exports.setUserRoles = onCall({cors: true}, async (request) => {
+  const caller = request.auth;
+  if (!caller || caller.token.isAdmin !== true) {
+    throw new Error('PERMISSION_DENIED: Admins only.');
+  }
 
-const {onSchedule} = require("firebase-functions/v2/scheduler");
-const {getFirestore, Timestamp} = require("firebase-admin/firestore");
-const admin = require("firebase-admin");
-admin.initializeApp();
+  const {uid, isAdmin = false, isPremium = false} = request.data || {};
+  if (!uid || typeof uid !== 'string') {
+    throw new Error('INVALID_ARGUMENT: \'uid\' is required.');
+  }
 
-// scheduled function
-exports.settleTickets = onSchedule("every 5 minutes", async (event) => {
-  const db = getFirestore();
-  const now = Timestamp.now();
-
-
-  // ---- Game Tickets ----
-  const gameSnapshot = await db
-      .collection("gameTickets")
-      .where("settleDate", "<=", now)
-      .where("serverSettled", "==", false)
-      .get();
-
-  const batch = db.batch();
-  gameSnapshot.forEach((doc) => {
-    batch.update(doc.ref, {serverSettled: true});
+  // 1) Set custom claims
+  await admin.auth().setCustomUserClaims(uid, {
+    isAdmin: !!isAdmin,
+    isPremium: !!isPremium,
   });
 
-  // ---- Arbitrage Tickets
-  const arbSnapshot = await db
-      .collection("arbTickets")
-      .where("settleDate", "<=", now)
-      .where("serverSettled", "==", false)
-      .get();
+  // 2) Mirror to Firestore for UI (optional)
+  await getFirestore()
+    .collection('users')
+    .doc(uid)
+    .set({isAdmin: !!isAdmin, isPremium: !!isPremium}, {merge: true});
 
-  arbSnapshot.forEach((doc) => {
-    batch.update(doc.ref, {serverSettled: true});
-  });
+  // 3) Force clients to refresh tokens eventually
+  try {
+    await admin.auth().revokeRefreshTokens(uid);
+  } catch (e) {
+    logger.warn(
+      'Revoke refresh tokens failed; user may need manual refresh.',
+      e,
+    );
+  }
 
-  await batch.commit();
-
-  console.log(
-      `Settled ${gameSnapshot.size} tickets and ${arbSnapshot.size} arb 
-       tickets`,
-  );
-
-  return null;
+  logger.info(`Updated claims for ${uid}`, {isAdmin, isPremium});
+  return {ok: true, uid, isAdmin: !!isAdmin, isPremium: !!isPremium};
 });
+
+/**
+ * Scheduled job: mark tickets as settled when settleDate <= now
+ */
+exports.settleTickets = onSchedule(
+  {schedule: 'every 5 minutes', timeZone: 'America/Chicago'},
+  async () => {
+    const db = getFirestore();
+    const now = Timestamp.now();
+
+    const batch = db.batch();
+
+    // ---- Game Tickets ----
+    const gameSnapshot = await db
+      .collection('gameTickets')
+      .where('settleDate', '<=', now)
+      .where('serverSettled', '==', false)
+      .get();
+
+    gameSnapshot.forEach((doc) => {
+      batch.update(doc.ref, {serverSettled: true});
+    });
+
+    // ---- Arbitrage Tickets ----
+    const arbSnapshot = await db
+      .collection('arbTickets')
+      .where('settleDate', '<=', now)
+      .where('serverSettled', '==', false)
+      .get();
+
+    arbSnapshot.forEach((doc) => {
+      batch.update(doc.ref, {serverSettled: true});
+    });
+
+    if (!gameSnapshot.empty || !arbSnapshot.empty) {
+      await batch.commit();
+    }
+
+    logger.info(
+      `Settled ${gameSnapshot.size} gameTs and ${arbSnapshot.size} arbTs`,
+    );
+    return null;
+  },
+);
