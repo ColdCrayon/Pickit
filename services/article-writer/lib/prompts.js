@@ -3,7 +3,7 @@ export function weeklyArticlesPrompt({ sport, events, weekKey }) {
   return `
 You are a talented sports writer. Produce FIVE articles as JSON that meet ALL criteria:
 
-- Each article >= 400 words, informative and original (no scraping).
+- Each article 400-600 words, informative and original (no scraping).
 - Audience: casual bettors & sports fans.
 - Focus only on these sports/events (draw from list below).
 - Include a title, summary (<= 40 words), full body in Markdown, and optional image URLs (royalty-free or leave empty).
@@ -30,7 +30,12 @@ Return STRICT JSON matching:
 }
 
 Events to reference (context only):
-${events.map(e => `- ${e.sport} ${e.league} | ${e.teams.home} vs ${e.teams.away} | ${e.startTimeISO}`).join("\n")}
+${events
+  .map(
+    (e) =>
+      `- ${e.sport} ${e.league} | ${e.teams.home} vs ${e.teams.away} | ${e.startTimeISO}`
+  )
+  .join("\n")}
 
 weekKey: ${weekKey}
 `.trim();
@@ -63,7 +68,12 @@ Constraints:
   players. Keep each query short.
 
 Events:
-${events.map(e => `- ${e.sport} ${e.league} | ${e.teams.home} vs ${e.teams.away} | ${e.startTimeISO}`).join("\n")}
+${events
+  .map(
+    (e) =>
+      `- ${e.sport} ${e.league} | ${e.teams.home} vs ${e.teams.away} | ${e.startTimeISO}`
+  )
+  .join("\n")}
 
 weekKey: ${weekKey}
 `.trim();
