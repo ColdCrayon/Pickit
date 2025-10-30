@@ -2,6 +2,8 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import TicketForm from "../components/admin/TicketForm";
 import { useUserPlan } from "../hooks/useUserPlan";
+import { AdminGuard } from "../components/admin/AdminGuard";
+import { UsersRoleTable } from "../components/admin/UsersRoleTable";
 // If you want the helper styles, import once (optional):
 import "../styles/admin.css";
 
@@ -19,7 +21,7 @@ export default function AdminDashboard() {
     }
   }, [user, isAdmin, loading, navigate]);
 
-// Show loading while checking auth status
+  // Show loading while checking auth status
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
@@ -38,7 +40,10 @@ export default function AdminDashboard() {
   return (
     <div className="page admin-page">
       <h1 className="page__title">Admin Dashboard</h1>
-      <TicketForm />
+      <AdminGuard>
+        <TicketForm />
+        <UsersRoleTable />
+      </AdminGuard>
     </div>
   );
 }
