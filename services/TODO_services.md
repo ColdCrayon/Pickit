@@ -10,5 +10,7 @@
 - Multi-sportsbook odds comparison
 - Personalized dashboard
 - Custom watchlists & notifications
+- Linking sportsbooks accounts
+    - Automatic betting
 
 
