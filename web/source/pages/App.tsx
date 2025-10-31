@@ -1,77 +1,39 @@
 import React, { useState } from "react";
 import { Routes, Route, Link } from "react-router-dom";
 import {
-  User,
-  FileText,
-  Info,
-  Shield,
-  TrendingUp,
   BarChart3,
   Users,
   Zap,
   Award,
-  X as CloseIcon,
-  Home as HomeIcon,
-  Book,
-  Scroll,
+  TrendingUp,
+  Shield,
 } from "lucide-react";
 
-import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
-import { auth, db } from "../lib/firebase";
+  // Removed unused auth, db imports - using useUserPlan hook instead
+import { useUserPlan } from "../hooks";
+import { Navbar, SidebarNav, Footer } from "../components";
 
 import PrivacyPolicy from "../pages/PrivacyPolicy";
 import Account from "./Account";
-import TermsOfService from "../pages/termsofservice";
-import Support from "../pages/support";
+import TermsOfService from "./TermsOfService";
+import Support from "./Support";
 import About from "./About";
-import Upgrade from "../pages/upgrade";
+import Upgrade from "./Upgrade";
 
-import NFL from "./NFL";
-import NBA from "./NBA";
-import MLB from "./MLB";
-import NHL from "./NHL";
+import SportsPage from "./sports/SportsPage";
 
-import FreePicks from "./FreePicks";
-import FreePicksAll from "../pages/FreePicksAll";
-import FreePicksLeague from "../pages/FreePicksLeague";
+import { FreePicks, FreePicksAll, FreePicksLeague } from "../components";
 import ArticlePage from "./Article";
-import News from "./news";
-
-import Footer from "../components/footer";
+import News from "./News";
 
 import AdminDashboard from "./AdminDashboard";
-import NavAdminLink from "../components/admin/NavAdminLink";
 import "../styles/admin.css";
 
 const logo = "/logo.png";
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [userRole, setUserRole] = React.useState({
-    isPremium: false,
-    isAdmin: false,
-  });
-
-  React.useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (u) => {
-      if (!u) {
-        setUserRole({ isPremium: false, isAdmin: false });
-        return;
-      }
-      try {
-        const snap = await getDoc(doc(db, "users", u.uid));
-        const data = snap.data() || {};
-        setUserRole({
-          isPremium: !!data.isPremium,
-          isAdmin: !!data.isAdmin,
-        });
-      } catch {
-        setUserRole({ isPremium: false, isAdmin: false });
-      }
-    });
-    return () => unsub();
-  }, []);
+  const { isPremium, isAdmin } = useUserPlan();
 
   return (
     <div className="main-scroll min-h-screen bg-gray-900 text-white relative overflow-hidden overscroll-none">
@@ -84,138 +46,17 @@ function App() {
       />
 
       {/* Navbar */}
-      <nav className="fixed top-0 left-0 w-full z-50 bg-gray-900/80 backdrop-blur-lg border-b border-white/10">
-        <div className="w-full px-6 flex items-center h-16 justify-between">
-          {/* Left Group: Brand + Links */}
-          <div className="flex items-center space-x-6">
-            {/* Toggle Button */}
-            <button
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="p-2"
-            >
-              {isSidebarOpen ? (
-                <CloseIcon className="w-6 h-6 text-white" />
-              ) : (
-                <div className="flex flex-col space-y-1.5">
-                  <span className="block w-6 h-0.5 bg-white"></span>
-                  <span className="block w-6 h-0.5 bg-white"></span>
-                  <span className="block w-6 h-0.5 bg-white"></span>
-                </div>
-              )}
-            </button>
-            <div className="flex items-center space-x-2">
-              <Link to="/" className="flex items-center space-x-2">
-                <img
-                  src="/logo.png"
-                  alt="PickIt Logo"
-                  className="w-8 h-8 rounded-full border border-white/20"
-                />
-              </Link>
-              <Link to="/" className="text-2xl font-bold">
-                PickIt
-              </Link>
-            </div>
-            {/* Sports Links */}
-            <div className="hidden md:flex space-x-6 ml-6">
-              {["MLB", "NFL", "NBA", "NHL"].map((sport, index) => (
-                <Link
-                  key={index}
-                  to={`/${sport.toLowerCase()}`}
-                  className="text-gray-300 hover:text-white transition"
-                >
-                  {sport}
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          {/* Right */}
-          <div className="flex items-center space-x-3">
-            {!userRole.isPremium && (
-              <Link
-                to="/upgrade"
-                className="hidden sm:inline-flex px-6 py-2.5 bg-yellow-500/90 text-gray-900 font-bold rounded-xl hover:bg-yellow-400"
-              >
-                UPGRADE
-              </Link>
-            )}
-            {userRole.isAdmin && <NavAdminLink />}
-            <Link
-              to="/Account"
-              className="hidden sm:inline-flex px-6 py-2.5 bg-gray-700/80 text-white font-bold rounded-xl hover:bg-gray-600/80"
-            >
-              ACCOUNT
-            </Link>
-            <Link
-              to="/Account"
-              className="p-2.5 bg-gray-700/80 rounded-xl hover:bg-gray-600/80"
-            >
-              <User className="w-5 h-5" />
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Navbar
+        isSidebarOpen={isSidebarOpen}
+        setIsSidebarOpen={setIsSidebarOpen}
+        userRole={{ isPremium, isAdmin }}
+      />
 
       {/* Sidebar */}
-      <aside
-        className={`fixed top-0 left-0 z-40 w-64 h-full bg-blue-800/95 backdrop-blur-xl transform transition-transform ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <div className="pt-20 px-6">
-          <nav className="space-y-4">
-            <Link
-              to="/"
-              className="flex items-center space-x-3 py-3 px-4 rounded-xl hover:bg-white/10"
-              onClick={() => setIsSidebarOpen(false)}
-            >
-              <HomeIcon className="w-5 h-5" /> <span>Home</span>
-            </Link>
-            <Link
-              to="/about"
-              className="flex items-center space-x-3 py-3 px-4 rounded-xl hover:bg-white/10"
-              onClick={() => setIsSidebarOpen(false)}
-            >
-              <Info className="w-5 h-5" /> <span>About</span>
-            </Link>
-            <Link
-              to="/news"
-              className="flex items-center space-x-3 py-3 px-4 rounded-xl hover:bg-white/10"
-              onClick={() => setIsSidebarOpen(false)}
-            >
-              <TrendingUp className="w-5 h-5" /> <span>News</span>
-            </Link>
-            <Link
-              to="/FreePicks"
-              className="flex items-center space-x-3 py-3 px-4 rounded-xl hover:bg-white/10"
-              onClick={() => setIsSidebarOpen(false)}
-            >
-              <Book className="w-5 h-5" /> <span>Free Picks</span>
-            </Link>
-            <Link
-              to="/privacy"
-              className="flex items-center space-x-3 py-3 px-4 rounded-xl hover:bg-white/10"
-              onClick={() => setIsSidebarOpen(false)}
-            >
-              <Shield className="w-5 h-5" /> <span>Privacy Policy</span>
-            </Link>
-            <Link
-              to="/termsofservice"
-              className="flex items-center space-x-3 py-3 px-4 rounded-xl hover:bg-white/10"
-              onClick={() => setIsSidebarOpen(false)}
-            >
-              <FileText className="w-5 h-5" /> <span>Terms of Service</span>
-            </Link>
-          </nav>
-        </div>
-      </aside>
-
-      {isSidebarOpen && (
-        <div
-          className="fixed inset-0 z-30 bg-black/50 lg:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
+      <SidebarNav
+        isSidebarOpen={isSidebarOpen}
+        setIsSidebarOpen={setIsSidebarOpen}
+      />
 
       <main
         className={`relative z-10 transition-all duration-300 ${
@@ -231,10 +72,10 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/upgrade" element={<Upgrade />} />
           <Route path="/news" element={<News />} />
-          <Route path="/nfl" element={<NFL />} />
-          <Route path="/nba" element={<NBA />} />
-          <Route path="/mlb" element={<MLB />} />
-          <Route path="/nhl" element={<NHL />} />
+          <Route path="/nfl" element={<SportsPage />} />
+          <Route path="/nba" element={<SportsPage />} />
+          <Route path="/mlb" element={<SportsPage />} />
+          <Route path="/nhl" element={<SportsPage />} />
           <Route path="/FreePicks" element={<FreePicks />} />
           <Route path="/free-picks/all" element={<FreePicksAll />} />
           <Route path="/free-picks/:league" element={<FreePicksLeague />} />
@@ -245,6 +86,7 @@ function App() {
     </div>
   );
 }
+
 
 function Home({ isSidebarOpen }: { isSidebarOpen: boolean }) {
   const [isPremium, setIsPremium] = React.useState<boolean | null>(null);
@@ -285,7 +127,6 @@ function Home({ isSidebarOpen }: { isSidebarOpen: boolean }) {
           </div>
         </div>
       </section>
-
       {/* Features */}
       <section className="pt-10 pb-10 w-full">
         <div className="text-center mb-20 mx-auto max-w-3xl px-6">
@@ -383,5 +224,6 @@ function Home({ isSidebarOpen }: { isSidebarOpen: boolean }) {
     </main>
   );
 }
+
 
 export default App;

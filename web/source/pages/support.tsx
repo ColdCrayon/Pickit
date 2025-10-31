@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Footer from "../components/footer";
+import { Footer } from "../components";
 
 const logo = "/logo.png";
 
@@ -48,8 +48,8 @@ const Support: React.FC = () => {
           <section>
             <h2 className="text-xl font-semibold mb-3">Need Help?</h2>
             <p>
-              We’re here to make sure your PickIt experience runs smoothly. Whether
-              you’re having trouble logging in, managing your account, or simply
+              We're here to make sure your PickIt experience runs smoothly. Whether
+              you're having trouble logging in, managing your account, or simply
               have a question, our support team is happy to help.
             </p>
           </section>
@@ -67,7 +67,7 @@ const Support: React.FC = () => {
           <section>
             <h2 className="text-xl font-semibold mb-3">Contact Our Team</h2>
             <p>
-              If you can’t find your answer in the FAQ or need direct help, you can
+              If you can't find your answer in the FAQ or need direct help, you can
               reach out to us any time:
             </p>
             <ul className="space-y-2 mt-3">
@@ -110,7 +110,7 @@ const Support: React.FC = () => {
             <h2 className="text-xl font-semibold mb-3">Community & Feedback</h2>
             <p>
               We love hearing from users. Share ideas, suggest features, or tell us
-              how PickIt helps you win smarter. Together, we’ll keep improving.
+              how PickIt helps you win smarter. Together, we'll keep improving.
             </p>
           </section>
         </div>

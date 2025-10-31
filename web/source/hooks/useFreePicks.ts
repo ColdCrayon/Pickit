@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { collection, query, where, orderBy, limit, onSnapshot } from "firebase/firestore";
-import { db } from "../lib/firebase";
+import { db, arbTicketConverter, gameTicketConverter } from "../lib";
 import { ArbTicket, GameTicket } from "../types/picks";
-import { arbTicketConverter, gameTicketConverter } from "../lib/converters";
 
 type State<T> = { data: T[]; loading: boolean; error: string | null };
 

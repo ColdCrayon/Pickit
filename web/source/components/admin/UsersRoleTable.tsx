@@ -11,8 +11,8 @@ import {
   DocumentData,
   QueryDocumentSnapshot,
 } from "firebase/firestore";
-import { setUserRoles } from "../../lib/setRoles";
-import { Toggle } from "../buttons/Toggle";
+import { setUserRoles } from "../../lib";
+import { Toggle } from "..";
 
 type UserRow = {
   id: string;
@@ -232,7 +232,7 @@ export function UsersRoleTable({ minRowSlots = 10, topSpacingPx = 32 }: Props) {
       </div>
 
       {/* Local table styles that blend with your card system */}
-      <style jsx>{`
+      <style>{`
         .table-wrap {
           width: 100%;
           overflow-x: auto;
@@ -323,7 +323,9 @@ export function UsersRoleTable({ minRowSlots = 10, topSpacingPx = 32 }: Props) {
             max-width: none;
           }
         }
-      `}</style>
+            `}</style>
     </section>
   );
 }
+
+export default UsersRoleTable;

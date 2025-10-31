@@ -1,6 +1,6 @@
 import React from "react";
 import { GameTicket } from "../../types/picks";
-import { formatPickDate } from "../../lib/dateUtils";
+import { formatPickDate } from "../../lib";
 
 interface GameTicketCardProps {
   ticket: GameTicket;

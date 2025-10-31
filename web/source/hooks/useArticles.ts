@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { collection, query, where, orderBy, limit, onSnapshot } from "firebase/firestore";
-import { db } from "../lib/firebase";
+import { db } from "../lib";
 import { Article } from "../types/articles";
 
 type ListArgs = {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Footer from "../components/footer";
-import { auth, googleProvider, upsertUserDoc, db } from "../lib/firebase";
+import { Footer } from "../components";
+import { auth, googleProvider, upsertUserDoc, db } from "../lib";
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -9,11 +9,11 @@ import {
   signInWithPopup,
   signOut,
   updateProfile,
-  sendPasswordResetEmail, // NEW
+  sendPasswordResetEmail,
   User as FirebaseUser,
 } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import { useUserPlan } from "../hooks/useUserPlan";
+import { useUserPlan } from "../hooks";
 
 type View = "signin" | "signup" | "forgot" | "profile";
 const logo = "/logo.png";

@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { collection, query, where, orderBy, limit, onSnapshot } from "firebase/firestore";
-import { db } from "../lib/firebase";
+import { db, gameTicketConverter } from "../lib";
 import { GameTicket } from "../types/picks";
-import { gameTicketConverter } from "../lib/converters";
 
 type Args = { 
   league?: "NFL" | "NBA" | "MLB" | "NHL";

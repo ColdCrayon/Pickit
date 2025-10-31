@@ -1,9 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import TicketForm from "../components/admin/TicketForm";
-import { useUserPlan } from "../hooks/useUserPlan";
-import { AdminGuard } from "../components/admin/AdminGuard";
-import { UsersRoleTable } from "../components/admin/UsersRoleTable";
+import { TicketForm, AdminGuard, UsersRoleTable } from "../components";
+import { useUserPlan } from "../hooks";
 // If you want the helper styles, import once (optional):
 import "../styles/admin.css";
 
