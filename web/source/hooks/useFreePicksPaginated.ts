@@ -3,9 +3,8 @@ import {
   collection, query, where, orderBy, limit, onSnapshot, startAfter,
   QueryDocumentSnapshot, DocumentData,
 } from "firebase/firestore";
-import { db } from "../lib/firebase";
+import { db, arbTicketConverter, gameTicketConverter } from "../lib";
 import { ArbTicket, GameTicket } from "../types/picks";
-import { arbTicketConverter, gameTicketConverter } from "../lib/converters";
 
 type PageState<T> = {
   data: T[];

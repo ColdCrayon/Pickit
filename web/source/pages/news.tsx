@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { useArticles } from "../hooks/useArticles";
-import Footer from "../components/footer";
+import { useArticles } from "../hooks";
+import { Footer } from "../components";
 
 const News: React.FC = () => {
   const [selectedSport, setSelectedSport] = useState<string | undefined>(

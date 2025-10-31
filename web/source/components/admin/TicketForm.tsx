@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createTicket, TicketInput } from "../../lib/tickets";
+import { createTicket, TicketInput } from "../../lib";
 
 const initial: TicketInput & { settleDate?: string | null } = {
   sportsbook: "",

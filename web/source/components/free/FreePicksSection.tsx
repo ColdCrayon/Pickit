@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Zap, TrendingUp, Percent } from "lucide-react";
 import { ArbTicket, GameTicket } from "../../types/picks";
-import { formatPickDate } from "../../lib/dateUtils";
+import { formatPickDate } from "../../lib";
 
 type Props = {
   league: "NFL" | "NBA" | "MLB" | "NHL";

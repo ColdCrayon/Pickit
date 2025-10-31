@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import {
   collection, query, where, orderBy, onSnapshot, limit
 } from "firebase/firestore";
-import { db } from "../lib/firebase";
+import { db, arbTicketConverter } from "../lib";
 import { ArbTicket } from "../types/picks";
-import { arbTicketConverter } from "../lib/converters";
 
 type Args = {
   league?: "NFL" | "NBA" | "MLB" | "NHL";

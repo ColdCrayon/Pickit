@@ -1,8 +1,7 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import { useArticleBySlug } from "../hooks/useArticles";
-import ArticleBody from "../components/news/ArticleBody";
-import Footer from "../components/footer";
+import { useArticleBySlug } from "../hooks";
+import { ArticleBody, Footer } from "../components";
 
 const ArticlePage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();

@@ -30,3 +30,5 @@ export function Toggle({ checked, onChange, label, disabled }: Props) {
     </button>
   );
 }
+
+export default Toggle;

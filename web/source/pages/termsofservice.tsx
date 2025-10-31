@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Footer from "../components/footer";
+import { Footer } from "../components";
 
 const logo = "/logo.png";
 
@@ -17,7 +17,7 @@ const TermsOfService: React.FC = () => {
       />
 
       {/* Content */}
-      <main className="relative z-10 max-w-5xl mx-auto py-20 px-6">
+      <main className="relative z-10 max-w-5xl mx-auto py-28 px-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
           <div className="flex items-center space-x-3">
@@ -70,7 +70,7 @@ const TermsOfService: React.FC = () => {
             </p>
             <p className="italic text-gray-300">
               Apple Compliance Notice: This app does not enable, support, or
-              promote gambling activities and complies with Apple’s App Store
+              promote gambling activities and complies with Apple's App Store
               Review Guidelines, including Section 5.3 (Gaming, Gambling, and
               Lotteries).
             </p>
@@ -116,10 +116,10 @@ const TermsOfService: React.FC = () => {
               <li>Use the App for illegal gambling or real-money wagering.</li>
               <li>Share false or misleading information.</li>
               <li>
-                Attempt to hack, exploit, or manipulate the App’s algorithms.
+                Attempt to hack, exploit, or manipulate the App's algorithms.
               </li>
               <li>
-                Violate any applicable laws or Apple’s Developer Policies.
+                Violate any applicable laws or Apple's Developer Policies.
               </li>
             </ul>
             <p>
@@ -144,7 +144,7 @@ const TermsOfService: React.FC = () => {
             <p>
               PickIt is not responsible for any financial loss, betting losses,
               or other damages resulting from your use of our advice or
-              predictions. The App is provided “AS IS” without warranties of any
+              predictions. The App is provided "AS IS" without warranties of any
               kind.
             </p>
           </section>

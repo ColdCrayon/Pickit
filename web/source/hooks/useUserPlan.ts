@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, getAuth, User } from "firebase/auth";
 import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "../lib/firebase";
+import { db } from "../lib";
 
 type PlanState = {
   user: User | null;

@@ -1,7 +1,8 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Footer } from "../components";
+
 const logo = "/logo.png";
-import Footer from "../components/footer";
 
 const tiers = [
   {
@@ -28,6 +29,7 @@ const tiers = [
     highlighted: true,
   },
 ];
+
 const Upgrade: React.FC = () => {
   const navigate = useNavigate();
 
