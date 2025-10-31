@@ -2,6 +2,7 @@
 
 ## Data Management
 - Format arb ticket data (book names ect.)
+- Add hash to game tickets
 - Admin Dashboard
     - Create tickets
     - View finds before tickets?
