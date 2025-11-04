@@ -76,6 +76,10 @@ Constraints:
 - Start directly with the first paragraph.
 - Use short, scannable paragraphs, occasional subheadings (### only), and a list if helpful.
 - No betting advice.
+- Avoid using horizontal rules (---), frontmatter, or top-level headings (# or ##).
+- Avoid tables or code blocks.
+- Keep the tone factual, professional, and journalistic.
+- Do NOT include a "Sources" section — those will be appended separately.
 
 Context:
 Sport: ${sport}
