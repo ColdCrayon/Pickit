@@ -28,13 +28,20 @@ const ArticlePage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
-      <div
-        className="absolute inset-0 bg-cover bg-center pointer-events-none"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)), url('Background.jpeg')",
-        }}
-      />
+      <div className="absolute inset-0 overflow-hidden">
+        <img
+          src={article?.imageUrls?.[0] || "Background.jpeg"}
+          alt="background"
+          className="w-full h-full object-cover blur-xl scale-110 opacity-40"
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              "linear-gradient(to bottom right, rgba(10,10,10,0.95), rgba(20,20,25,0.85), rgba(0,0,0,0.9))",
+          }}
+        />
+      </div>
 
       <main className="relative z-10 max-w-3xl mx-auto py-16 px-6">
         {loading && <p className="text-gray-400">Loading…</p>}
