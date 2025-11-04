@@ -88,6 +88,7 @@ app.post("/generate", async (req, res) => {
       const bodyMarkdownRaw = await writeBodyMarkdown(a);
 
       const bodyMarkdown = bodyMarkdownRaw
+        .replace(/^---$/gm, "###") // replace standalone HRs
         .replace(/^\s*#{1,2}\s+.*$/m, "") // drop first H1/H2 line
         .trim();
 
@@ -102,11 +103,11 @@ app.post("/generate", async (req, res) => {
         );
       }
 
-      const mdWithSources = sources.length
-        ? `${bodyMarkdown}\n\n---\n**Sources**\n${sources
-            .map((u) => `- ${u}`)
-            .join("\n")}\n`
-        : bodyMarkdown;
+      // const mdWithSources = sources.length
+      //   ? `${bodyMarkdown}\n\n---\n**Sources**\n${sources
+      //       .map((u) => `- ${u}`)
+      //       .join("\n")}\n`
+      //   : bodyMarkdown;
 
       const expiresAt = admin.firestore.Timestamp.fromDate(
         new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
@@ -117,7 +118,7 @@ app.post("/generate", async (req, res) => {
         sport: a.sport,
         teams: a.teams,
         summary: a.summary,
-        mdWithSources,
+        bodyMarkdown,
         imageUrls,
         sources,
         expiresAt,
