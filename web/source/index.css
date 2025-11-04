@@ -9,3 +9,9 @@
     @apply min-h-full bg-gray-900 overscroll-none overflow-x-hidden;
   }
 }
+
+.prose p {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  line-height: 1.7;
+}
