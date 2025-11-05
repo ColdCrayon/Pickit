@@ -76,7 +76,7 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
         {/* Main Dashboard Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Watchlist Section - Takes 2 columns */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 flex">
             <DashboardCard
               title="My Watchlist"
               icon={<Star className="w-5 h-5 text-yellow-400" />}
@@ -92,7 +92,7 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
           </div>
 
           {/* Quick Links - Takes 1 column */}
-          <div>
+          <div className="flex">
             <DashboardCard
               title="Quick Access"
               icon={<Zap className="w-5 h-5 text-yellow-400" />}
@@ -200,7 +200,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
   action,
   children,
 }) => (
-  <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+  <div className="bg-white/5 border border-white/10 rounded-2xl p-6 w-full h-full flex flex-col">
     <div className="flex items-center justify-between mb-6">
       <div className="flex items-center gap-2">
         {icon}
@@ -208,7 +208,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
       </div>
       {action}
     </div>
-    {children}
+    <div className="flex-1">{children}</div>
   </div>
 );
 
@@ -238,16 +238,18 @@ const QuickLink: React.FC<QuickLinkProps> = ({ to, label, description }) => (
 // Placeholder Components (to be replaced in future phases)
 
 const WatchlistPlaceholder: React.FC = () => (
-  <div className="text-center py-12">
-    <Star className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-    <h3 className="text-lg font-semibold mb-2">No items in watchlist</h3>
-    <p className="text-gray-400 mb-6">
-      Start tracking your favorite teams, players, or markets
-    </p>
-    <p className="text-sm text-gray-500">
-      <strong>Coming Soon:</strong> Add teams/players to track odds, line
-      movements, and get alerts
-    </p>
+  <div className="flex items-center justify-center h-full text-center py-12">
+    <div>
+      <Star className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+      <h3 className="text-lg font-semibold mb-2">No items in watchlist</h3>
+      <p className="text-gray-400 mb-6">
+        Start tracking your favorite teams, players, or markets
+      </p>
+      <p className="text-sm text-gray-500">
+        <strong>Coming Soon:</strong> Add teams/players to track odds, line
+        movements, and get alerts
+      </p>
+    </div>
   </div>
 );
 
