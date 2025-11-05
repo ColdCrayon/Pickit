@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { User, X as CloseIcon, Home as HomeIcon, Book, Info, TrendingUp, Shield, FileText } from "lucide-react";
-import NavAdminLink from "./admin/NavAdminLink";
+import { User, X as CloseIcon, LayoutDashboard } from "lucide-react";
+import NavAdminLink from "../admin/NavAdminLink";
 
 const logo = "/logo.png";
 
@@ -13,7 +13,11 @@ interface NavbarProps {
 
 const sports = ["MLB", "NFL", "NBA", "NHL"];
 
-const Navbar: React.FC<NavbarProps> = ({ isSidebarOpen, setIsSidebarOpen, userRole }) => (
+const Navbar: React.FC<NavbarProps> = ({
+  isSidebarOpen,
+  setIsSidebarOpen,
+  userRole,
+}) => (
   <nav className="fixed top-0 left-0 w-full z-50 bg-gray-900/80 backdrop-blur-lg border-b border-white/10">
     <div className="w-full px-6 flex items-center h-16 justify-between">
       {/* Left Group: Brand + Links */}
@@ -22,6 +26,7 @@ const Navbar: React.FC<NavbarProps> = ({ isSidebarOpen, setIsSidebarOpen, userRo
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           className="p-2"
+          aria-label="Toggle sidebar"
         >
           {isSidebarOpen ? (
             <CloseIcon className="w-6 h-6 text-white" />
@@ -35,7 +40,11 @@ const Navbar: React.FC<NavbarProps> = ({ isSidebarOpen, setIsSidebarOpen, userRo
         </button>
         <div className="flex items-center space-x-2">
           <Link to="/" className="flex items-center space-x-2">
-            <img src={logo} alt="PickIt Logo" className="w-8 h-8 rounded-full border border-white/20" />
+            <img
+              src={logo}
+              alt="PickIt Logo"
+              className="w-8 h-8 rounded-full border border-white/20"
+            />
           </Link>
           <Link to="/" className="text-2xl font-bold">
             PickIt
@@ -56,24 +65,40 @@ const Navbar: React.FC<NavbarProps> = ({ isSidebarOpen, setIsSidebarOpen, userRo
       </div>
       {/* Right */}
       <div className="flex items-center space-x-3">
+        {/* Pro Dashboard Link - Only for premium users */}
+        {userRole.isPremium && (
+          <Link
+            to="/dashboard"
+            className="hidden sm:inline-flex items-center gap-2 px-6 py-2.5 bg-yellow-500/20 text-yellow-400 font-bold rounded-xl hover:bg-yellow-500/30 transition"
+            title="Go to Pro Dashboard"
+          >
+            <LayoutDashboard className="w-4 h-4" />
+            <span>Dashboard</span>
+          </Link>
+        )}
+        {/* Upgrade Button - Only for standard users */}
         {!userRole.isPremium && (
           <Link
             to="/upgrade"
-            className="hidden sm:inline-flex px-6 py-2.5 bg-yellow-500/90 text-gray-900 font-bold rounded-xl hover:bg-yellow-400"
+            className="hidden sm:inline-flex px-6 py-2.5 bg-yellow-500/90 text-gray-900 font-bold rounded-xl hover:bg-yellow-400 transition"
           >
             UPGRADE
           </Link>
         )}
+        {/* Admin Link */}
         {userRole.isAdmin && <NavAdminLink />}
+        {/* Account Button */}
         <Link
           to="/Account"
-          className="hidden sm:inline-flex px-6 py-2.5 bg-gray-700/80 text-white font-bold rounded-xl hover:bg-gray-600/80"
+          className="hidden sm:inline-flex px-6 py-2.5 bg-gray-700/80 text-white font-bold rounded-xl hover:bg-gray-600/80 transition"
         >
           ACCOUNT
         </Link>
+        {/* Mobile Account Icon */}
         <Link
           to="/Account"
-          className="p-2.5 bg-gray-700/80 rounded-xl hover:bg-gray-600/80"
+          className="p-2.5 bg-gray-700/80 rounded-xl hover:bg-gray-600/80 transition"
+          aria-label="Account"
         >
           <User className="w-5 h-5" />
         </Link>

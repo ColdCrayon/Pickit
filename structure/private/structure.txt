@@ -1,0 +1,328 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                    PICKIT PRO DASHBOARD - FILE STRUCTURE                   ║
+║                          Phase 1 Implementation                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+web/source/
+│
+├── pages/
+│   │
+│   ├── App.tsx                    [REFACTORED - Routes & Layout Only]
+│   │   └─ Lines: ~400 → ~80 (80% reduction!)
+│   │   └─ Purpose: Pure routing, no embedded components
+│   │   └─ Features:
+│   │       • Conditional home route (pro vs standard)
+│   │       • ProGuard protection on /dashboard
+│   │       • Clean separation of concerns
+│   │
+│   ├── Home.tsx                   [NEW - Standard User Landing]
+│   │   └─ Purpose: Landing page for non-premium users
+│   │   └─ Features:
+│   │       • Hero section with branding
+│   │       • 6 feature cards (Real-time Analytics, AI, etc.)
+│   │       • CTA section with upgrade prompt
+│   │       • Footer
+│   │
+│   ├── ProDashboard.tsx          [NEW - Pro User Command Center]
+│   │   └─ Purpose: Phase 1 MVP Dashboard for premium users
+│   │   └─ Features:
+│   │       • Quick stats overview (4 cards)
+│   │       • Watchlist section (placeholder)
+│   │       • Quick access links to sports pages
+│   │       • Odds comparison (placeholder)
+│   │       • Line movement charts (placeholder)
+│   │       • AI insights teaser
+│   │   └─ Placeholders for Phase 2+:
+│   │       Watchlist CRUD
+│   │       Live odds comparison
+│   │       Line movement graphs
+│   │       Alert configuration
+│   │
+│   ├── index.ts                   [UPDATED]
+│   │   └─ Added: Home, ProDashboard exports
+│   │
+│   └── ... (existing pages unchanged)
+│       ├── Account.tsx
+│       ├── About.tsx
+│       ├── AdminDashboard.tsx
+│       └── etc.
+│
+├── components/
+│   │
+│   ├── guards/                   [NEW FOLDER]
+│   │   └── ProGuard.tsx          [NEW - Route Protection]
+│   │       └─ Purpose: Protect pro-only routes
+│   │       └─ Features:
+│   │           • Checks isPremium status
+│   │           • Loading state while verifying
+│   │           • Redirects to /upgrade if not premium
+│   │           • Allows access if premium
+│   │
+│   ├── Navbar.tsx                [UPDATED]
+│   │   └─ Added: Conditional "Dashboard" link for pro users
+│   │   └─ Styling: Yellow accent (matches upgrade button)
+│   │   └─ Icon: <LayoutDashboard />
+│   │
+│   ├── SidebarNav.tsx            [UPDATED]
+│   │   └─ Added: Conditional "Dashboard" nav item
+│   │   └─ Position: After "Home" link
+│   │   └─ Styling: Yellow highlight for visibility
+│   │
+│   ├── index.ts                  [UPDATED]
+│   │   └─ Added: ProGuard export
+│   │
+│   └── ... (existing components)
+│       ├── tickets/
+│       ├── layouts/
+│       ├── free/
+│       ├── admin/
+│       └── etc.
+│
+├── hooks/
+│   └── useUserPlan.ts               [EXISTING - No changes needed]
+│       └─ Already provides: isPremium, isAdmin, loading
+│
+└── lib/
+    └── firebase.ts                   [EXISTING - No changes needed]
+
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║                          COMPONENT RELATIONSHIPS                           ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+                                   App.tsx
+                                      │
+                    ┌─────────────────┼─────────────────┐
+                    │                 │                 │
+                 Navbar          SidebarNav          Routes
+                    │                 │                 │
+            ┌───────┴───────┐         │         ┌───────┴────────┐
+            │               │         │         │                │
+      isPremium?      isAdmin?    isPremium?   isPremium?    Other Routes
+            │               │         │         │                │
+        Dashboard     AdminLink   Dashboard   / Route         /about
+         Button                     Link        │             /news
+                                               │              /nfl
+                                    ┌──────────┴───────┐      etc.
+                                    │                  │
+                              isPremium?         ProGuard
+                                    │                  │
+                        ┌───────────┴────────┐         │
+                        │                    │         │
+                  ProDashboard            Home     /dashboard
+                  (Premium)            (Standard)      │
+                                                       │
+                                                 ProDashboard
+                                                  (Protected)
+
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║                            USER FLOW DIAGRAM                               ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+STANDARD USER:
+┌─────────────┐
+│ Visit /     │
+└──────┬──────┘
+       │
+       ▼
+┌──────────────────┐      ┌─────────────────┐
+│ isPremium check  │─NO──▶│  Home.tsx       │
+└──────────────────┘      │  (Landing page) │
+                          └────────┬─────────┘
+                                   │
+                          Click "Get Started"
+                                   │
+                                   ▼
+                          ┌─────────────────┐
+                          │  /upgrade       │
+                          │  (Pricing page) │
+                          └─────────────────┘
+
+
+PRO USER:
+┌─────────────┐
+│ Visit /     │
+└──────┬──────┘
+       │
+       ▼
+┌──────────────────┐      ┌─────────────────────┐
+│ isPremium check  │─YES─▶│  ProDashboard.tsx   │
+└──────────────────┘      │  (Command center)   │
+       │                  └──────────┬──────────┘
+       │                             │
+       │                    ┌────────┴────────┐
+       │                    │                 │
+       │              Quick Stats      Watchlist
+       │                    │          (Phase 2)
+       │                    │
+       │              Odds Compare
+       │               (Phase 2)
+       │
+       │
+       └─────────────────────────────┐
+                                     │
+                                     ▼
+                        ┌──────────────────────┐
+                        │ Can access:          │
+                        │ • /dashboard         │
+                        │ • All sports pages   │
+                        │ • Arb opportunities  │
+                        │ • All game picks     │
+                        └──────────────────────┘
+
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║                        ROUTE PROTECTION FLOW                               ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+User accesses /dashboard
+         │
+         ▼
+   ┌──────────┐
+   │ProGuard  │
+   │Component │
+   └────┬─────┘
+        │
+        ▼
+  ┌─────────────┐
+  │ useUserPlan │
+  │   Loading?  │
+  └──────┬──────┘
+         │
+    ┌────┴────┐
+    │         │
+   YES       NO
+    │         │
+    ▼         ▼
+ ┌──────┐  ┌──────────────┐
+ │Show  │  │ isPremium?   │
+ │Spin  │  └──────┬───────┘
+ │ner   │         │
+ └──────┘    ┌────┴────┐
+             │         │
+            YES       NO
+             │         │
+             ▼         ▼
+    ┌────────────┐  ┌─────────────┐
+    │   Render   │  │  Redirect   │
+    │ProDashboard│  │ to /upgrade │
+    └────────────┘  └─────────────┘
+
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║                     FIRESTORE STRUCTURE (Future)                           ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+Firestore Database
+│
+├── users/
+│   └── {uid}/
+│       ├── email: string
+│       ├── isPremium: boolean  ◀── Used by ProGuard
+│       ├── isAdmin: boolean
+│       │
+│       └── watchlist/  [PHASE 2 - Not Yet Implemented]
+│           └── {itemId}/
+│               ├── type: "team" | "player" | "game"
+│               ├── league: "nfl" | "nba" | "mlb" | "nhl"
+│               ├── entityId: string
+│               └── addedAt: timestamp
+│
+├── 📁 gameTickets/
+│   └── {ticketId}/
+│       └── ... (existing structure)
+│
+└── 📁 arbTickets/
+    └── {ticketId}/
+        └── ... (existing structure)
+
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║                         PHASE BREAKDOWN                                    ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+PHASE 1 (COMPLETE):
+   • Refactored App.tsx
+   • Created Home.tsx (standard landing)
+   • Created ProDashboard.tsx (pro dashboard MVP)
+   • Created ProGuard.tsx (route protection)
+   • Updated Navbar (dashboard link)
+   • Updated SidebarNav (dashboard item)
+   • Updated index exports
+
+PHASE 2 (NEXT):
+   • Implement watchlist Firestore structure
+   • Create useWatchlist hook (CRUD operations)
+   • Build WatchlistManager component
+   • Build OddsComparisonTable component
+   • Build LineMovementChart component
+   • Integrate with existing odds data
+
+PHASE 3 (FUTURE):
+   • Alert system (price alerts, arb alerts)
+   • Alert rules stored in Firestore
+   • Cloud Function triggers
+   • Push notifications
+
+PHASE 4 (FUTURE):
+   • Pick tracking (manual entry)
+   • ROI calculation
+   • Performance charts
+   • Win/loss records
+
+PHASE 5 (FUTURE):
+   • Dashboard customization
+   • Widget drag-and-drop
+   • Layout preferences
+   • Theme settings
+
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║                       FILES TO INSTALL                                     ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+1. CREATE NEW FOLDER:
+   web/source/components/guards/
+
+2. COPY NEW FILES:
+   web/source/components/guards/ProGuard.tsx
+   web/source/pages/Home.tsx
+   web/source/pages/ProDashboard.tsx
+
+3. REPLACE EXISTING FILES:
+   web/source/pages/App.tsx
+   web/source/components/Navbar.tsx
+   web/source/components/SidebarNav.tsx
+   web/source/components/index.ts
+   web/source/pages/index.ts
+
+4. DOCUMENTATION:
+   REFACTOR_GUIDE.md (this file!)
+
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║                           SUMMARY                                          ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+BEFORE:
+• App.tsx: 400+ lines (routes + home page mixed)
+• No pro dashboard
+• No route protection
+• Standard users see same page as pro users
+
+AFTER:
+• App.tsx: ~80 lines (routes only)
+• Home.tsx: Dedicated landing for standard users
+• ProDashboard.tsx: Command center for pro users
+• ProGuard.tsx: Route protection
+• Conditional navigation (dashboard link for pro users only)
+• Clean separation of concerns
+• Ready for Phase 2 feature implementation
+
+KEY BENEFITS:
+✓ Separation of concerns
+✓ Easier to maintain and extend
+✓ Better user experience (different views for different tiers)
+✓ Secure route protection
+✓ Scalable architecture for future phases

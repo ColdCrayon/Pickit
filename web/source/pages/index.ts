@@ -10,4 +10,5 @@ export { default as PrivacyPolicy } from "./PrivacyPolicy";
 export { default as Support } from "./Support";
 export { default as TermsOfService } from "./TermsOfService";
 export { default as Upgrade } from "./Upgrade";
-
+export { default as Home } from "./Home";
+export { default as ProDashboard } from "./ProDashboard";

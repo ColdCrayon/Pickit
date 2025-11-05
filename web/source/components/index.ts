@@ -1,8 +1,8 @@
 // Centralized exports for all reusable components
 
 // Navigation
-export { default as Navbar } from "./Navbar";
-export { default as SidebarNav } from "./SidebarNav";
+export { default as Navbar } from "./nav/Navbar";
+export { default as SidebarNav } from "./nav/SidebarNav";
 
 // Tickets
 export { default as ArbTicketCard } from "./tickets/ArbTicketCard";
@@ -29,8 +29,10 @@ export { default as ArticleBody } from "./news/ArticleBody";
 export { default as Toggle } from "./buttons/Toggle";
 
 // Admin
-export { AdminGuard } from "./admin/AdminGuard";
+export { AdminGuard } from "./guards/AdminGuard";
 export { default as NavAdminLink } from "./admin/NavAdminLink";
 export { default as TicketForm } from "./admin/TicketForm";
 export { default as UsersRoleTable } from "./admin/UsersRoleTable";
 
+// Guards
+export { ProGuard } from "./guards/ProGuard";
