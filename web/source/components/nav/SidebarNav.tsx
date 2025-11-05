@@ -7,9 +7,7 @@ import {
   Book,
   Shield,
   FileText,
-  LayoutDashboard,
 } from "lucide-react";
-import { useUserPlan } from "../../hooks/useUserPlan";
 
 interface SidebarNavProps {
   isSidebarOpen: boolean;
@@ -20,8 +18,6 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
   isSidebarOpen,
   setIsSidebarOpen,
 }) => {
-  const { isPremium } = useUserPlan();
-
   return (
     <>
       <aside
@@ -38,18 +34,6 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
             >
               <HomeIcon className="w-5 h-5" /> <span>Home</span>
             </Link>
-
-            {/* Dashboard Link - Only for premium users */}
-            {isPremium && (
-              <Link
-                to="/dashboard"
-                className="flex items-center space-x-3 py-3 px-4 rounded-xl hover:bg-white/10 bg-yellow-500/10 border border-yellow-500/20 transition"
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <LayoutDashboard className="w-5 h-5 text-yellow-400" />
-                <span className="text-yellow-400 font-semibold">Dashboard</span>
-              </Link>
-            )}
 
             <Link
               to="/about"
