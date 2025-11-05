@@ -2,12 +2,14 @@ import React from "react";
 import { Link } from "react-router-dom";
 import {
   Home as HomeIcon,
+  LayoutDashboard,
   Info,
   TrendingUp,
   Book,
   Shield,
   FileText,
 } from "lucide-react";
+import { useUserPlan } from "../../hooks/useUserPlan";
 
 interface SidebarNavProps {
   isSidebarOpen: boolean;
@@ -18,6 +20,8 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
   isSidebarOpen,
   setIsSidebarOpen,
 }) => {
+  const { isPremium } = useUserPlan();
+
   return (
     <>
       <aside
@@ -32,7 +36,15 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
               className="flex items-center space-x-3 py-3 px-4 rounded-xl hover:bg-white/10 transition"
               onClick={() => setIsSidebarOpen(false)}
             >
-              <HomeIcon className="w-5 h-5" /> <span>Home</span>
+              {isPremium ? (
+                <>
+                  <LayoutDashboard className="w-5 h-5" /> <span>Dashboard</span>
+                </>
+              ) : (
+                <>
+                  <HomeIcon className="w-5 h-5" /> <span>Home</span>
+                </>
+              )}
             </Link>
 
             <Link
