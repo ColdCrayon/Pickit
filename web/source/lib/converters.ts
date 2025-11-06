@@ -1,16 +1,7 @@
 import { Timestamp, QueryDocumentSnapshot, SnapshotOptions } from "firebase/firestore";
-import {ArbTicket, GameTicket } from "../types/picks";
+import { ArbTicket, GameTicket } from "../types/picks";
 
-const toDate = (v: any): Date | null => {
-  if (!v) return null;
-  if (v instanceof Date) return v;
-  if (v instanceof Timestamp) return v.toDate();
-  // string like "Sep 22, 2025 at 9:54PM" or ISO
-  const d = new Date(v);
-  return isNaN(d.getTime()) ? null : d;
-};
-
-const passthroughDate = (v: any) => v ?? null; // we won’t parse/convert now
+const passthroughDate = (v: any) => v ?? null; // we won't parse/convert now
 
 export const arbTicketConverter = {
   toFirestore(t: ArbTicket) {
@@ -45,15 +36,29 @@ export const gameTicketConverter = {
     const d = snap.data(options) as any;
     return {
       id: d.id ?? snap.id,
-      league: d.league,
-      pickDescription: d.pickDescription ?? "",
-      pickGameInfo: d.pickGameInfo ?? "",
-      pickPublishDate: passthroughDate(d.pickPublishDate),
-      pickSportsbook: d.pickSportsbook ?? "",
-      pickTeam: d.pickTeam ?? "",
-      pickType: d.pickType ?? "",
-      serverSettled: !!d.serverSettled,
+      
+      // New format fields (from Firebase screenshot)
+      //league: d.league,
+      market: d.market,
+      pickType: d.pickType,
+      description: d.description,
+      selectionTeam: d.selectionTeam,
+      selectionSide: d.selectionSide,
+      oddsAmerican: d.oddsAmerican,
+      sportsbook: d.sportsbook,
+      externalUrl: d.externalUrl,
+      
+      // Legacy format fields (for backward compatibility)
+      pickDescription: d.pickDescription,
+      //description: d.description,
+      pickSportsbook: d.pickSportsbook,
+      pickTeam: d.pickTeam,
+      
+      // Timestamps
+      createdAt: passthroughDate(d.createdAt),
+      updatedAt: passthroughDate(d.updatedAt),
       settleDate: passthroughDate(d.settleDate),
+      pickPublishDate: passthroughDate(d.pickPublishDate),
     };
   },
 };

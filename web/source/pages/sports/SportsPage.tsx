@@ -24,13 +24,12 @@ const SportsPage: React.FC = () => {
     max: 20 
   });
   
-  // For game tickets:
-  // - Premium users: includeSettled = true (shows all tickets)
-  // - Free users: includeSettled = false (only shows unsettled/live tickets)
-  // Note: You might want to adjust this logic based on your business rules
+  // For game tickets - same pattern as arb tickets:
+  // - Premium users: showSettledOnly = false (shows ALL tickets)
+  // - Free users: showSettledOnly = true (only shows settled tickets)
   const { tickets: gameTickets, loading: gameLoading, error: gameError } = useSportsTickets({ 
     league: validSport, 
-    includeSettled: true, // Show all game tickets for now
+    showSettledOnly: !isPremium, // Free users only see settled, premium sees all
     max: 20 
   });
 
