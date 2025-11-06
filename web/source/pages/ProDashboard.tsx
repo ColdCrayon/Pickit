@@ -7,9 +7,10 @@ import {
   Zap,
   BarChart3,
   Bell,
-  Plus,
 } from "lucide-react";
 import { Footer } from "../components";
+import { WatchlistCard } from "../components/dashboard/WatchlistCard";
+import { useUserPlan } from "../hooks";
 
 interface ProDashboardProps {
   isSidebarOpen: boolean;
@@ -20,13 +21,15 @@ interface ProDashboardProps {
  * Command center for premium users
  *
  * Features (Phase 1):
- * - Watchlist section (teams/players/games to track)
+ * - Watchlist section (teams/players/games to track) ✅ IMPLEMENTED
  * - Odds comparison table (placeholder - not yet implemented)
  * - Line movement charts (placeholder - not yet implemented)
  * - Quick access to arbitrage & picks
  * - Stats overview
  */
 const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
+  const { user } = useUserPlan();
+
   return (
     <main
       className={`relative z-10 transition-all duration-300 ${
@@ -50,8 +53,8 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
           <StatCard
             icon={<Star className="w-6 h-6" />}
             label="Watchlist Items"
-            value="0"
-            subtext="Add teams to track"
+            value="-"
+            subtext="Track your favorites"
           />
           <StatCard
             icon={<Zap className="w-6 h-6" />}
@@ -74,85 +77,66 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
         </div>
 
         {/* Main Dashboard Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          {/* Watchlist Section - Takes 2 columns */}
-          <div className="lg:col-span-2 flex">
-            <DashboardCard
-              title="My Watchlist"
-              icon={<Star className="w-5 h-5 text-yellow-400" />}
-              action={
-                <button className="flex items-center gap-2 px-4 py-2 bg-yellow-500/20 text-yellow-400 rounded-xl hover:bg-yellow-500/30 transition">
-                  <Plus className="w-4 h-4" />
-                  Add Item
-                </button>
-              }
-            >
-              <WatchlistPlaceholder />
-            </DashboardCard>
-          </div>
-
-          {/* Quick Links - Takes 1 column */}
-          <div className="flex">
-            <DashboardCard
-              title="Quick Access"
-              icon={<Zap className="w-5 h-5 text-yellow-400" />}
-            >
-              <div className="space-y-3">
-                <QuickLink
-                  to="/nfl"
-                  label="NFL Games"
-                  description="View current NFL odds"
-                />
-                <QuickLink
-                  to="/nba"
-                  label="NBA Games"
-                  description="View current NBA odds"
-                />
-                <QuickLink
-                  to="/mlb"
-                  label="MLB Games"
-                  description="View current MLB odds"
-                />
-                <QuickLink
-                  to="/nhl"
-                  label="NHL Games"
-                  description="View current NHL odds"
-                />
-                <QuickLink
-                  to="/FreePicks"
-                  label="Free Picks"
-                  description="Browse settled picks"
-                />
-              </div>
-            </DashboardCard>
-          </div>
-        </div>
-
-        {/* Odds Comparison Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Watchlist Section - NOW FULLY FUNCTIONAL */}
+          <div className="lg:col-span-2">
+            <WatchlistCard userId={user?.uid} />
+          </div>
+
+          {/* Odds Comparison Placeholder */}
           <DashboardCard
             title="Odds Comparison"
-            icon={<BarChart3 className="w-5 h-5 text-yellow-400" />}
+            icon={<BarChart3 className="w-5 h-5 text-blue-400" />}
           >
             <OddsComparisonPlaceholder />
           </DashboardCard>
 
+          {/* Line Movement Placeholder */}
           <DashboardCard
             title="Line Movement"
-            icon={<TrendingUp className="w-5 h-5 text-yellow-400" />}
+            icon={<TrendingUp className="w-5 h-5 text-green-400" />}
           >
             <LineMovementPlaceholder />
           </DashboardCard>
         </div>
 
-        {/* AI Insights Teaser */}
+        {/* Quick Links */}
         <DashboardCard
-          title="AI Insights"
-          icon={<TrendingUp className="w-5 h-5 text-yellow-400" />}
+          title="Quick Access"
+          icon={<Zap className="w-5 h-5 text-yellow-400" />}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <QuickLink
+              to="/nfl"
+              label="NFL Arbitrage"
+              description="View current NFL betting opportunities"
+            />
+            <QuickLink
+              to="/nba"
+              label="NBA Arbitrage"
+              description="Check NBA market inefficiencies"
+            />
+            <QuickLink
+              to="/free-picks/all"
+              label="Today's Picks"
+              description="Expert predictions across all leagues"
+            />
+            <QuickLink
+              to="/news"
+              label="Latest News"
+              description="Stay updated with sports betting insights"
+            />
+          </div>
+        </DashboardCard>
+
+        {/* Coming Soon Section */}
+        <DashboardCard
+          title="Advanced Analytics"
+          icon={<BarChart3 className="w-5 h-5 text-purple-400" />}
         >
           <div className="text-center py-8">
-            <p className="text-gray-400 mb-4">
-              AI-powered insights and personalized recommendations coming soon!
+            <p className="text-gray-400 mb-2">
+              Advanced data visualizations and predictive models coming soon
             </p>
             <p className="text-sm text-gray-500">
               We're building advanced analytics to help you make smarter betting
@@ -236,22 +220,6 @@ const QuickLink: React.FC<QuickLinkProps> = ({ to, label, description }) => (
 );
 
 // Placeholder Components (to be replaced in future phases)
-
-const WatchlistPlaceholder: React.FC = () => (
-  <div className="flex items-center justify-center h-full text-center py-12">
-    <div>
-      <Star className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-      <h3 className="text-lg font-semibold mb-2">No items in watchlist</h3>
-      <p className="text-gray-400 mb-6">
-        Start tracking your favorite teams, players, or markets
-      </p>
-      <p className="text-sm text-gray-500">
-        <strong>Coming Soon:</strong> Add teams/players to track odds, line
-        movements, and get alerts
-      </p>
-    </div>
-  </div>
-);
 
 const OddsComparisonPlaceholder: React.FC = () => (
   <div className="text-center py-8">

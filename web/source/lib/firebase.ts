@@ -39,6 +39,18 @@ export async function upsertUserDoc(
       isAdmin: data.isAdmin ?? false,
       isPremium: data.isPremium ?? false,
       joined: serverTimestamp(),
+      // Initialize empty watchlist
+      watchlist: {
+        teams: [],
+        games: [],
+        markets: [],
+      },
+      // Initialize default watchlist settings
+      watchlistSettings: {
+        enableNotifications: true,
+        alertThreshold: 5.0,
+        maxWatchlistItems: 50,
+      },
     },
     { merge: true }
   );
