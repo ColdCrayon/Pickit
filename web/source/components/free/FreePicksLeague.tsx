@@ -91,7 +91,7 @@ const FreePicksLeague: React.FC = () => {
                     {game.data.map((g) => (
                       <div key={g.id} className="p-4 rounded-xl border border-white/10 bg-white/5">
                         <div className="flex items-center justify-between">
-                          <div className="font-semibold">{g.pickGameInfo}</div>
+                          <div className="font-semibold">{g.description}</div>
                           <div className="text-xs text-gray-400">{formatPickDate(g.pickPublishDate)}</div>
                         </div>
                         <p className="text-yellow-400 text-sm mt-1">{g.pickTeam} ({g.pickType})</p>

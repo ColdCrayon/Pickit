@@ -15,9 +15,9 @@ const TicketCard: React.FC<{ t: GameTicket }> = ({ t }) => {
       {/* Stub */}
       <div className="sm:w-28 w-full sm:h-full sm:absolute sm:inset-y-0 sm:left-0 bg-black/20 border-r border-white/10 flex sm:flex-col flex-row items-center justify-center gap-2 p-4">
         <div className="text-xs text-gray-300 text-center leading-tight">
-          <div className="uppercase tracking-wider">{t.league ?? "NFL"}</div>
+          {/*<div className="uppercase tracking-wider">{t.league ?? "NFL"}</div>*/}
           <div className="opacity-70">Pick</div>
-          {t.serverSettled && (
+          {t.updatedAt && (
             <div className="mt-1 inline-block px-2 py-0.5 rounded-full bg-green-500/10 border border-green-400/40 text-[10px] text-green-300">
               Settled
             </div>
@@ -29,7 +29,7 @@ const TicketCard: React.FC<{ t: GameTicket }> = ({ t }) => {
       <div className="sm:ml-28 p-5 md:p-6">
         <div className="flex items-start justify-between gap-4">
           <h3 className="text-2xl md:text-3xl font-extrabold tracking-tight">
-            {t.pickGameInfo}
+            {/*{t.pickGameInfo}*/}
           </h3>
           <div className="text-right">
             <div className="text-sm text-gray-400">Sportsbook</div>

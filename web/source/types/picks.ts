@@ -1,15 +1,33 @@
-// “Tickets” DB == game picks from gameTickets collection
+// Updated types based on actual Firebase structure
+
 export interface GameTicket {
   id: string;
-  league?: string;           
-  pickDescription: string;   
-  pickGameInfo: string;      
-  pickPublishDate: Date;     
-  pickSportsbook: string;    
-  pickTeam: string;          
-  pickType: string;          
-  serverSettled: boolean;
-  settleDate?: Date | null;
+  
+  // New format (matches Firebase screenshot)
+  league?: string;                    // e.g., "NBA"
+  market?: string;                    // e.g., "spread"
+  pickType?: string;                  // e.g., "Game Spread"
+  description?: string;               // Description of the pick
+  selectionTeam?: string;            // e.g., "Boston Celtics"
+  selectionSide?: string;            // e.g., "-6.5"
+  oddsAmerican?: number;             // e.g., -110
+  externalUrl?: string;              // Link to sportsbook
+  sportsbook?: string;               // e.g., "DraftKings"
+  
+  // Legacy/alternative field names (keeping for compatibility)
+  pickGameInfo?: string;             
+  pickDescription?: string;
+  pickSportsbook?: string;    
+  pickTeam?: string;          
+  
+  // Timestamps
+  createdAt?: any;                   // Date | Timestamp | string
+  updatedAt?: any;                   // Date | Timestamp | string (presence indicates "settled")
+  pickPublishDate?: any;             // Date | Timestamp | string
+  settleDate?: any;                  // Date | Timestamp | string | null
+  
+  // NOTE: GameTickets do NOT have serverSettled field
+  // Instead, presence of updatedAt indicates the ticket is settled/completed
 }
 
 export interface ArbLeg {
@@ -26,10 +44,10 @@ export interface ArbTicket {
   marketId?: string;          // "moneyline", "spread", ...
   margin?: number;            // positive = edge
   legs: ArbLeg[];
-  serverSettled: boolean;
-  createdAt?: any;            // string | Timestamp | Date  (we'll just show whatever)
-  settleDate?: any;           // same
-  pickPublishDate?: any;      // some data may have this instead of createdAt
+  serverSettled: boolean;     // ArbTickets DO have serverSettled
+  createdAt?: any;            // string | Timestamp | Date
+  settleDate?: any;           
+  pickPublishDate?: any;      
   // optional book shortcuts; some older docs may have these:
   sportsBook1?: string;
   sportsBook2?: string;

@@ -1,11 +1,12 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-import { useSportsArbTickets, useSportsTickets } from "../../hooks";
+import { useSportsArbTickets, useSportsTickets, useUserPlan } from "../../hooks";
 import { SportsPageLayout } from "../../components";
 import { SPORTS, type Sport } from "../../lib";
 
 const SportsPage: React.FC = () => {
   const location = useLocation();
+  const { isPremium, loading: userLoading } = useUserPlan();
 
   const sportFromPath = location.pathname.slice(1).toUpperCase(); // Remove leading "/"
   
@@ -14,17 +15,35 @@ const SportsPage: React.FC = () => {
     ? (sportFromPath as Sport)
     : "NFL"; // Default fallback
 
+  // For arb tickets:
+  // - Premium users: includeLive = true (shows all tickets)
+  // - Free users: includeLive = false (only shows settled tickets via the serverSettled filter)
   const { tickets: arbTickets, loading: arbLoading, error: arbError } = useSportsArbTickets({ 
     league: validSport, 
-    includeLive: true, 
+    includeLive: isPremium, // Only premium users get live tickets
     max: 20 
   });
   
+  // For game tickets - same pattern as arb tickets:
+  // - Premium users: showSettledOnly = false (shows ALL tickets)
+  // - Free users: showSettledOnly = true (only shows settled tickets)
   const { tickets: gameTickets, loading: gameLoading, error: gameError } = useSportsTickets({ 
     league: validSport, 
-    includeSettled: true, 
+    showSettledOnly: !isPremium, // Free users only see settled, premium sees all
     max: 20 
   });
+
+  // Show loading state while checking user authentication
+  if (userLoading) {
+    return (
+      <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-400 mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <SportsPageLayout
@@ -36,9 +55,9 @@ const SportsPage: React.FC = () => {
       gameLoading={gameLoading}
       arbError={arbError}
       gameError={gameError}
+      isPremium={isPremium}
     />
   );
 };
 
 export default SportsPage;
-
