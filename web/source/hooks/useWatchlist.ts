@@ -1,5 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
-import { doc, getDoc, updateDoc, onSnapshot } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  onSnapshot,
+  Timestamp,
+} from "firebase/firestore";
 import { db } from "../lib";
 import {
   Watchlist,
@@ -104,12 +110,14 @@ export function useWatchlist(userId: string | undefined): UseWatchlistReturn {
       try {
         // Check if team already exists
         if (watchlist.teams.some((t) => t.id === team.id)) {
-          throw new Error("Team already in watchlist");
+          throw new Error(
+            "Team already in watchlist. Reload the page to see the changes."
+          );
         }
 
         const newTeam: WatchlistTeam = {
           ...team,
-          addedAt: new Date(),
+          addedAt: Timestamp.now().toDate(), // Convert Firestore Timestamp to Date
         };
 
         const updatedWatchlist = {
@@ -163,7 +171,7 @@ export function useWatchlist(userId: string | undefined): UseWatchlistReturn {
 
         const newGame: WatchlistGame = {
           ...game,
-          addedAt: new Date(),
+          addedAt: Timestamp.now().toDate(), // Convert Firestore Timestamp to Date
         };
 
         const updatedWatchlist = {
@@ -217,7 +225,7 @@ export function useWatchlist(userId: string | undefined): UseWatchlistReturn {
 
         const newMarket: WatchlistMarket = {
           ...market,
-          addedAt: new Date(),
+          addedAt: Timestamp.now().toDate(), // Convert Firestore Timestamp to Date
         };
 
         const updatedWatchlist = {

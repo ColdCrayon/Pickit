@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { X, Search, Star, Clock, TrendingUp } from "lucide-react";
 import {
   WatchlistTeam,
@@ -31,6 +31,24 @@ export const AddToWatchlistModal: React.FC<AddToWatchlistModalProps> = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Auto-clear error after 5 seconds
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setError(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
+  // Clear error when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setError(null);
+      setSearchQuery("");
+    }
+  }, [isOpen]);
 
   // Sample teams data (in production, this would come from an API or database)
   const sampleTeams = [
@@ -125,6 +143,7 @@ export const AddToWatchlistModal: React.FC<AddToWatchlistModalProps> = ({
     try {
       await onAddTeam(team);
       setSearchQuery("");
+      onClose(); // Close modal after successful add
     } catch (err: any) {
       setError(err.message || "Failed to add team");
     } finally {
@@ -138,6 +157,7 @@ export const AddToWatchlistModal: React.FC<AddToWatchlistModalProps> = ({
     try {
       await onAddGame(game);
       setSearchQuery("");
+      onClose(); // Close modal after successful add
     } catch (err: any) {
       setError(err.message || "Failed to add game");
     } finally {
@@ -151,6 +171,7 @@ export const AddToWatchlistModal: React.FC<AddToWatchlistModalProps> = ({
     try {
       await onAddMarket(market);
       setSearchQuery("");
+      onClose(); // Close modal after successful add
     } catch (err: any) {
       setError(err.message || "Failed to add market");
     } finally {
