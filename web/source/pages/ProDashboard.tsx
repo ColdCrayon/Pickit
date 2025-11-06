@@ -76,6 +76,37 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
           />
         </div>
 
+        {/* Quick Links */}
+        <div className="mb-8">
+          <DashboardCard
+            title="Quick Access"
+            icon={<Zap className="w-5 h-5 text-yellow-400" />}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <QuickLink
+                to="/nfl"
+                label="NFL Arbitrage"
+                description="View current NFL betting opportunities"
+              />
+              <QuickLink
+                to="/nba"
+                label="NBA Arbitrage"
+                description="Check NBA market inefficiencies"
+              />
+              <QuickLink
+                to="/free-picks/all"
+                label="Today's Picks"
+                description="Expert predictions across all leagues"
+              />
+              <QuickLink
+                to="/news"
+                label="Latest News"
+                description="Stay updated with sports betting insights"
+              />
+            </div>
+          </DashboardCard>
+        </div>
+
         {/* Main Dashboard Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Watchlist Section - NOW FULLY FUNCTIONAL */}
@@ -99,35 +130,6 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
             <LineMovementPlaceholder />
           </DashboardCard>
         </div>
-
-        {/* Quick Links */}
-        <DashboardCard
-          title="Quick Access"
-          icon={<Zap className="w-5 h-5 text-yellow-400" />}
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <QuickLink
-              to="/nfl"
-              label="NFL Arbitrage"
-              description="View current NFL betting opportunities"
-            />
-            <QuickLink
-              to="/nba"
-              label="NBA Arbitrage"
-              description="Check NBA market inefficiencies"
-            />
-            <QuickLink
-              to="/free-picks/all"
-              label="Today's Picks"
-              description="Expert predictions across all leagues"
-            />
-            <QuickLink
-              to="/news"
-              label="Latest News"
-              description="Stay updated with sports betting insights"
-            />
-          </div>
-        </DashboardCard>
 
         {/* Coming Soon Section */}
         <DashboardCard
