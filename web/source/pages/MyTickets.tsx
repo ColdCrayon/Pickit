@@ -44,7 +44,7 @@ export const MyTickets: React.FC = () => {
     <div className="min-h-screen bg-gray-900 text-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-8 mt-10">
           <div className="flex items-center gap-3 mb-2">
             <Star className="w-8 h-8 text-yellow-400 fill-yellow-400" />
             <h1 className="text-4xl font-bold">My Saved Tickets</h1>
