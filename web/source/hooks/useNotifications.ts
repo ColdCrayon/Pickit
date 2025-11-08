@@ -1,12 +1,13 @@
 /**
  * web/source/hooks/useNotifications.ts
  *
- * NEW FOR WEEK 1: Hook for managing push notifications
- * Handles FCM token registration and foreground message handling
+ * FIXED: Check if notifications are already enabled on mount
  */
 
 import { useState, useEffect, useCallback } from "react";
+import { doc, getDoc } from "firebase/firestore";
 import { useAuth } from "./useAuth";
+import { db } from "../lib/firebase";
 import {
   requestNotificationPermission,
   saveFcmToken,
@@ -50,6 +51,42 @@ export const useNotifications = (): NotificationState & NotificationActions => {
     token: null,
     enabled: false,
   });
+
+  /**
+   * Check if user already has notifications enabled
+   */
+  useEffect(() => {
+    if (!user) {
+      setState((prev) => ({ ...prev, enabled: false, token: null }));
+      return;
+    }
+
+    const checkExistingToken = async () => {
+      try {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        const userData = userDoc.data();
+
+        if (userData?.fcmToken && userData?.notificationsEnabled !== false) {
+          setState((prev) => ({
+            ...prev,
+            enabled: true,
+            token: userData.fcmToken,
+            permission: Notification.permission,
+          }));
+        } else {
+          setState((prev) => ({
+            ...prev,
+            enabled: false,
+            token: null,
+          }));
+        }
+      } catch (error) {
+        console.error("Error checking notification status:", error);
+      }
+    };
+
+    checkExistingToken();
+  }, [user]);
 
   /**
    * Request notification permission and save FCM token
