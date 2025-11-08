@@ -13,6 +13,7 @@ import TermsOfService from "./TermsOfService";
 import Support from "./Support";
 import About from "./About";
 import Upgrade from "./Upgrade";
+import Billing from "./billing";
 import SportsPage from "./sports/SportsPage";
 import { FreePicks, FreePicksAll, FreePicksLeague } from "../components";
 import ArticlePage from "./Article";
@@ -90,6 +91,7 @@ function App() {
           {/* Public Pages */}
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/Account" element={<Account />} />
+          <Route path="/billing" element={<Billing />} /> 
           <Route path="/termsofservice" element={<TermsOfService />} />
           <Route path="/support" element={<Support />} />
           <Route path="/about" element={<About />} />

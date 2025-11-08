@@ -15,6 +15,7 @@ export const ROUTES = {
   TERMS: "/termsofservice",
   SUPPORT: "/support",
   UPGRADE: "/upgrade",
+  BILLING: "/billing",
   FREE_PICKS: "/FreePicks",
   FREE_PICKS_ALL: "/free-picks/all",
   FREE_PICKS_LEAGUE: "/free-picks/:league",

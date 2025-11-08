@@ -302,35 +302,35 @@ const Account: React.FC = () => {
 
               {/* Subscription Info Card (for Premium users) */}
               {isPremium && (
-                <div className="mt-10"> 
-                <Card>
-                  <div className="flex items-start justify-between">
-                        <div className="flex items-start justify-between">
-                          <h3 className="text-xl font-semibold mb-2 flex items-center gap-2">
-                            <CreditCard className="w-5 h-5 text-yellow-400" />
-                            Subscription Details
-                          </h3>
-                          <div className="space-y-2 text-gray-300">
-                            <p className="flex items-center gap-2">
-                              <Calendar className="w-4 h-4" />
-                              <span>Premium Plan - Monthly</span>
-                            </p>
-          <p className="text-sm text-gray-400">
+   <div className="mt-10">
+    <Card>
+      <div className="flex items-start justify-between gap-6">
+        <div className="flex-1 space-y-4">
+          <h3 className="text-xl font-semibold flex items-center gap-2">
+            <CreditCard className="w-5 h-5 text-yellow-400" />
+            Subscription Details
+          </h3>
+          <div className="space-y-3 text-gray-300 pl-7">
+            <p className="flex items-center gap-2 text-base">
+              <Calendar className="w-4 h-4" />
+              <span>Premium Plan - Monthly</span>
+            </p>
+            <p className="text-sm text-gray-400 pl-6">
               Next billing date: {new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString()}
-                        </p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => setShowSubscriptionModal(true)}
-                      className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl transition text-sm flex items-center gap-2"
-                    >
-                      <Settings className="w-4 h-4" />
-                      Manage
-                    </button>
-                  </div>
-                </Card>
-              </div>
-              )}
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={() => setShowSubscriptionModal(true)}
+          className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl transition text-sm flex items-center gap-2 shrink-0"
+        >
+          <Settings className="w-4 h-4" />
+          Manage
+        </button>
+      </div>
+    </Card>
+  </div>
+)}
 
               {/* Plan Features */}
               <Card>
@@ -639,9 +639,10 @@ const SubscriptionModal: React.FC<{
 }> = ({ isPremium, onClose }) => {
   const [cancelConfirm, setCancelConfirm] = useState(false);
 
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-      <div className="bg-gray-800 border border-white/10 rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-gray-800 bordeßr border-white/10 rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold flex items-center gap-2">
             <Settings className="w-6 h-6 text-yellow-400" />
