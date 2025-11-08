@@ -1,36 +1,81 @@
-// Centralized exports for all library utilities
+/**
+ * web/source/lib/index.ts
+ *
+ * UPDATED for Week 1: Added new exports for user tickets and notifications
+ */
 
 // Firebase
-export { auth, googleProvider, db, upsertUserDoc } from "./firebase";
+export {
+  auth,
+  googleProvider,
+  db,
+  upsertUserDoc,
+  // NEW: FCM exports
+  requestNotificationPermission,
+  saveFcmToken,
+  setupForegroundMessageHandler,
+  disableNotifications,
+} from "./firebase";
 
 // Converters
-export { arbTicketConverter, gameTicketConverter } from "./converters";
+export {
+  arbTicketConverter,
+  gameTicketConverter,
+  userTicketConverter, // NEW
+} from "./converters";
+
+// NEW: Export UserTicket type
+export type { UserTicket } from "./converters";
 
 // Constants
-export { SPORTS, ROUTES, SPORT_ROUTES, COLLECTIONS, USER_ROLES, DEFAULT_MAX_TICKETS } from "./constants";
-export type { Sport } from "./constants";
+export {
+  SPORTS,
+  ROUTES,
+  SPORT_ROUTES,
+  COLLECTIONS,
+  USER_ROLES,
+  DEFAULT_MAX_TICKETS,
+  TICKET_TYPES, // NEW
+} from "./constants";
+export type { Sport, TicketType } from "./constants"; // NEW: TicketType
 
 // Utilities
-export { formatDate, formatPickDate, formatDateTime, formatRelativeDate } from "./utils";
-export { americanToDecimal, decimalToAmerican, impliedProbability } from "./utils";
+export {
+  formatDate,
+  formatPickDate,
+  formatDateTime,
+  formatRelativeDate,
+} from "./utils";
+export {
+  americanToDecimal,
+  decimalToAmerican,
+  impliedProbability,
+} from "./utils";
 export { debounce, capitalize, formatPercent, truncate } from "./utils";
 
 // Common Types
-export type { 
-  LoadingState, 
-  ApiError, 
-  Nullable, 
-  Optional, 
-  AsyncState, 
-  PaginatedData, 
+export type {
+  LoadingState,
+  ApiError,
+  Nullable,
+  Optional,
+  AsyncState,
+  PaginatedData,
   FilterOptions,
   UserRole,
   SportLeague,
-  MarketType
+  MarketType,
 } from "./common-types";
 
 // Error Handling
-export { AppError, getErrorMessage, handleFirebaseError, logError, withErrorHandling, getSafeErrorMessage } from "./error-handler";
+export {
+  AppError,
+  getErrorMessage,
+  handleFirebaseError,
+  logError,
+  withErrorHandling,
+  getSafeErrorMessage,
+} from "./error-handler";
 
 // Date Utils (for backward compatibility)
 export { formatDate as formatDateAlt } from "./dateUtils";
@@ -41,4 +86,3 @@ export type { TicketInput } from "./tickets";
 
 // User Roles
 export { setUserRoles } from "./setRoles";
-
