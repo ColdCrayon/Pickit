@@ -1,5 +1,7 @@
 /**
  * web/source/lib/converters.ts
+ *
+ * UPDATED for Week 1: Fixed userTicketConverter to return complete UserTicket objects
  */
 
 import {
@@ -131,29 +133,29 @@ export interface UserTicket {
 }
 
 export const userTicketConverter = {
-  toFirestore(userTicket: Partial<UserTicket>): DocumentData {
-    const data: DocumentData = {};
-    if (userTicket.ticketId) data.ticketId = userTicket.ticketId;
-    if (userTicket.ticketType) data.ticketType = userTicket.ticketType;
-    if (userTicket.savedAt)
-      data.savedAt = Timestamp.fromDate(userTicket.savedAt);
-    if (userTicket.notificationSent !== undefined) {
-      data.notificationSent = userTicket.notificationSent;
-    }
-    if (userTicket.userId) data.userId = userTicket.userId;
-    return data;
+  toFirestore(userTicket: UserTicket): DocumentData {
+    // For toFirestore, we can accept Partial since we're creating/updating
+    return {
+      ticketId: userTicket.ticketId,
+      ticketType: userTicket.ticketType,
+      savedAt: Timestamp.fromDate(userTicket.savedAt),
+      notificationSent: userTicket.notificationSent,
+      userId: userTicket.userId,
+    };
   },
   fromFirestore(
     snapshot: QueryDocumentSnapshot,
     options?: SnapshotOptions
   ): UserTicket {
     const data = snapshot.data(options);
+
+    // Ensure all required fields have values (never undefined)
     return {
       id: snapshot.id,
       ticketId: data.ticketId || "",
       ticketType: data.ticketType || "game",
       savedAt: data.savedAt?.toDate() || new Date(),
-      notificationSent: data.notificationSent || false,
+      notificationSent: data.notificationSent ?? false, // Use ?? to handle false vs undefined
       userId: data.userId || "",
     };
   },
