@@ -21,6 +21,7 @@ import AdminDashboard from "./AdminDashboard";
 
 // Styles
 import "../styles/admin.css";
+import MyTickets from "./MyTickets";
 
 /**
  * App - Main application component
@@ -86,6 +87,8 @@ function App() {
               </ProGuard>
             }
           />
+
+          <Route path="/my-tickets" element={<MyTickets />} />
 
           {/* Public Pages */}
           <Route path="/privacy" element={<PrivacyPolicy />} />
