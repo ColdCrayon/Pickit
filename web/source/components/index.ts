@@ -1,8 +1,8 @@
 // Centralized exports for all reusable components
 
 // Navigation
-export { default as Navbar } from "./nav/Navbar";
-export { default as SidebarNav } from "./nav/SidebarNav";
+export { default as Navbar } from "./navigation/Navbar";
+export { default as SidebarNav } from "./navigation/SidebarNav";
 
 // Tickets
 export { default as ArbTicketCard } from "./tickets/ArbTicketCard";
