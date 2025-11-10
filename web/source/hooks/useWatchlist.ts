@@ -31,6 +31,41 @@ interface UseWatchlistReturn {
 }
 
 /**
+ * Normalize watchlist data - handles both array and object formats
+ */
+function normalizeWatchlistData(watchlist: any): Watchlist {
+  if (!watchlist) {
+    return { teams: [], games: [], markets: [] };
+  }
+
+  // Helper to convert object-with-numeric-keys to array
+  const toArray = (data: any): any[] => {
+    if (Array.isArray(data)) return data;
+    if (!data || typeof data !== "object") return [];
+
+    // Check if it's an object with numeric keys (0, 1, 2, etc.)
+    const keys = Object.keys(data);
+    const isNumericKeys = keys.every((k) => !isNaN(parseInt(k)));
+
+    if (isNumericKeys && keys.length > 0) {
+      // Convert to array
+      return keys
+        .map((k) => parseInt(k))
+        .sort((a, b) => a - b)
+        .map((i) => data[i]);
+    }
+
+    return [];
+  };
+
+  return {
+    teams: toArray(watchlist.teams),
+    games: toArray(watchlist.games),
+    markets: toArray(watchlist.markets),
+  };
+}
+
+/**
  * useWatchlist Hook
  * Manages user's watchlist with real-time updates
  *
@@ -64,14 +99,9 @@ export function useWatchlist(userId: string | undefined): UseWatchlistReturn {
         if (docSnap.exists()) {
           const data = docSnap.data();
 
-          // Set watchlist with defaults if not present
-          setWatchlist(
-            data.watchlist || {
-              teams: [],
-              games: [],
-              markets: [],
-            }
-          );
+          // Normalize watchlist data (handles both array and object formats)
+          const normalizedWatchlist = normalizeWatchlistData(data.watchlist);
+          setWatchlist(normalizedWatchlist);
 
           // Set settings with defaults
           setSettings(
@@ -117,12 +147,13 @@ export function useWatchlist(userId: string | undefined): UseWatchlistReturn {
 
         const newTeam: WatchlistTeam = {
           ...team,
-          addedAt: Timestamp.now().toDate(), // Convert Firestore Timestamp to Date
+          addedAt: Timestamp.now().toDate(),
         };
 
         const updatedWatchlist = {
-          ...watchlist,
           teams: [...watchlist.teams, newTeam],
+          games: watchlist.games,
+          markets: watchlist.markets,
         };
 
         await updateDoc(doc(db, "users", userId), {
@@ -143,8 +174,9 @@ export function useWatchlist(userId: string | undefined): UseWatchlistReturn {
 
       try {
         const updatedWatchlist = {
-          ...watchlist,
           teams: watchlist.teams.filter((t) => t.id !== teamId),
+          games: watchlist.games,
+          markets: watchlist.markets,
         };
 
         await updateDoc(doc(db, "users", userId), {
@@ -171,12 +203,13 @@ export function useWatchlist(userId: string | undefined): UseWatchlistReturn {
 
         const newGame: WatchlistGame = {
           ...game,
-          addedAt: Timestamp.now().toDate(), // Convert Firestore Timestamp to Date
+          addedAt: Timestamp.now().toDate(),
         };
 
         const updatedWatchlist = {
-          ...watchlist,
+          teams: watchlist.teams,
           games: [...watchlist.games, newGame],
+          markets: watchlist.markets,
         };
 
         await updateDoc(doc(db, "users", userId), {
@@ -197,8 +230,9 @@ export function useWatchlist(userId: string | undefined): UseWatchlistReturn {
 
       try {
         const updatedWatchlist = {
-          ...watchlist,
+          teams: watchlist.teams,
           games: watchlist.games.filter((g) => g.id !== gameId),
+          markets: watchlist.markets,
         };
 
         await updateDoc(doc(db, "users", userId), {
@@ -225,11 +259,12 @@ export function useWatchlist(userId: string | undefined): UseWatchlistReturn {
 
         const newMarket: WatchlistMarket = {
           ...market,
-          addedAt: Timestamp.now().toDate(), // Convert Firestore Timestamp to Date
+          addedAt: Timestamp.now().toDate(),
         };
 
         const updatedWatchlist = {
-          ...watchlist,
+          teams: watchlist.teams,
+          games: watchlist.games,
           markets: [...watchlist.markets, newMarket],
         };
 
@@ -251,7 +286,8 @@ export function useWatchlist(userId: string | undefined): UseWatchlistReturn {
 
       try {
         const updatedWatchlist = {
-          ...watchlist,
+          teams: watchlist.teams,
+          games: watchlist.games,
           markets: watchlist.markets.filter((m) => m.id !== marketId),
         };
 

@@ -3,6 +3,8 @@
  *
  * Queries the /events collection to fetch upcoming games that users can add to their watchlist.
  * Supports filtering by sport, date range, and pagination.
+ *
+ * FIXED: useMultiSportEvents now properly handles empty results
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -173,45 +175,60 @@ export function useMultiSportEvents(
 
     try {
       const allEvents: Event[] = [];
+      const perSportLimit = Math.ceil((filters.limit || 50) / sports.length);
 
-      // Fetch events for each sport
-      for (const sport of sports) {
-        const eventsRef = collection(db, "events");
-        const constraints: QueryConstraint[] = [];
+      // Fetch events for each sport in parallel
+      const promises = sports.map(async (sport) => {
+        try {
+          const eventsRef = collection(db, "events");
+          const constraints: QueryConstraint[] = [];
 
-        constraints.push(where("sport", "==", sport));
+          constraints.push(where("sport", "==", sport));
 
-        const startAfter = filters.startAfter || new Date();
-        constraints.push(
-          where("startTime", ">=", Timestamp.fromDate(startAfter))
-        );
-
-        if (filters.startBefore) {
+          const startAfter = filters.startAfter || new Date();
           constraints.push(
-            where("startTime", "<=", Timestamp.fromDate(filters.startBefore))
+            where("startTime", ">=", Timestamp.fromDate(startAfter))
           );
-        }
 
-        constraints.push(orderBy("startTime", "asc"));
+          if (filters.startBefore) {
+            constraints.push(
+              where("startTime", "<=", Timestamp.fromDate(filters.startBefore))
+            );
+          }
 
-        const perSportLimit = Math.ceil((filters.limit || 50) / sports.length);
-        constraints.push(limit(perSportLimit));
+          constraints.push(orderBy("startTime", "asc"));
+          constraints.push(limit(perSportLimit));
 
-        const q = query(eventsRef, ...constraints);
-        const snapshot = await getDocs(q);
+          const q = query(eventsRef, ...constraints);
+          const snapshot = await getDocs(q);
 
-        snapshot.forEach((doc) => {
-          const data = doc.data();
-          allEvents.push({
-            id: doc.id,
-            sport: data.sport,
-            teams: data.teams,
-            startTime: data.startTime,
-            lastOddsUpdate: data.lastOddsUpdate,
-            expiresAt: data.expiresAt,
+          const sportEvents: Event[] = [];
+          snapshot.forEach((doc) => {
+            const data = doc.data();
+            sportEvents.push({
+              id: doc.id,
+              sport: data.sport,
+              teams: data.teams,
+              startTime: data.startTime,
+              lastOddsUpdate: data.lastOddsUpdate,
+              expiresAt: data.expiresAt,
+            });
           });
-        });
-      }
+
+          return sportEvents;
+        } catch (err) {
+          console.error(`Error fetching ${sport} events:`, err);
+          return []; // Return empty array on error for this sport
+        }
+      });
+
+      // Wait for all queries to complete
+      const results = await Promise.all(promises);
+
+      // Flatten results
+      results.forEach((sportEvents) => {
+        allEvents.push(...sportEvents);
+      });
 
       // Sort all events by start time
       allEvents.sort((a, b) => {

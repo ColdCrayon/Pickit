@@ -18,6 +18,8 @@ import { FreePicks, FreePicksAll, FreePicksLeague } from "../components";
 import ArticlePage from "./Article";
 import News from "./News";
 import AdminDashboard from "./AdminDashboard";
+import EventBrowser from "./EventBrowser";
+import Watchlist from "./Watchlist";
 
 // Styles
 import "../styles/admin.css";
@@ -84,6 +86,16 @@ function App() {
             element={
               <ProGuard>
                 <ProDashboard isSidebarOpen={isSidebarOpen} />
+              </ProGuard>
+            }
+          />
+
+          <Route path="/browse-events" element={<EventBrowser />} />
+          <Route
+            path="/watchlist"
+            element={
+              <ProGuard>
+                <Watchlist />
               </ProGuard>
             }
           />
