@@ -23,6 +23,7 @@ service cloud.firestore {
     }
     // Ensure sensitive flags can't be changed by regular users
     function unchanged(field) {
+      // If field not present in new data, treat as unchanged
       return !(field in request.resource.data) ||
              (field in resource.data && request.resource.data[field] == resource.data[field]);
     }
@@ -31,22 +32,12 @@ service cloud.firestore {
     match /users/{userId} {
       allow read:  if isSignedIn() && request.auth.uid == userId;
       allow write: if
+        // User can update their own safe fields (email/username/etc.)
         (isSignedIn() && request.auth.uid == userId &&
          unchanged('isAdmin') && unchanged('isPremium'))
         ||
+        // Admins can write any user doc (including setting flags)
         isAdmin();
-
-      // ===================================================================
-      // NEW FOR WEEK 1: User Tickets Subcollection
-      // ===================================================================
-      // Users can save tickets to their personal collection
-      match /tickets/{ticketId} {
-        // Users can read their own saved tickets
-        allow read: if isSignedIn() && request.auth.uid == userId;
-        
-        // Users can create/update/delete their own saved tickets
-        allow write: if isSignedIn() && request.auth.uid == userId;
-      }
     }
 
     // ----- Game Tickets -----
@@ -62,6 +53,39 @@ service cloud.firestore {
       // Read: admin OR premium OR (standard & settled)
       allow read: if isAdmin() || isPremium() || (isSignedIn() && resource.data.serverSettled == true);
       // Write: admin only
+      allow write: if isAdmin();
+    }
+
+    // ----- NEW: Events Collection (from odds-ingestor) -----
+    match /events/{eventId} {
+      // Allow any signed-in user to read events
+      allow read: if isSignedIn();
+      // Only backend services can write (via admin SDK)
+      allow write: if false;
+      
+      // Allow reading markets and books subcollections
+      match /markets/{marketId} {
+        allow read: if isSignedIn();
+        allow write: if false;
+        
+        match /books/{bookId} {
+          allow read: if isSignedIn();
+          allow write: if false;
+          
+          // Allow reading snapshots subcollection
+          match /snapshots/{snapshotId} {
+            allow read: if isSignedIn();
+            allow write: if false;
+          }
+        }
+      }
+    }
+
+    // ----- Articles Collection -----
+    match /articles/{articleId} {
+      // Anyone can read published articles
+      allow read: if true;
+      // Only admins can write articles
       allow write: if isAdmin();
     }
 
