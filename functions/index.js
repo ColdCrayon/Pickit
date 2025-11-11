@@ -144,10 +144,16 @@ exports.onArbTicketCreate = onDocumentCreated(
       }
 
       // Construct notification
+      const marginValue = ticketData.margin;
+      const rawMargin = Number(marginValue);
+      const marginBody =
+        marginValue !== undefined &&
+        marginValue !== null &&
+        Number.isFinite(rawMargin)
+        ? `${(rawMargin * 100).toFixed(2)}% edge found! Check your saved tickets.`
+        : "New arbitrage opportunity! Check your saved tickets.";
       const title = "New Arbitrage Opportunity";
-      const body = `${ticketData.margin?.toFixed(
-        2
-      )}% edge found! Check your saved tickets.`;
+      const body = marginBody;
       const data = {
         type: "arb_ticket_created",
         ticketId,
