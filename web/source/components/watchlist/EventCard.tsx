@@ -1,13 +1,18 @@
 /**
- * EventCard Component
+ * EventCard Component - FIXED VERSION
  *
  * Displays an event with teams, start time, and best odds
  * Includes "Add to Watchlist" button
+ *
+ * FIXES:
+ * - Proper Timestamp handling when adding to watchlist
+ * - Correctly converts Event.startTime (Timestamp) to format expected by watchlist
+ * - Improved error handling
  */
 
 import React, { useState } from "react";
 import { Star, Calendar, TrendingUp } from "lucide-react";
-import { Event, sportToLeague } from "../../types/events";
+import { Event, sportKeyToLeague } from "../../types/events";
 import { useBestOdds } from "../../hooks/useEventOdds";
 import { useAuth } from "../../hooks/useAuth";
 import { useWatchlist } from "../../hooks/useWatchlist";
@@ -22,31 +27,38 @@ interface EventCardProps {
 
 /**
  * Format date/time for display
+ * Handles both Timestamp and Date objects
  */
 function formatEventTime(startTime: Timestamp | Date): string {
-  const date = startTime instanceof Timestamp ? startTime.toDate() : startTime;
-  const now = new Date();
-  const diffMs = date.getTime() - now.getTime();
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-  const diffDays = Math.floor(diffHours / 24);
+  try {
+    const date =
+      startTime instanceof Timestamp ? startTime.toDate() : startTime;
+    const now = new Date();
+    const diffMs = date.getTime() - now.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffHours / 24);
 
-  // If within 24 hours, show relative time
-  if (diffHours < 24 && diffHours > 0) {
-    return `in ${diffHours}h`;
+    // If within 24 hours, show relative time
+    if (diffHours < 24 && diffHours > 0) {
+      return `in ${diffHours}h`;
+    }
+
+    // If within 7 days, show days
+    if (diffDays < 7 && diffDays > 0) {
+      return `in ${diffDays}d`;
+    }
+
+    // Otherwise show date
+    return date.toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  } catch (err) {
+    console.error("[EventCard] Error formatting time:", err);
+    return "TBD";
   }
-
-  // If within 7 days, show days
-  if (diffDays < 7 && diffDays > 0) {
-    return `in ${diffDays}d`;
-  }
-
-  // Otherwise show date
-  return date.toLocaleDateString(undefined, {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
 }
 
 export const EventCard: React.FC<EventCardProps> = ({
@@ -70,7 +82,7 @@ export const EventCard: React.FC<EventCardProps> = ({
   // Check if already in watchlist
   const isInWatchlist = watchlist?.games.some((g) => g.id === event.id);
 
-  const league = sportToLeague[event.sport] || event.sport.toUpperCase();
+  const league = sportKeyToLeague(event.sport);
 
   const handleAddToWatchlist = async () => {
     if (!user) {
@@ -84,21 +96,36 @@ export const EventCard: React.FC<EventCardProps> = ({
 
     setAdding(true);
     try {
+      // FIXED: Ensure startTime is always a Timestamp
+      let startTimeTimestamp: Timestamp;
+
+      if (event.startTime instanceof Timestamp) {
+        startTimeTimestamp = event.startTime;
+      } else if (event.startTime instanceof Date) {
+        startTimeTimestamp = Timestamp.fromDate(event.startTime);
+      } else if (
+        typeof event.startTime === "object" &&
+        event.startTime.toDate
+      ) {
+        // Handle Timestamp-like objects
+        startTimeTimestamp = event.startTime as Timestamp;
+      } else {
+        console.error("[EventCard] Invalid startTime format:", event.startTime);
+        throw new Error("Invalid event start time");
+      }
+
       await addGame({
         id: event.id,
         league: league as "NFL" | "NBA" | "MLB" | "NHL",
         teams: event.teams,
-        startTime:
-          event.startTime instanceof Timestamp
-            ? event.startTime.toDate()
-            : event.startTime,
+        startTime: startTimeTimestamp, // ✅ Always pass Timestamp
       });
 
       if (onAddSuccess) {
         onAddSuccess();
       }
     } catch (error: any) {
-      console.error("Error adding to watchlist:", error);
+      console.error("[EventCard] Error adding to watchlist:", error);
       if (!error.message.includes("already in watchlist")) {
         alert(error.message || "Failed to add to watchlist");
       }
@@ -187,12 +214,18 @@ export const EventCard: React.FC<EventCardProps> = ({
               <SpreadDisplay
                 homeOdds={
                   bestSpread.home
-                    ? { priceAmerican: bestSpread.home }
+                    ? {
+                        priceAmerican: bestSpread.home,
+                        point: bestSpread.homePoint,
+                      }
                     : undefined
                 }
                 awayOdds={
                   bestSpread.away
-                    ? { priceAmerican: bestSpread.away }
+                    ? {
+                        priceAmerican: bestSpread.away,
+                        point: bestSpread.awayPoint,
+                      }
                     : undefined
                 }
                 homeTeam={event.teams.home}
@@ -210,12 +243,18 @@ export const EventCard: React.FC<EventCardProps> = ({
               <TotalsDisplay
                 overOdds={
                   bestTotals.over
-                    ? { priceAmerican: bestTotals.over }
+                    ? {
+                        priceAmerican: bestTotals.over,
+                        point: bestTotals.point,
+                      }
                     : undefined
                 }
                 underOdds={
                   bestTotals.under
-                    ? { priceAmerican: bestTotals.under }
+                    ? {
+                        priceAmerican: bestTotals.under,
+                        point: bestTotals.point,
+                      }
                     : undefined
                 }
               />
