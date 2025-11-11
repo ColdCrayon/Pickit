@@ -19,9 +19,12 @@ import { FreePicks, FreePicksAll, FreePicksLeague } from "../components";
 import ArticlePage from "./Article";
 import News from "./News";
 import AdminDashboard from "./AdminDashboard";
+import EventBrowser from "./EventBrowser";
+import Watchlist from "./Watchlist";
 
 // Styles
 import "../styles/admin.css";
+import MyTickets from "./MyTickets";
 
 /**
  * App - Main application component
@@ -87,6 +90,18 @@ function App() {
               </ProGuard>
             }
           />
+
+          <Route path="/browse-events" element={<EventBrowser />} />
+          <Route
+            path="/watchlist"
+            element={
+              <ProGuard>
+                <Watchlist />
+              </ProGuard>
+            }
+          />
+
+          <Route path="/my-tickets" element={<MyTickets />} />
 
           {/* Public Pages */}
           <Route path="/privacy" element={<PrivacyPolicy />} />

@@ -12,3 +12,5 @@ export { default as TermsOfService } from "./TermsOfService";
 export { default as Upgrade } from "./Upgrade";
 export { default as Home } from "./Home";
 export { default as ProDashboard } from "./ProDashboard";
+export { default as EventBrowser } from "./EventBrowser";
+export { default as Watchlist } from "./Watchlist";

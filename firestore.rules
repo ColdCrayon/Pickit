@@ -56,6 +56,40 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // ----- NEW: Events Collection (from odds-ingestor) -----
+    match /events/{eventId} {
+      // Allow any signed-in user to read events
+      allow read: if isSignedIn();
+      // Only backend services can write (via admin SDK)
+      allow write: if false;
+      
+      // Allow reading markets and books subcollections
+      match /markets/{marketId} {
+        allow read: if isSignedIn();
+        allow write: if false;
+        
+        match /books/{bookId} {
+          allow read: if isSignedIn();
+          allow write: if false;
+          
+          // Allow reading snapshots subcollection
+          match /snapshots/{snapshotId} {
+            allow read: if isSignedIn();
+            allow write: if false;
+          }
+        }
+      }
+    }
+
+    // ----- Articles Collection -----
+    match /articles/{articleId} {
+      // Anyone can read published articles
+      allow read: if true;
+      // Only admins can write articles
+      allow write: if isAdmin();
+    }
+
     // (No catch-all allows — default deny)
   }
 }
+

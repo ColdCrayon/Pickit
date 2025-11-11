@@ -1,3 +1,8 @@
+/**
+ * ProDashboard - Updated with Real Watchlist Integration
+ * Command center for premium users with live watchlist data
+ */
+
 import React from "react";
 import { Link } from "react-router-dom";
 import {
@@ -10,23 +15,33 @@ import {
   Plus,
 } from "lucide-react";
 import { Footer } from "../components";
+import { useAuth } from "../hooks/useAuth";
+import { useWatchlist } from "../hooks/useWatchlist";
+import { WatchlistGameItem } from "../components/watchlist/WatchlistGameItem";
 
 interface ProDashboardProps {
   isSidebarOpen: boolean;
 }
 
-/**
- * ProDashboard - Phase 1 MVP
- * Command center for premium users
- *
- * Features (Phase 1):
- * - Watchlist section (teams/players/games to track)
- * - Odds comparison table (placeholder - not yet implemented)
- * - Line movement charts (placeholder - not yet implemented)
- * - Quick access to arbitrage & picks
- * - Stats overview
- */
 const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
+  const { user } = useAuth();
+  const {
+    watchlist,
+    removeGame,
+    loading: watchlistLoading,
+    totalItems,
+  } = useWatchlist(user?.uid);
+
+  // Get upcoming games (sorted by start time)
+  const upcomingGames =
+    watchlist?.games
+      .filter((game) => new Date(game.startTime) > new Date())
+      .sort(
+        (a, b) =>
+          new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+      )
+      .slice(0, 3) || []; // Show top 3
+
   return (
     <main
       className={`relative z-10 transition-all duration-300 ${
@@ -50,8 +65,8 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
           <StatCard
             icon={<Star className="w-6 h-6" />}
             label="Watchlist Items"
-            value="0"
-            subtext="Add teams to track"
+            value={totalItems.toString()}
+            subtext={`${watchlist?.games.length || 0} games tracked`}
           />
           <StatCard
             icon={<Zap className="w-6 h-6" />}
@@ -81,13 +96,45 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
               title="My Watchlist"
               icon={<Star className="w-5 h-5 text-yellow-400" />}
               action={
-                <button className="flex items-center gap-2 px-4 py-2 bg-yellow-500/20 text-yellow-400 rounded-xl hover:bg-yellow-500/30 transition">
+                <Link
+                  to="/browse-events"
+                  className="flex items-center gap-2 px-4 py-2 bg-yellow-500/20 text-yellow-400 rounded-xl hover:bg-yellow-500/30 transition"
+                >
                   <Plus className="w-4 h-4" />
-                  Add Item
-                </button>
+                  Add Games
+                </Link>
               }
             >
-              <WatchlistPlaceholder />
+              {watchlistLoading ? (
+                <div className="flex items-center justify-center h-full py-12">
+                  <div className="text-center">
+                    <div className="inline-block w-8 h-8 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mb-4"></div>
+                    <p className="text-gray-400">Loading watchlist...</p>
+                  </div>
+                </div>
+              ) : upcomingGames.length === 0 ? (
+                <WatchlistEmptyState />
+              ) : (
+                <div className="space-y-4">
+                  {upcomingGames.map((game) => (
+                    <WatchlistGameItem
+                      key={game.id}
+                      game={game}
+                      onRemove={removeGame}
+                      showOdds={true}
+                    />
+                  ))}
+
+                  {watchlist && watchlist.games.length > 3 && (
+                    <Link
+                      to="/watchlist"
+                      className="block text-center py-3 text-yellow-400 hover:text-yellow-300 transition font-semibold"
+                    >
+                      View All {watchlist.games.length} Games →
+                    </Link>
+                  )}
+                </div>
+              )}
             </DashboardCard>
           </div>
 
@@ -98,6 +145,16 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
               icon={<Zap className="w-5 h-5 text-yellow-400" />}
             >
               <div className="space-y-3">
+                <QuickLink
+                  to="/browse-events"
+                  label="Browse Events"
+                  description="Add games to watchlist"
+                />
+                <QuickLink
+                  to="/watchlist"
+                  label="Full Watchlist"
+                  description="View all tracked games"
+                />
                 <QuickLink
                   to="/nfl"
                   label="NFL Games"
@@ -235,23 +292,27 @@ const QuickLink: React.FC<QuickLinkProps> = ({ to, label, description }) => (
   </Link>
 );
 
-// Placeholder Components (to be replaced in future phases)
-
-const WatchlistPlaceholder: React.FC = () => (
+// Watchlist Empty State
+const WatchlistEmptyState: React.FC = () => (
   <div className="flex items-center justify-center h-full text-center py-12">
     <div>
       <Star className="w-16 h-16 text-gray-600 mx-auto mb-4" />
       <h3 className="text-lg font-semibold mb-2">No items in watchlist</h3>
       <p className="text-gray-400 mb-6">
-        Start tracking your favorite teams, players, or markets
+        Start tracking games to see live odds and get notifications
       </p>
-      <p className="text-sm text-gray-500">
-        <strong>Coming Soon:</strong> Add teams/players to track odds, line
-        movements, and get alerts
-      </p>
+      <Link
+        to="/browse-events"
+        className="inline-flex items-center gap-2 px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold rounded-lg transition"
+      >
+        <Plus className="w-5 h-5" />
+        Browse Events
+      </Link>
     </div>
   </div>
 );
+
+// Placeholder Components (to be replaced in future phases)
 
 const OddsComparisonPlaceholder: React.FC = () => (
   <div className="text-center py-8">

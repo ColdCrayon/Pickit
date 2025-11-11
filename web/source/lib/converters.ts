@@ -1,66 +1,162 @@
-import { Timestamp, QueryDocumentSnapshot, SnapshotOptions } from "firebase/firestore";
-import { ArbTicket, GameTicket } from "../types/picks";
+/**
+ * web/source/lib/converters.ts
+ *
+ * UPDATED for Week 1: Fixed userTicketConverter to return complete UserTicket objects
+ */
 
-const passthroughDate = (v: any) => v ?? null; // we won't parse/convert now
+import {
+  DocumentData,
+  QueryDocumentSnapshot,
+  SnapshotOptions,
+  Timestamp,
+} from "firebase/firestore";
+
+export interface ArbTicket {
+  id: string;
+  eventId: string;
+  marketId: string;
+  legs: Array<{
+    bookId: string;
+    side: string;
+    priceDecimal: number;
+    stake: number;
+  }>;
+  margin: number;
+  createdAt: Date;
+  settleDate: Date;
+  serverSettled: boolean;
+}
 
 export const arbTicketConverter = {
-  toFirestore(t: ArbTicket) {
-    return { ...t };
+  toFirestore(ticket: Partial<ArbTicket>): DocumentData {
+    const data: DocumentData = {};
+    if (ticket.eventId) data.eventId = ticket.eventId;
+    if (ticket.marketId) data.marketId = ticket.marketId;
+    if (ticket.legs) data.legs = ticket.legs;
+    if (ticket.margin !== undefined) data.margin = ticket.margin;
+    if (ticket.createdAt) data.createdAt = Timestamp.fromDate(ticket.createdAt);
+    if (ticket.settleDate)
+      data.settleDate = Timestamp.fromDate(ticket.settleDate);
+    if (ticket.serverSettled !== undefined)
+      data.serverSettled = ticket.serverSettled;
+    return data;
   },
-  fromFirestore(snap: QueryDocumentSnapshot, options: SnapshotOptions): ArbTicket {
-    const d = snap.data(options) as any;
+  fromFirestore(
+    snapshot: QueryDocumentSnapshot,
+    options?: SnapshotOptions
+  ): ArbTicket {
+    const data = snapshot.data(options);
     return {
-      id: d.id ?? snap.id,
-      league: d.league,
-      eventId: d.eventId,
-      marketId: d.marketId,
-      margin: typeof d.margin === "number" ? d.margin : undefined,
-      legs: Array.isArray(d.legs) ? d.legs : [],
-      serverSettled: !!d.serverSettled,
-      createdAt: passthroughDate(d.createdAt),
-      settleDate: passthroughDate(d.settleDate),
-      pickPublishDate: passthroughDate(d.pickPublishDate),
-      sportsBook1: d.sportsBook1 ?? d.pickSportsbook ?? "",
-      sportsBook2: d.sportsBook2 ?? "",
-      pickOddsSB1: d.pickOddsSB1 ?? "",
-      pickOddsSB2: d.pickOddsSB2 ?? "",
+      id: snapshot.id,
+      eventId: data.eventId || "",
+      marketId: data.marketId || "",
+      legs: data.legs || [],
+      margin: data.margin || 0,
+      createdAt: data.createdAt?.toDate() || new Date(),
+      settleDate: data.settleDate?.toDate() || new Date(),
+      serverSettled: data.serverSettled || false,
     };
   },
 };
+
+export interface GameTicket {
+  id: string;
+  sportsbook: string;
+  league: string;
+  market: "moneyline" | "spread" | "total" | "prop";
+  selectionTeam?: string;
+  selectionSide?: string;
+  oddsAmerican: number;
+  externalUrl?: string;
+  description?: string;
+  pickType?: string;
+  settleDate?: Date | null;
+  serverSettled: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 export const gameTicketConverter = {
-  toFirestore(t: GameTicket) {
-    return { ...t };
+  toFirestore(ticket: Partial<GameTicket>): DocumentData {
+    const data: DocumentData = {};
+    if (ticket.sportsbook) data.sportsbook = ticket.sportsbook;
+    if (ticket.league) data.league = ticket.league;
+    if (ticket.market) data.market = ticket.market;
+    if (ticket.selectionTeam !== undefined)
+      data.selectionTeam = ticket.selectionTeam;
+    if (ticket.selectionSide !== undefined)
+      data.selectionSide = ticket.selectionSide;
+    if (ticket.oddsAmerican !== undefined)
+      data.oddsAmerican = ticket.oddsAmerican;
+    if (ticket.externalUrl !== undefined) data.externalUrl = ticket.externalUrl;
+    if (ticket.description !== undefined) data.description = ticket.description;
+    if (ticket.pickType !== undefined) data.pickType = ticket.pickType;
+    if (ticket.settleDate)
+      data.settleDate = Timestamp.fromDate(ticket.settleDate);
+    if (ticket.serverSettled !== undefined)
+      data.serverSettled = ticket.serverSettled;
+    if (ticket.createdAt) data.createdAt = Timestamp.fromDate(ticket.createdAt);
+    if (ticket.updatedAt) data.updatedAt = Timestamp.fromDate(ticket.updatedAt);
+    return data;
   },
-  fromFirestore(snap: QueryDocumentSnapshot, options: SnapshotOptions): GameTicket {
-    const d = snap.data(options) as any;
+  fromFirestore(
+    snapshot: QueryDocumentSnapshot,
+    options?: SnapshotOptions
+  ): GameTicket {
+    const data = snapshot.data(options);
     return {
-      id: d.id ?? snap.id,
-      
-      // New format fields (from Firebase screenshot)
-      //league: d.league,
-      market: d.market,
-      pickType: d.pickType,
-      description: d.description,
-      selectionTeam: d.selectionTeam,
-      selectionSide: d.selectionSide,
-      oddsAmerican: d.oddsAmerican,
-      sportsbook: d.sportsbook,
-      externalUrl: d.externalUrl,
-      
-      // Legacy format fields (for backward compatibility)
-      pickDescription: d.pickDescription,
-      //description: d.description,
-      pickSportsbook: d.pickSportsbook,
-      pickTeam: d.pickTeam,
-      
-      // Timestamps
-      createdAt: passthroughDate(d.createdAt),
-      updatedAt: passthroughDate(d.updatedAt),
-      settleDate: passthroughDate(d.settleDate),
-      pickPublishDate: passthroughDate(d.pickPublishDate),
+      id: snapshot.id,
+      sportsbook: data.sportsbook || "",
+      league: data.league || "",
+      market: data.market || "moneyline",
+      selectionTeam: data.selectionTeam,
+      selectionSide: data.selectionSide,
+      oddsAmerican: data.oddsAmerican || 0,
+      externalUrl: data.externalUrl,
+      description: data.description,
+      pickType: data.pickType,
+      settleDate: data.settleDate?.toDate() || null,
+      serverSettled: data.serverSettled || false,
+      createdAt: data.createdAt?.toDate() || new Date(),
+      updatedAt: data.updatedAt?.toDate() || new Date(),
     };
   },
 };
 
+export interface UserTicket {
+  id: string; // Document ID
+  ticketId: string; // Reference to arbTickets or gameTickets
+  ticketType: "arb" | "game";
+  savedAt: Date;
+  notificationSent: boolean;
+  userId: string;
+}
 
+export const userTicketConverter = {
+  toFirestore(userTicket: UserTicket): DocumentData {
+    // For toFirestore, we can accept Partial since we're creating/updating
+    return {
+      ticketId: userTicket.ticketId,
+      ticketType: userTicket.ticketType,
+      savedAt: Timestamp.fromDate(userTicket.savedAt),
+      notificationSent: userTicket.notificationSent,
+      userId: userTicket.userId,
+    };
+  },
+  fromFirestore(
+    snapshot: QueryDocumentSnapshot,
+    options?: SnapshotOptions
+  ): UserTicket {
+    const data = snapshot.data(options);
+
+    // Ensure all required fields have values (never undefined)
+    return {
+      id: snapshot.id,
+      ticketId: data.ticketId || "",
+      ticketType: data.ticketType || "game",
+      savedAt: data.savedAt?.toDate() || new Date(),
+      notificationSent: data.notificationSent ?? false, // Use ?? to handle false vs undefined
+      userId: data.userId || "",
+    };
+  },
+};

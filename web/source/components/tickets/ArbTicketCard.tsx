@@ -2,6 +2,7 @@ import React from "react";
 import { Percent, Calendar, TrendingUp } from "lucide-react";
 import { ArbTicket } from "../../types/picks";
 import { Timestamp } from "firebase/firestore";
+import { SaveTicketButton } from "./SaveTicketButton";
 
 const fmtDate = (v: any) => {
   if (!v) return "";
@@ -36,41 +37,36 @@ const fmtDate = (v: any) => {
 const ArbTicketCard: React.FC<{ t: ArbTicket }> = ({ t }) => {
   // Determine the title - prefer eventId, fall back to marketId or a default
   const ticketTitle = t.eventId || t.marketId || "Arbitrage Opportunity";
-  
+
   // Format the margin percentage
-  const marginDisplay = typeof t.margin === "number" 
-    ? `${(t.margin * 100).toFixed(2)}%` 
-    : "N/A";
-  
+  const marginDisplay =
+    typeof t.margin === "number" ? `${(t.margin * 100).toFixed(2)}%` : "N/A";
+
   const isPositiveMargin = typeof t.margin === "number" && t.margin >= 0;
 
   return (
     <div className="relative rounded-2xl bg-white/5 border border-white/10 overflow-hidden hover:border-white/20 transition-all">
       {/* Header Section */}
-      <div className="p-4 bg-black/20 border-b border-white/10">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1">
-            <h3 className="text-lg font-bold text-white leading-tight mb-1">
-              {ticketTitle}
-            </h3>
-            {t.league && (
-              <div className="inline-block px-2 py-0.5 rounded-md bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold uppercase tracking-wide">
-                {t.league}
-              </div>
-            )}
-          </div>
-          
-          {/* Margin Badge */}
-          <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg ${
-            isPositiveMargin 
-              ? "bg-green-500/10 border border-green-400/30" 
-              : "bg-red-500/10 border border-red-400/30"
-          }`}>
-            <TrendingUp className={`w-4 h-4 ${isPositiveMargin ? "text-green-300" : "text-red-300"}`} />
-            <span className={`text-sm font-bold ${isPositiveMargin ? "text-green-300" : "text-red-300"}`}>
-              {marginDisplay}
-            </span>
-          </div>
+      <div className="flex items-center justify-between mb-2">
+        <div className="font-semibold">
+          {t.eventId ?? t.marketId ?? "Event"}
+        </div>
+
+        {/* Right side: Margin + Save Button */}
+        <div className="flex items-center gap-2">
+          {typeof t.margin === "number" && (
+            <div
+              className={`text-xs ${
+                t.margin >= 0 ? "text-green-300" : "text-red-300"
+              } flex items-center gap-1`}
+            >
+              <Percent className="w-3 h-3" />
+              {(t.margin * 100).toFixed(2)}%
+            </div>
+          )}
+
+          {/* NEW: Save Button */}
+          <SaveTicketButton ticketId={t.id} ticketType="arb" />
         </div>
       </div>
 
@@ -78,8 +74,8 @@ const ArbTicketCard: React.FC<{ t: ArbTicket }> = ({ t }) => {
       <div className="p-4">
         <div className="grid sm:grid-cols-2 gap-3 mb-4">
           {t.legs?.map((leg, i) => (
-            <div 
-              key={i} 
+            <div
+              key={i}
               className="rounded-xl border border-white/10 bg-gradient-to-br from-black/40 to-black/20 p-3 hover:border-white/20 transition-colors"
             >
               {/* Sportsbook Name */}
@@ -93,7 +89,7 @@ const ArbTicketCard: React.FC<{ t: ArbTicket }> = ({ t }) => {
                   </span>
                 )}
               </div>
-              
+
               {/* Outcome and Odds */}
               <div className="space-y-1">
                 <div className="text-sm text-gray-200 font-medium capitalize">
@@ -113,7 +109,7 @@ const ArbTicketCard: React.FC<{ t: ArbTicket }> = ({ t }) => {
         {/* Show message if there are more than 4 legs */}
         {t.legs && t.legs.length > 4 && (
           <div className="text-xs text-gray-400 text-center mb-3">
-            + {t.legs.length - 4} more leg{t.legs.length - 4 > 1 ? 's' : ''}
+            + {t.legs.length - 4} more leg{t.legs.length - 4 > 1 ? "s" : ""}
           </div>
         )}
 
@@ -123,11 +119,13 @@ const ArbTicketCard: React.FC<{ t: ArbTicket }> = ({ t }) => {
             <Calendar className="w-3.5 h-3.5" />
             <span>{fmtDate(t.createdAt || t.pickPublishDate)}</span>
           </div>
-          
+
           {t.serverSettled && (
             <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-green-500/10 border border-green-400/30">
               <div className="w-1.5 h-1.5 rounded-full bg-green-400"></div>
-              <span className="text-xs font-semibold text-green-300">Settled</span>
+              <span className="text-xs font-semibold text-green-300">
+                Settled
+              </span>
             </div>
           )}
         </div>

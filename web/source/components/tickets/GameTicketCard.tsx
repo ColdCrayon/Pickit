@@ -2,6 +2,8 @@ import React from "react";
 import { GameTicket } from "../../types/picks";
 import { Calendar, TrendingUp, ExternalLink, DollarSign } from "lucide-react";
 import { Timestamp } from "firebase/firestore";
+import { SaveTicketButton } from "./SaveTicketButton";
+import { formatPickDate } from "../../lib/utils";
 
 const fmtDate = (v: any) => {
   if (!v) return "";
@@ -35,9 +37,9 @@ const fmtDate = (v: any) => {
 // Convert American odds to decimal for display
 const americanToDecimal = (odds: number): string => {
   if (odds > 0) {
-    return ((odds / 100) + 1).toFixed(2);
+    return (odds / 100 + 1).toFixed(2);
   } else {
-    return ((100 / Math.abs(odds)) + 1).toFixed(2);
+    return (100 / Math.abs(odds) + 1).toFixed(2);
   }
 };
 
@@ -56,7 +58,7 @@ const GameTicketCard: React.FC<GameTicketCardProps> = ({ ticket }) => {
   const odds = ticket.oddsAmerican || 0;
   const externalUrl = ticket.externalUrl;
   const publishDate = ticket.createdAt;
-  
+
   // A ticket is "settled" if it has an updatedAt timestamp
   const isSettled = !!ticket.updatedAt;
 
@@ -65,36 +67,25 @@ const GameTicketCard: React.FC<GameTicketCardProps> = ({ ticket }) => {
       {/* Header Section */}
       <div className="p-4 bg-black/20 border-b border-white/10">
         <div className="flex items-start justify-between gap-3">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-1">
-              <h3 className="text-lg font-bold text-white leading-tight">
-                {team}
-              </h3>
-              {side && (
-                <span className="text-yellow-400 font-bold text-base">
-                  {side}
-                </span>
-              )}
+          <div className="font-semibold">{ticket.pickGameInfo}</div>
+
+          {/* Right side: Date + Save Button */}
+          <div className="flex items-center gap-2">
+            <div className="text-xs text-gray-400">
+              {formatPickDate(ticket.pickPublishDate)}
             </div>
-            
-            <div className="flex items-center gap-2 flex-wrap">
-              {/*{league && (
-                <div className="inline-block px-2 py-0.5 rounded-md bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold uppercase tracking-wide">
-                  {league}
-                </div>
-              )}*/}
-              <div className="inline-block px-2 py-0.5 rounded-md bg-purple-500/20 border border-purple-400/30 text-purple-300 text-xs font-semibold capitalize">
-                {pickType}
-              </div>
-            </div>
+
+            {/* NEW: Save Button */}
+            <SaveTicketButton ticketId={ticket.id} ticketType="game" />
           </div>
-          
+
           {/* Odds Display */}
           {odds !== 0 && (
             <div className="text-right">
               <div className="text-xs text-gray-400 mb-0.5">Odds</div>
               <div className="text-lg font-bold text-yellow-400">
-                {odds > 0 ? '+' : ''}{odds}
+                {odds > 0 ? "+" : ""}
+                {odds}
               </div>
               <div className="text-xs text-gray-500">
                 ({americanToDecimal(odds)})
@@ -123,7 +114,7 @@ const GameTicketCard: React.FC<GameTicketCardProps> = ({ ticket }) => {
               {sportsbook}
             </span>
           </div>
-          
+
           {externalUrl && (
             <a
               href={externalUrl}
@@ -143,11 +134,13 @@ const GameTicketCard: React.FC<GameTicketCardProps> = ({ ticket }) => {
             <Calendar className="w-3.5 h-3.5" />
             <span>{fmtDate(publishDate)}</span>
           </div>
-          
+
           {isSettled && (
             <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-green-500/10 border border-green-400/30">
               <div className="w-1.5 h-1.5 rounded-full bg-green-400"></div>
-              <span className="text-xs font-semibold text-green-300">Settled</span>
+              <span className="text-xs font-semibold text-green-300">
+                Settled
+              </span>
             </div>
           )}
         </div>

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { User, X as CloseIcon, LayoutDashboard } from "lucide-react";
+import { User, X as CloseIcon, LayoutDashboard, Star } from "lucide-react";
 import NavAdminLink from "../admin/NavAdminLink";
 
 const logo = "/logo.png";
@@ -65,6 +65,15 @@ const Navbar: React.FC<NavbarProps> = ({
       </div>
       {/* Right */}
       <div className="flex items-center space-x-3">
+        {userRole.isPremium && (
+          <Link
+            to="/my-tickets"
+            className="hidden sm:inline-flex items-center gap-2 px-6 py-2.5 bg-yellow-500/20 text-yellow-400 font-bold rounded-xl hover:bg-yellow-500/30 transition"
+          >
+            <Star className="w-5 h-5 text-yellow-400" />
+            <span>My Tickets</span>
+          </Link>
+        )}
         {/* Pro Dashboard Link - Only for premium users */}
         {userRole.isPremium && (
           <Link
