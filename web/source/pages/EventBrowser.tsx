@@ -12,7 +12,7 @@ import {
   useMultiSportEvents,
 } from "../hooks/useAvailableEvents";
 import { EventCard } from "../components/watchlist/EventCard";
-import { SportKey, leagueToSport, League } from "../types/events";
+import { SportKey, leagueToSportKey, League } from "../types/events";
 
 const SPORTS: { key: SportKey; label: League }[] = [
   { key: "americanfootball_nfl", label: "NFL" },

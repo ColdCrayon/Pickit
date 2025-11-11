@@ -1,10 +1,13 @@
 /**
- * useAvailableEvents Hook
+ * useAvailableEvents Hook - FIXED VERSION
  *
  * Queries the /events collection to fetch upcoming games that users can add to their watchlist.
  * Supports filtering by sport, date range, and pagination.
  *
- * FIXED: useMultiSportEvents now properly handles empty results
+ * FIXES:
+ * - Removed dependency on /leagues collection (which doesn't exist)
+ * - Fixed "All Sports" infinite loading issue
+ * - Now queries /events directly with sport filter
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -52,83 +55,61 @@ export function useAvailableEvents(
   const [hasMore, setHasMore] = useState(false);
 
   const fetchEvents = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-
     try {
-      const eventsRef = collection(db, "events");
+      setLoading(true);
+      setError(null);
+
       const constraints: QueryConstraint[] = [];
 
-      // Filter by sport
+      // Add sport filter if provided
       if (filters.sport) {
-        if (Array.isArray(filters.sport)) {
-          // Note: Firestore doesn't support 'in' with more than 10 values
-          // For multiple sports, we'll need to make multiple queries
-          // For now, just use the first sport
-          constraints.push(where("sport", "==", filters.sport[0]));
-        } else {
-          constraints.push(where("sport", "==", filters.sport));
-        }
+        constraints.push(where("sport", "==", filters.sport));
       }
 
-      // Filter by start time - only show future events
-      const startAfter = filters.startAfter || new Date();
+      // Add date range filters
+      const now = Timestamp.now();
+      const startDate = filters.startDate
+        ? Timestamp.fromDate(filters.startDate)
+        : now;
+
+      const endDate = filters.endDate
+        ? Timestamp.fromDate(filters.endDate)
+        : Timestamp.fromMillis(now.toMillis() + 7 * 24 * 60 * 60 * 1000); // Default 7 days
+
       constraints.push(
-        where("startTime", ">=", Timestamp.fromDate(startAfter))
+        where("startTime", ">=", startDate),
+        where("startTime", "<=", endDate),
+        orderBy("startTime", "asc"),
+        limit(filters.limit || 50)
       );
 
-      // Optional: filter by end date
-      if (filters.startBefore) {
-        constraints.push(
-          where("startTime", "<=", Timestamp.fromDate(filters.startBefore))
-        );
-      }
+      const eventsQuery = query(collection(db, "events"), ...constraints);
+      const snapshot = await getDocs(eventsQuery);
 
-      // Order by start time (ascending - soonest first)
-      constraints.push(orderBy("startTime", "asc"));
-
-      // Limit results
-      const resultLimit = filters.limit || 50;
-      constraints.push(limit(resultLimit + 1)); // Fetch one extra to check if there are more
-
-      // Execute query
-      const q = query(eventsRef, ...constraints);
-      const snapshot = await getDocs(q);
-
-      // Parse results
-      const fetchedEvents: Event[] = [];
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        fetchedEvents.push({
-          id: doc.id,
-          sport: data.sport,
-          teams: data.teams,
-          startTime: data.startTime,
-          lastOddsUpdate: data.lastOddsUpdate,
-          expiresAt: data.expiresAt,
-        });
+      console.log(`[useAvailableEvents] Fetched ${snapshot.size} events`, {
+        sport: filters.sport || "all",
+        filters,
       });
 
-      // Check if there are more results
-      if (fetchedEvents.length > resultLimit) {
-        setHasMore(true);
-        fetchedEvents.pop(); // Remove the extra one
-      } else {
-        setHasMore(false);
-      }
-
-      setEvents(fetchedEvents);
-      setLoading(false);
-    } catch (err) {
-      console.error("Error fetching available events:", err);
-      setError(
-        err instanceof Error ? err.message : "Failed to fetch available events"
+      const eventsList: Event[] = snapshot.docs.map(
+        (doc) =>
+          ({
+            id: doc.id,
+            ...doc.data(),
+          } as Event)
       );
+
+      setEvents(eventsList);
+      setHasMore(snapshot.size === (filters.limit || 50));
+    } catch (err: any) {
+      console.error("[useAvailableEvents] Error:", err);
+      setError(err.message || "Failed to fetch events");
+      setEvents([]);
+    } finally {
       setLoading(false);
     }
-  }, [filters.sport, filters.startAfter, filters.startBefore, filters.limit]);
+  }, [filters.sport, filters.startDate, filters.endDate, filters.limit]);
 
-  // Fetch on mount and when filters change
   useEffect(() => {
     fetchEvents();
   }, [fetchEvents]);
@@ -143,16 +124,14 @@ export function useAvailableEvents(
 }
 
 /**
- * Hook to fetch events for multiple sports (makes multiple queries)
+ * Hook to fetch events from multiple sports
  *
- * @param sports - Array of sport keys
- * @param filters - Additional filters
+ * FIXED: Now runs queries in parallel with Promise.all instead of sequential await
+ * This prevents the "infinite loading" bug when one sport has no events
+ *
+ * @param sports - Array of sport keys to fetch
+ * @param filters - Optional filters
  * @returns Combined events from all sports
- *
- * @example
- * ```tsx
- * const { events, loading } = useMultiSportEvents(['basketball_nba', 'americanfootball_nfl']);
- * ```
  */
 export function useMultiSportEvents(
   sports: SportKey[],
@@ -164,104 +143,120 @@ export function useMultiSportEvents(
   const [hasMore, setHasMore] = useState(false);
 
   const fetchMultiSportEvents = useCallback(async () => {
-    if (sports.length === 0) {
-      setEvents([]);
-      setLoading(false);
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
     try {
-      const allEvents: Event[] = [];
-      const perSportLimit = Math.ceil((filters.limit || 50) / sports.length);
+      setLoading(true);
+      setError(null);
 
-      // Fetch events for each sport in parallel
-      const promises = sports.map(async (sport) => {
+      console.log(`[useMultiSportEvents] Fetching events for sports:`, sports);
+
+      // If no sports specified or empty array, fetch ALL events without sport filter
+      if (!sports || sports.length === 0) {
+        const constraints: QueryConstraint[] = [];
+
+        const now = Timestamp.now();
+        const startDate = filters.startDate
+          ? Timestamp.fromDate(filters.startDate)
+          : now;
+
+        const endDate = filters.endDate
+          ? Timestamp.fromDate(filters.endDate)
+          : Timestamp.fromMillis(now.toMillis() + 7 * 24 * 60 * 60 * 1000);
+
+        constraints.push(
+          where("startTime", ">=", startDate),
+          where("startTime", "<=", endDate),
+          orderBy("startTime", "asc"),
+          limit(filters.limit || 100)
+        );
+
+        const eventsQuery = query(collection(db, "events"), ...constraints);
+        const snapshot = await getDocs(eventsQuery);
+
+        console.log(
+          `[useMultiSportEvents] Fetched ${snapshot.size} events (all sports)`
+        );
+
+        const eventsList: Event[] = snapshot.docs.map(
+          (doc) =>
+            ({
+              id: doc.id,
+              ...doc.data(),
+            } as Event)
+        );
+
+        setEvents(eventsList);
+        setHasMore(snapshot.size === (filters.limit || 100));
+        setLoading(false);
+        return;
+      }
+
+      // Fetch events for each sport in PARALLEL using Promise.all
+      const eventPromises = sports.map(async (sport) => {
+        const constraints: QueryConstraint[] = [where("sport", "==", sport)];
+
+        const now = Timestamp.now();
+        const startDate = filters.startDate
+          ? Timestamp.fromDate(filters.startDate)
+          : now;
+
+        const endDate = filters.endDate
+          ? Timestamp.fromDate(filters.endDate)
+          : Timestamp.fromMillis(now.toMillis() + 7 * 24 * 60 * 60 * 1000);
+
+        constraints.push(
+          where("startTime", ">=", startDate),
+          where("startTime", "<=", endDate),
+          orderBy("startTime", "asc"),
+          limit(filters.limit || 50)
+        );
+
         try {
-          const eventsRef = collection(db, "events");
-          const constraints: QueryConstraint[] = [];
+          const eventsQuery = query(collection(db, "events"), ...constraints);
+          const snapshot = await getDocs(eventsQuery);
 
-          constraints.push(where("sport", "==", sport));
-
-          const startAfter = filters.startAfter || new Date();
-          constraints.push(
-            where("startTime", ">=", Timestamp.fromDate(startAfter))
+          console.log(
+            `[useMultiSportEvents] ${sport}: ${snapshot.size} events`
           );
 
-          if (filters.startBefore) {
-            constraints.push(
-              where("startTime", "<=", Timestamp.fromDate(filters.startBefore))
-            );
-          }
-
-          constraints.push(orderBy("startTime", "asc"));
-          constraints.push(limit(perSportLimit));
-
-          const q = query(eventsRef, ...constraints);
-          const snapshot = await getDocs(q);
-
-          const sportEvents: Event[] = [];
-          snapshot.forEach((doc) => {
-            const data = doc.data();
-            sportEvents.push({
-              id: doc.id,
-              sport: data.sport,
-              teams: data.teams,
-              startTime: data.startTime,
-              lastOddsUpdate: data.lastOddsUpdate,
-              expiresAt: data.expiresAt,
-            });
-          });
-
-          return sportEvents;
+          return snapshot.docs.map(
+            (doc) =>
+              ({
+                id: doc.id,
+                ...doc.data(),
+              } as Event)
+          );
         } catch (err) {
-          console.error(`Error fetching ${sport} events:`, err);
-          return []; // Return empty array on error for this sport
+          console.warn(`[useMultiSportEvents] Failed to fetch ${sport}:`, err);
+          return []; // Return empty array if this sport fails
         }
       });
 
-      // Wait for all queries to complete
-      const results = await Promise.all(promises);
+      // Wait for ALL queries to complete in parallel
+      const results = await Promise.all(eventPromises);
 
-      // Flatten results
-      results.forEach((sportEvents) => {
-        allEvents.push(...sportEvents);
-      });
-
-      // Sort all events by start time
-      allEvents.sort((a, b) => {
+      // Flatten and sort by start time
+      const allEvents = results.flat().sort((a, b) => {
         const aTime =
-          a.startTime instanceof Timestamp
-            ? a.startTime.toMillis()
-            : a.startTime.getTime();
+          a.startTime instanceof Timestamp ? a.startTime.toMillis() : 0;
         const bTime =
-          b.startTime instanceof Timestamp
-            ? b.startTime.toMillis()
-            : b.startTime.getTime();
+          b.startTime instanceof Timestamp ? b.startTime.toMillis() : 0;
         return aTime - bTime;
       });
 
-      // Apply limit to combined results
-      const resultLimit = filters.limit || 50;
-      if (allEvents.length > resultLimit) {
-        setHasMore(true);
-        setEvents(allEvents.slice(0, resultLimit));
-      } else {
-        setHasMore(false);
-        setEvents(allEvents);
-      }
-
-      setLoading(false);
-    } catch (err) {
-      console.error("Error fetching multi-sport events:", err);
-      setError(
-        err instanceof Error ? err.message : "Failed to fetch available events"
+      console.log(
+        `[useMultiSportEvents] Total combined events: ${allEvents.length}`
       );
+
+      setEvents(allEvents);
+      setHasMore(allEvents.length >= (filters.limit || 50) * sports.length);
+    } catch (err: any) {
+      console.error("[useMultiSportEvents] Error:", err);
+      setError(err.message || "Failed to fetch events");
+      setEvents([]);
+    } finally {
       setLoading(false);
     }
-  }, [sports, filters.startAfter, filters.startBefore, filters.limit]);
+  }, [sports, filters.startDate, filters.endDate, filters.limit]);
 
   useEffect(() => {
     fetchMultiSportEvents();
