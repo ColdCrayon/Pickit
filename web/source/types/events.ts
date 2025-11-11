@@ -31,8 +31,8 @@ export type OutcomeType = "home" | "away" | "over" | "under";
 export interface EventFilters {
   sport?: SportKey;
   league?: League;
-  startDate?: Date; // ✅ FIXED: Added startDate
-  endDate?: Date; // ✅ FIXED: Added endDate
+  startDate?: Date;
+  endDate?: Date;
   limit?: number;
 }
 
@@ -45,16 +45,26 @@ export interface Teams {
 }
 
 /**
+ * Odds entry for display components
+ * Used in OddsDisplay components
+ */
+export interface OddsEntry {
+  priceAmerican?: number;
+  priceDecimal?: number;
+  point?: number;
+}
+
+/**
  * Odds for a specific outcome from a bookmaker
  */
 export interface Odds {
   bookmaker: string;
-  home?: number; // ✅ FIXED: Added home odds
-  away?: number; // ✅ FIXED: Added away odds
-  over?: number; // ✅ FIXED: Added over odds
-  under?: number; // ✅ FIXED: Added under odds
-  point?: number; // Point spread or total line
-  price: number; // Odds value (decimal format)
+  home?: number;
+  away?: number;
+  over?: number;
+  under?: number;
+  point?: number;
+  price: number;
   lastUpdate: Timestamp;
 }
 
@@ -108,26 +118,13 @@ export interface EventWithOdds extends Event {
  * Best odds across all bookmakers for a market
  */
 export interface BestOdds {
-  home?: {
-    bookmaker: string;
-    price: number;
-    point?: number;
-  };
-  away?: {
-    bookmaker: string;
-    price: number;
-    point?: number;
-  };
-  over?: {
-    bookmaker: string;
-    price: number;
-    point?: number;
-  };
-  under?: {
-    bookmaker: string;
-    price: number;
-    point?: number;
-  };
+  home?: number;
+  away?: number;
+  over?: number;
+  under?: number;
+  homePoint?: number;
+  awayPoint?: number;
+  point?: number;
 }
 
 /**
@@ -166,3 +163,7 @@ export function leagueToSportKey(league: League): SportKey {
 export function getSportDisplayName(sportKey: SportKey): string {
   return sportKeyToLeague(sportKey);
 }
+
+// DEPRECATED: Backwards compatibility alias
+// Use sportKeyToLeague instead
+export const sportToLeague = sportKeyToLeague;
