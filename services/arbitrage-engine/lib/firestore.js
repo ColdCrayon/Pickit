@@ -62,7 +62,7 @@ export async function writeArb(id, doc) {
   const ref = db.collection("arbTickets").doc(id);
   await ref.set({
     ...doc,
-    createdAt: doc.createdAt || now()
+    createdAt: doc.createdAt ?? firestore.tsNow(),
   }, { merge: true });
 }
 
