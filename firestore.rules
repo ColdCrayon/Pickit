@@ -21,6 +21,23 @@ service cloud.firestore {
     function isPremium() {
       return hasMe() && getMe().data.isPremium == true;
     }
+    function isTicketOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    function canManageTicket(userId) {
+      return isTicketOwner(userId) || isAdmin();
+    }
+    function validTicketData(userId, ticketId) {
+      return request.resource.data.keys().hasOnly([
+               'ticketId',
+               'ticketType',
+               'savedAt',
+               'notificationSent',
+               'userId'
+             ]) &&
+             request.resource.data.userId == userId &&
+             request.resource.data.ticketId == ticketId;
+    }
     // Ensure sensitive flags can't be changed by regular users
     function unchanged(field) {
       // If field not present in new data, treat as unchanged
@@ -38,6 +55,12 @@ service cloud.firestore {
         ||
         // Admins can write any user doc (including setting flags)
         isAdmin();
+
+      match /tickets/{ticketId} {
+        allow read: if canManageTicket(userId);
+        allow create, update: if canManageTicket(userId) && validTicketData(userId, ticketId);
+        allow delete: if canManageTicket(userId);
+      }
     }
 
     // ----- Game Tickets -----
