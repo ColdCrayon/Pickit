@@ -1,13 +1,12 @@
 /**
- * EventCard Component - FIXED VERSION
+ * EventCard Component - FIXED ODDS DISPLAY
  *
  * Displays an event with teams, start time, and best odds
  * Includes "Add to Watchlist" button
  *
  * FIXES:
- * - Proper Timestamp handling when adding to watchlist
- * - Correctly converts Event.startTime (Timestamp) to format expected by watchlist
- * - Improved error handling
+ * - Properly handles bestOdds as Record<string, number> (not objects)
+ * - Fixed "[object Object]" display issue
  */
 
 import React, { useState } from "react";
@@ -74,7 +73,7 @@ export const EventCard: React.FC<EventCardProps> = ({
   } = useWatchlist(user?.uid);
   const [adding, setAdding] = useState(false);
 
-  // Get best odds for display
+  // Get best odds for display - returns Record<string, number>
   const { bestOdds: bestMoneyline } = useBestOdds(event.id, "h2h");
   const { bestOdds: bestSpread } = useBestOdds(event.id, "spreads");
   const { bestOdds: bestTotals } = useBestOdds(event.id, "totals");
@@ -107,7 +106,6 @@ export const EventCard: React.FC<EventCardProps> = ({
         typeof event.startTime === "object" &&
         event.startTime.toDate
       ) {
-        // Handle Timestamp-like objects
         startTimeTimestamp = event.startTime as Timestamp;
       } else {
         console.error("[EventCard] Invalid startTime format:", event.startTime);
@@ -118,7 +116,7 @@ export const EventCard: React.FC<EventCardProps> = ({
         id: event.id,
         league: league as "NFL" | "NBA" | "MLB" | "NHL",
         teams: event.teams,
-        startTime: startTimeTimestamp, // ✅ Always pass Timestamp
+        startTime: startTimeTimestamp,
       });
 
       if (onAddSuccess) {
@@ -182,7 +180,7 @@ export const EventCard: React.FC<EventCardProps> = ({
             <span>Best Available Odds</span>
           </div>
 
-          {/* Moneyline */}
+          {/* Moneyline - FIXED: bestMoneyline is Record<string, number> */}
           {bestMoneyline && (
             <div>
               <div className="text-xs text-gray-500 mb-1 font-semibold">
@@ -190,12 +188,12 @@ export const EventCard: React.FC<EventCardProps> = ({
               </div>
               <MoneylineDisplay
                 homeOdds={
-                  bestMoneyline.home
+                  bestMoneyline.home !== undefined
                     ? { priceAmerican: bestMoneyline.home }
                     : undefined
                 }
                 awayOdds={
-                  bestMoneyline.away
+                  bestMoneyline.away !== undefined
                     ? { priceAmerican: bestMoneyline.away }
                     : undefined
                 }
@@ -205,7 +203,7 @@ export const EventCard: React.FC<EventCardProps> = ({
             </div>
           )}
 
-          {/* Spread */}
+          {/* Spread - FIXED: bestSpread is Record<string, number> */}
           {bestSpread && (
             <div>
               <div className="text-xs text-gray-500 mb-1 font-semibold">
@@ -213,7 +211,7 @@ export const EventCard: React.FC<EventCardProps> = ({
               </div>
               <SpreadDisplay
                 homeOdds={
-                  bestSpread.home
+                  bestSpread.home !== undefined
                     ? {
                         priceAmerican: bestSpread.home,
                         point: bestSpread.homePoint,
@@ -221,7 +219,7 @@ export const EventCard: React.FC<EventCardProps> = ({
                     : undefined
                 }
                 awayOdds={
-                  bestSpread.away
+                  bestSpread.away !== undefined
                     ? {
                         priceAmerican: bestSpread.away,
                         point: bestSpread.awayPoint,
@@ -234,7 +232,7 @@ export const EventCard: React.FC<EventCardProps> = ({
             </div>
           )}
 
-          {/* Totals */}
+          {/* Totals - FIXED: bestTotals is Record<string, number> */}
           {bestTotals && (
             <div>
               <div className="text-xs text-gray-500 mb-1 font-semibold">
@@ -242,7 +240,7 @@ export const EventCard: React.FC<EventCardProps> = ({
               </div>
               <TotalsDisplay
                 overOdds={
-                  bestTotals.over
+                  bestTotals.over !== undefined
                     ? {
                         priceAmerican: bestTotals.over,
                         point: bestTotals.point,
@@ -250,7 +248,7 @@ export const EventCard: React.FC<EventCardProps> = ({
                     : undefined
                 }
                 underOdds={
-                  bestTotals.under
+                  bestTotals.under !== undefined
                     ? {
                         priceAmerican: bestTotals.under,
                         point: bestTotals.point,

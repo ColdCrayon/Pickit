@@ -1,14 +1,13 @@
 /**
- * useAvailableEvents Hook - COMPLETE VERSION WITH useMultiSportEvents
+ * useAvailableEvents Hook - INFINITE LOOP FIX
  *
  * Queries the /events collection to fetch upcoming games that users can add to their watchlist.
  * Supports filtering by sport, date range, and pagination.
  *
  * FIXES:
- * - Removed dependency on /leagues collection (which doesn't exist)
- * - Fixed "All Sports" infinite loading issue
- * - Now queries /events directly with sport filter
- * - Added useMultiSportEvents export
+ * - Stabilized useCallback dependencies to prevent infinite re-renders
+ * - Used JSON.stringify for array comparison in dependencies
+ * - Fixed sports array reference causing infinite loop
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -45,11 +44,6 @@ interface UseAvailableEventsReturn {
  *   sport: 'basketball_nba',
  *   limit: 20
  * });
- *
- * // For "All Sports", pass undefined or null:
- * const { events, loading, error } = useAvailableEvents({
- *   limit: 50
- * });
  * ```
  */
 export function useAvailableEvents(
@@ -67,15 +61,9 @@ export function useAvailableEvents(
 
       const constraints: QueryConstraint[] = [];
 
-      // Add sport filter ONLY if provided
-      // For "All Sports", filters.sport will be undefined/null
+      // Add sport filter if provided
       if (filters.sport) {
-        console.log(
-          `[useAvailableEvents] Filtering by sport: ${filters.sport}`
-        );
         constraints.push(where("sport", "==", filters.sport));
-      } else {
-        console.log(`[useAvailableEvents] Fetching all sports`);
       }
 
       // Add date range filters
@@ -86,33 +74,22 @@ export function useAvailableEvents(
 
       const endDate = filters.endDate
         ? Timestamp.fromDate(filters.endDate)
-        : Timestamp.fromMillis(now.toMillis() + 7 * 24 * 60 * 60 * 1000); // 7 days ahead
+        : Timestamp.fromMillis(now.toMillis() + 7 * 24 * 60 * 60 * 1000); // Default 7 days
 
-      // CRITICAL: Order by startTime first before adding where clauses
       constraints.push(
         where("startTime", ">=", startDate),
-        where("startTime", "<=", endDate)
+        where("startTime", "<=", endDate),
+        orderBy("startTime", "asc"),
+        limit(filters.limit || 50)
       );
-
-      // Add orderBy and limit
-      constraints.push(orderBy("startTime", "asc"));
-      constraints.push(limit(filters.limit || 100));
-
-      console.log(`[useAvailableEvents] Query constraints:`, {
-        sport: filters.sport || "ALL",
-        startDate: startDate.toDate().toISOString(),
-        endDate: endDate.toDate().toISOString(),
-        limit: filters.limit || 100,
-      });
 
       const eventsQuery = query(collection(db, "events"), ...constraints);
       const snapshot = await getDocs(eventsQuery);
 
-      console.log(
-        `[useAvailableEvents] Fetched ${snapshot.size} events (sport: ${
-          filters.sport || "ALL"
-        })`
-      );
+      console.log(`[useAvailableEvents] Fetched ${snapshot.size} events`, {
+        sport: filters.sport || "all",
+        filters,
+      });
 
       const eventsList: Event[] = snapshot.docs.map(
         (doc) =>
@@ -123,17 +100,21 @@ export function useAvailableEvents(
       );
 
       setEvents(eventsList);
-      setHasMore(snapshot.size === (filters.limit || 100));
-      setLoading(false);
+      setHasMore(snapshot.size === (filters.limit || 50));
     } catch (err: any) {
-      console.error("[useAvailableEvents] Error fetching events:", err);
+      console.error("[useAvailableEvents] Error:", err);
       setError(err.message || "Failed to fetch events");
-      setLoading(false);
       setEvents([]);
+    } finally {
+      setLoading(false);
     }
-  }, [filters.sport, filters.startDate, filters.endDate, filters.limit]);
+  }, [
+    filters.sport,
+    filters.startDate?.getTime(), // Use getTime() for stable Date comparison
+    filters.endDate?.getTime(),
+    filters.limit,
+  ]);
 
-  // Fetch on mount and when filters change
   useEffect(() => {
     fetchEvents();
   }, [fetchEvents]);
@@ -149,19 +130,12 @@ export function useAvailableEvents(
 
 /**
  * Hook to fetch events from multiple sports
- * Useful for "All Sports" view
+ *
+ * FIXED: Now uses stable dependencies to prevent infinite re-renders
  *
  * @param sports - Array of sport keys to fetch
- * @param filters - Optional filters for date range, limit
- * @returns Combined events from all sports, loading state, error, and refresh function
- *
- * @example
- * ```tsx
- * const { events, loading, error } = useMultiSportEvents(
- *   ['basketball_nba', 'americanfootball_nfl'],
- *   { limit: 50 }
- * );
- * ```
+ * @param filters - Optional filters
+ * @returns Combined events from all sports
  */
 export function useMultiSportEvents(
   sports: SportKey[],
@@ -172,16 +146,17 @@ export function useMultiSportEvents(
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
 
-  const fetchEvents = useCallback(async () => {
+  const fetchMultiSportEvents = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
-      // If no sports specified or array is empty, fetch all sports
-      if (!sports || sports.length === 0) {
-        console.log("[useMultiSportEvents] Fetching all sports (no filter)");
+      console.log(`[useMultiSportEvents] Fetching events for sports:`, sports);
 
+      // If no sports specified or empty array, fetch ALL events without sport filter
+      if (!sports || sports.length === 0) {
         const constraints: QueryConstraint[] = [];
+
         const now = Timestamp.now();
         const startDate = filters.startDate
           ? Timestamp.fromDate(filters.startDate)
@@ -273,30 +248,34 @@ export function useMultiSportEvents(
       });
 
       console.log(
-        `[useMultiSportEvents] Total events fetched: ${allEvents.length}`
+        `[useMultiSportEvents] Total combined events: ${allEvents.length}`
       );
 
       setEvents(allEvents);
-      setHasMore(false); // Can't easily determine hasMore for multi-sport
-      setLoading(false);
+      setHasMore(allEvents.length >= (filters.limit || 50) * sports.length);
     } catch (err: any) {
-      console.error("[useMultiSportEvents] Error fetching events:", err);
+      console.error("[useMultiSportEvents] Error:", err);
       setError(err.message || "Failed to fetch events");
-      setLoading(false);
       setEvents([]);
+    } finally {
+      setLoading(false);
     }
-  }, [sports, filters.startDate, filters.endDate, filters.limit]);
+  }, [
+    JSON.stringify(sports), // ✅ FIX: Use JSON.stringify for stable array comparison
+    filters.startDate?.getTime(),
+    filters.endDate?.getTime(),
+    filters.limit,
+  ]);
 
-  // Fetch on mount and when dependencies change
   useEffect(() => {
-    fetchEvents();
-  }, [fetchEvents]);
+    fetchMultiSportEvents();
+  }, [fetchMultiSportEvents]);
 
   return {
     events,
     loading,
     error,
-    refresh: fetchEvents,
+    refresh: fetchMultiSportEvents,
     hasMore,
   };
 }

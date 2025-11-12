@@ -1,11 +1,13 @@
 /**
- * EventBrowser Page
+ * EventBrowser Page - FIXED VERSION
  *
  * Browse upcoming events from The Odds API and add them to watchlist
  * Supports filtering by sport and date range
+ *
+ * FIX: Memoized sports array to prevent infinite re-render loop
  */
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Search, Filter, Calendar, TrendingUp } from "lucide-react";
 import {
   useAvailableEvents,
@@ -25,16 +27,17 @@ export default function EventBrowser() {
   const [selectedSport, setSelectedSport] = useState<SportKey | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
 
+  // ✅ FIX: Memoize the sports array so it doesn't recreate on every render
+  // This was causing infinite loop because array reference changed each render
+  const sportKeys = useMemo(() => SPORTS.map((s) => s.key), []);
+
   // Fetch events based on selected sport
   const singleSportResult = useAvailableEvents({
     sport: selectedSport !== "all" ? selectedSport : undefined,
     limit: 50,
   });
 
-  const multiSportResult = useMultiSportEvents(
-    SPORTS.map((s) => s.key),
-    { limit: 50 }
-  );
+  const multiSportResult = useMultiSportEvents(sportKeys, { limit: 50 });
 
   const { events, loading, error, refresh } =
     selectedSport === "all" ? multiSportResult : singleSportResult;
@@ -149,35 +152,13 @@ export default function EventBrowser() {
                 Showing {filteredEvents.length} event
                 {filteredEvents.length !== 1 ? "s" : ""}
               </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredEvents.map((event) => (
-                  <EventCard
-                    key={event.id}
-                    event={event}
-                    showOdds={true}
-                    onAddSuccess={() => {
-                      // Optional: Show success toast
-                      console.log("Added to watchlist:", event.id);
-                    }}
-                  />
+                  <EventCard key={event.id} event={event} showOdds={true} />
                 ))}
               </div>
             </>
           )}
-        </div>
-
-        {/* Info Footer */}
-        <div className="mt-12 p-6 bg-blue-500/10 border border-blue-500/20 rounded-xl">
-          <h3 className="font-semibold mb-2 flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-blue-400" />
-            Live Odds & Notifications
-          </h3>
-          <p className="text-sm text-gray-400">
-            Add games to your watchlist to receive real-time odds updates and
-            notifications when lines move. Click the star icon on any event to
-            start tracking.
-          </p>
         </div>
       </div>
     </div>

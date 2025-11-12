@@ -1,6 +1,10 @@
 /**
- * ProDashboard - Updated with Real Watchlist Integration
- * Command center for premium users with live watchlist data
+ * ProDashboard - UPDATED: Single Card + View All Button
+ *
+ * Changes:
+ * - Shows only 1 game card (not 3)
+ * - Always displays "View All" button when games exist
+ * - Button appears directly below the card
  */
 
 import React from "react";
@@ -13,7 +17,9 @@ import {
   BarChart3,
   Bell,
   Plus,
+  ArrowRight,
 } from "lucide-react";
+import { Timestamp } from "firebase/firestore";
 import { Footer } from "../components";
 import { useAuth } from "../hooks/useAuth";
 import { useWatchlist } from "../hooks/useWatchlist";
@@ -32,15 +38,62 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
     totalItems,
   } = useWatchlist(user?.uid);
 
+  console.log("[ProDashboard] Watchlist data:", {
+    watchlist,
+    gamesCount: watchlist?.games?.length,
+    totalItems,
+    loading: watchlistLoading,
+  });
+
   // Get upcoming games (sorted by start time)
-  const upcomingGames =
-    watchlist?.games
-      .filter((game) => new Date(game.startTime) > new Date())
-      .sort(
-        (a, b) =>
-          new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
-      )
-      .slice(0, 3) || []; // Show top 3
+  const upcomingGames = React.useMemo(() => {
+    if (!watchlist?.games) {
+      console.log("[ProDashboard] No watchlist.games");
+      return [];
+    }
+
+    const now = new Date();
+    console.log(
+      "[ProDashboard] Filtering games, total:",
+      watchlist.games.length
+    );
+
+    const filtered = watchlist.games
+      .filter((game) => {
+        const gameTime =
+          game.startTime instanceof Timestamp
+            ? game.startTime.toDate()
+            : new Date(game.startTime);
+
+        const isUpcoming = gameTime > now;
+        console.log(
+          "[ProDashboard] Game:",
+          game.id,
+          "startTime:",
+          gameTime,
+          "isUpcoming:",
+          isUpcoming
+        );
+        return isUpcoming;
+      })
+      .sort((a, b) => {
+        const aTime =
+          a.startTime instanceof Timestamp
+            ? a.startTime.toMillis()
+            : new Date(a.startTime).getTime();
+        const bTime =
+          b.startTime instanceof Timestamp
+            ? b.startTime.toMillis()
+            : new Date(b.startTime).getTime();
+        return aTime - bTime;
+      });
+
+    console.log("[ProDashboard] Filtered upcoming games:", filtered.length);
+    return filtered;
+  }, [watchlist?.games]);
+
+  // ✅ Show only the first upcoming game
+  const nextGame = upcomingGames[0];
 
   return (
     <main
@@ -53,7 +106,7 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <LayoutDashboard className="w-8 h-8 text-yellow-400" />
-            <h1 className="text-4xl font-bold">Pro Dashboard</h1>
+            <h1 className="text-4xl font-bold">Dashboard</h1>
           </div>
           <p className="text-gray-400">
             Your command center for smart betting decisions
@@ -112,27 +165,50 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
                     <p className="text-gray-400">Loading watchlist...</p>
                   </div>
                 </div>
-              ) : upcomingGames.length === 0 ? (
+              ) : !watchlist?.games || watchlist.games.length === 0 ? (
                 <WatchlistEmptyState />
-              ) : (
-                <div className="space-y-4">
-                  {upcomingGames.map((game) => (
-                    <WatchlistGameItem
-                      key={game.id}
-                      game={game}
-                      onRemove={removeGame}
-                      showOdds={true}
-                    />
-                  ))}
-
-                  {watchlist && watchlist.games.length > 3 && (
+              ) : upcomingGames.length === 0 ? (
+                /* All games are past */
+                <div className="flex items-center justify-center h-full text-center py-12">
+                  <div>
+                    <Star className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">
+                      No upcoming games
+                    </h3>
+                    <p className="text-gray-400 mb-6">
+                      All your tracked games have already started or finished.
+                    </p>
                     <Link
-                      to="/watchlist"
-                      className="block text-center py-3 text-yellow-400 hover:text-yellow-300 transition font-semibold"
+                      to="/browse-events"
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold rounded-lg transition"
                     >
-                      View All {watchlist.games.length} Games →
+                      <Plus className="w-5 h-5" />
+                      Add More Games
                     </Link>
-                  )}
+                  </div>
+                </div>
+              ) : (
+                /* ✅ Show single game card + View All button */
+                <div className="space-y-4">
+                  {/* Show only the first upcoming game */}
+                  <WatchlistGameItem
+                    key={nextGame.id}
+                    game={nextGame}
+                    onRemove={removeGame}
+                    showOdds={true}
+                  />
+
+                  {/* Always show View All button when there are games */}
+                  <Link
+                    to="/watchlist"
+                    className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 hover:border-yellow-400/50 transition group"
+                  >
+                    <span className="text-yellow-400 font-semibold group-hover:text-yellow-300 transition">
+                      View All {watchlist.games.length} Game
+                      {watchlist.games.length !== 1 ? "s" : ""}
+                    </span>
+                    <ArrowRight className="w-5 h-5 text-yellow-400 group-hover:text-yellow-300 group-hover:translate-x-1 transition-all" />
+                  </Link>
                 </div>
               )}
             </DashboardCard>
@@ -176,7 +252,7 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
                   description="View current NHL odds"
                 />
                 <QuickLink
-                  to="/FreePicks"
+                  to="/articles"
                   label="Free Picks"
                   description="Browse settled picks"
                 />
@@ -185,38 +261,22 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
           </div>
         </div>
 
-        {/* Odds Comparison Section */}
+        {/* Placeholder Sections */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <DashboardCard
             title="Odds Comparison"
-            icon={<BarChart3 className="w-5 h-5 text-yellow-400" />}
+            icon={<BarChart3 className="w-5 h-5 text-blue-400" />}
           >
             <OddsComparisonPlaceholder />
           </DashboardCard>
 
           <DashboardCard
             title="Line Movement"
-            icon={<TrendingUp className="w-5 h-5 text-yellow-400" />}
+            icon={<TrendingUp className="w-5 h-5 text-green-400" />}
           >
             <LineMovementPlaceholder />
           </DashboardCard>
         </div>
-
-        {/* AI Insights Teaser */}
-        <DashboardCard
-          title="AI Insights"
-          icon={<TrendingUp className="w-5 h-5 text-yellow-400" />}
-        >
-          <div className="text-center py-8">
-            <p className="text-gray-400 mb-4">
-              AI-powered insights and personalized recommendations coming soon!
-            </p>
-            <p className="text-sm text-gray-500">
-              We're building advanced analytics to help you make smarter betting
-              decisions.
-            </p>
-          </div>
-        </DashboardCard>
       </div>
 
       <Footer />
@@ -224,8 +284,7 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
   );
 };
 
-// Helper Components
-
+// Stats Card Component
 interface StatCardProps {
   icon: React.ReactNode;
   label: string;
@@ -236,14 +295,17 @@ interface StatCardProps {
 const StatCard: React.FC<StatCardProps> = ({ icon, label, value, subtext }) => (
   <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
     <div className="flex items-center gap-3 mb-3">
-      <div className="text-yellow-400">{icon}</div>
-      <h3 className="text-sm font-medium text-gray-400">{label}</h3>
+      <div className="p-2 bg-yellow-400/20 rounded-lg text-yellow-400">
+        {icon}
+      </div>
+      <span className="text-sm text-gray-400">{label}</span>
     </div>
     <div className="text-3xl font-bold mb-1">{value}</div>
-    <p className="text-xs text-gray-500">{subtext}</p>
+    <p className="text-sm text-gray-500">{subtext}</p>
   </div>
 );
 
+// Dashboard Card Component
 interface DashboardCardProps {
   title: string;
   icon: React.ReactNode;
@@ -269,6 +331,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
   </div>
 );
 
+// Quick Link Component
 interface QuickLinkProps {
   to: string;
   label: string;
@@ -312,8 +375,7 @@ const WatchlistEmptyState: React.FC = () => (
   </div>
 );
 
-// Placeholder Components (to be replaced in future phases)
-
+// Placeholder Components
 const OddsComparisonPlaceholder: React.FC = () => (
   <div className="text-center py-8">
     <BarChart3 className="w-12 h-12 text-gray-600 mx-auto mb-4" />
