@@ -221,9 +221,9 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
                   description="View current NHL odds"
                 />
                 <QuickLink
-                  to="/Account"
-                  label="Account Settings"
-                  description="Manage your profile"
+                  to="/FreePicks"
+                  label="Free Picks"
+                  description="Daily predictions"
                 />
               </div>
             </DashboardCard>
