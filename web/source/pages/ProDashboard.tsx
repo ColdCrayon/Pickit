@@ -1,10 +1,10 @@
 /**
- * ProDashboard - UPDATED: Single Card + View All Button
+ * ProDashboard - UPDATED: Quick Access in Separate Row
  *
  * Changes:
- * - Shows only 1 game card (not 3)
- * - Always displays "View All" button when games exist
- * - Button appears directly below the card
+ * - Quick Access card now has its own full-width row
+ * - Watchlist card takes full width (more space)
+ * - Better visual balance and no height conflicts
  */
 
 import React from "react";
@@ -92,7 +92,6 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
     return filtered;
   }, [watchlist?.games]);
 
-  // ✅ Show only the first upcoming game
   const nextGame = upcomingGames[0];
 
   return (
@@ -141,124 +140,117 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
           />
         </div>
 
-        {/* Main Dashboard Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          {/* Watchlist Section - Takes 2 columns */}
-          <div className="lg:col-span-2 flex">
-            <DashboardCard
-              title="My Watchlist"
-              icon={<Star className="w-5 h-5 text-yellow-400" />}
-              action={
-                <Link
-                  to="/browse-events"
-                  className="flex items-center gap-2 px-4 py-2 bg-yellow-500/20 text-yellow-400 rounded-xl hover:bg-yellow-500/30 transition"
-                >
-                  <Plus className="w-4 h-4" />
-                  Add Games
-                </Link>
-              }
-            >
-              {watchlistLoading ? (
-                <div className="flex items-center justify-center h-full py-12">
-                  <div className="text-center">
-                    <div className="inline-block w-8 h-8 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mb-4"></div>
-                    <p className="text-gray-400">Loading watchlist...</p>
-                  </div>
+        {/* ✅ NEW LAYOUT: Watchlist takes full width */}
+        <div className="mb-8">
+          <DashboardCard
+            title="My Watchlist"
+            icon={<Star className="w-5 h-5 text-yellow-400" />}
+            action={
+              <Link
+                to="/browse-events"
+                className="flex items-center gap-2 px-4 py-2 bg-yellow-500/20 text-yellow-400 rounded-xl hover:bg-yellow-500/30 transition"
+              >
+                <Plus className="w-4 h-4" />
+                Add Games
+              </Link>
+            }
+          >
+            {watchlistLoading ? (
+              <div className="flex items-center justify-center h-full py-12">
+                <div className="text-center">
+                  <div className="inline-block w-8 h-8 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mb-4"></div>
+                  <p className="text-gray-400">Loading watchlist...</p>
                 </div>
-              ) : !watchlist?.games || watchlist.games.length === 0 ? (
-                <WatchlistEmptyState />
-              ) : upcomingGames.length === 0 ? (
-                /* All games are past */
-                <div className="flex items-center justify-center h-full text-center py-12">
-                  <div>
-                    <Star className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">
-                      No upcoming games
-                    </h3>
-                    <p className="text-gray-400 mb-6">
-                      All your tracked games have already started or finished.
-                    </p>
-                    <Link
-                      to="/browse-events"
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold rounded-lg transition"
-                    >
-                      <Plus className="w-5 h-5" />
-                      Add More Games
-                    </Link>
-                  </div>
-                </div>
-              ) : (
-                /* ✅ Show single game card + View All button */
-                <div className="space-y-4">
-                  {/* Show only the first upcoming game */}
-                  <WatchlistGameItem
-                    key={nextGame.id}
-                    game={nextGame}
-                    onRemove={removeGame}
-                    showOdds={true}
-                  />
-
-                  {/* Always show View All button when there are games */}
+              </div>
+            ) : !watchlist?.games || watchlist.games.length === 0 ? (
+              <WatchlistEmptyState />
+            ) : upcomingGames.length === 0 ? (
+              <div className="flex items-center justify-center h-full text-center py-12">
+                <div>
+                  <Star className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">
+                    No upcoming games
+                  </h3>
+                  <p className="text-gray-400 mb-6">
+                    All your tracked games have already started or finished.
+                  </p>
                   <Link
-                    to="/watchlist"
-                    className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 hover:border-yellow-400/50 transition group"
+                    to="/browse-events"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold rounded-lg transition"
                   >
-                    <span className="text-yellow-400 font-semibold group-hover:text-yellow-300 transition">
-                      View All {watchlist.games.length} Game
-                      {watchlist.games.length !== 1 ? "s" : ""}
-                    </span>
-                    <ArrowRight className="w-5 h-5 text-yellow-400 group-hover:text-yellow-300 group-hover:translate-x-1 transition-all" />
+                    <Plus className="w-5 h-5" />
+                    Add More Games
                   </Link>
                 </div>
-              )}
-            </DashboardCard>
-          </div>
-
-          {/* Quick Links - Takes 1 column */}
-          <div className="flex">
-            <DashboardCard
-              title="Quick Access"
-              icon={<Zap className="w-5 h-5 text-yellow-400" />}
-            >
-              <div className="space-y-3">
-                <QuickLink
-                  to="/browse-events"
-                  label="Browse Events"
-                  description="Add games to watchlist"
-                />
-                <QuickLink
-                  to="/watchlist"
-                  label="Full Watchlist"
-                  description="View all tracked games"
-                />
-                <QuickLink
-                  to="/nfl"
-                  label="NFL Games"
-                  description="View current NFL odds"
-                />
-                <QuickLink
-                  to="/nba"
-                  label="NBA Games"
-                  description="View current NBA odds"
-                />
-                <QuickLink
-                  to="/mlb"
-                  label="MLB Games"
-                  description="View current MLB odds"
-                />
-                <QuickLink
-                  to="/nhl"
-                  label="NHL Games"
-                  description="View current NHL odds"
-                />
-                <QuickLink
-                  to="/articles"
-                  label="Free Picks"
-                  description="Browse settled picks"
-                />
               </div>
-            </DashboardCard>
-          </div>
+            ) : (
+              <div className="space-y-4">
+                <WatchlistGameItem
+                  key={nextGame.id}
+                  game={nextGame}
+                  onRemove={removeGame}
+                  showOdds={true}
+                />
+
+                <Link
+                  to="/watchlist"
+                  className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 hover:border-yellow-400/50 transition group"
+                >
+                  <span className="text-yellow-400 font-semibold group-hover:text-yellow-300 transition">
+                    View All {watchlist.games.length} Game
+                    {watchlist.games.length !== 1 ? "s" : ""}
+                  </span>
+                  <ArrowRight className="w-5 h-5 text-yellow-400 group-hover:text-yellow-300 group-hover:translate-x-1 transition-all" />
+                </Link>
+              </div>
+            )}
+          </DashboardCard>
+        </div>
+
+        {/* ✅ Quick Access - Full Width Row */}
+        <div className="mb-8">
+          <DashboardCard
+            title="Quick Access"
+            icon={<Zap className="w-5 h-5 text-yellow-400" />}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+              <QuickLink
+                to="/browse-events"
+                label="Browse Events"
+                description="Add games to watchlist"
+              />
+              <QuickLink
+                to="/watchlist"
+                label="Full Watchlist"
+                description="View all tracked games"
+              />
+              <QuickLink
+                to="/nfl"
+                label="NFL Games"
+                description="View current NFL odds"
+              />
+              <QuickLink
+                to="/nba"
+                label="NBA Games"
+                description="View current NBA odds"
+              />
+              <QuickLink
+                to="/mlb"
+                label="MLB Games"
+                description="View current MLB odds"
+              />
+              <QuickLink
+                to="/nhl"
+                label="NHL Games"
+                description="View current NHL odds"
+              />
+              <QuickLink
+                to="/articles"
+                label="Free Picks"
+                description="Browse settled picks"
+              />
+            </div>
+          </DashboardCard>
         </div>
 
         {/* Placeholder Sections */}
@@ -319,7 +311,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
   action,
   children,
 }) => (
-  <div className="bg-white/5 border border-white/10 rounded-2xl p-6 w-full h-full flex flex-col">
+  <div className="bg-white/5 border border-white/10 rounded-2xl p-6 w-full">
     <div className="flex items-center justify-between mb-6">
       <div className="flex items-center gap-2">
         {icon}
@@ -327,7 +319,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
       </div>
       {action}
     </div>
-    <div className="flex-1">{children}</div>
+    <div>{children}</div>
   </div>
 );
 
