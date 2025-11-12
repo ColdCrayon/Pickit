@@ -5,7 +5,7 @@
  * Includes remove button
  *
  * FIXES:
- * - Properly handles bestOdds as Record<string, number>
+ * - Properly handles bestOdds as Record<string, OddsEntry>
  * - Fixed "[object Object]" display issue
  * - Robust Timestamp handling
  */
@@ -115,7 +115,7 @@ export const WatchlistGameItem: React.FC<WatchlistGameItemProps> = ({
 }) => {
   const [removing, setRemoving] = useState(false);
 
-  // Get best odds - returns Record<string, number>
+  // Get best odds - returns Record<string, OddsEntry>
   const { bestOdds: bestMoneyline, loading: moneylineLoading } = useBestOdds(
     game.id,
     "h2h"
@@ -191,87 +191,48 @@ export const WatchlistGameItem: React.FC<WatchlistGameItemProps> = ({
             )}
           </div>
 
-          {/* Moneyline - FIXED: bestMoneyline is Record<string, number> */}
+          {/* Moneyline */}
           {bestMoneyline &&
-            (bestMoneyline.home !== undefined ||
-              bestMoneyline.away !== undefined) && (
+            (bestMoneyline.home || bestMoneyline.away) && (
               <div>
                 <div className="text-xs text-gray-500 mb-1 font-semibold">
                   Moneyline
                 </div>
                 <MoneylineDisplay
-                  homeOdds={
-                    bestMoneyline.home !== undefined
-                      ? { priceAmerican: bestMoneyline.home }
-                      : undefined
-                  }
-                  awayOdds={
-                    bestMoneyline.away !== undefined
-                      ? { priceAmerican: bestMoneyline.away }
-                      : undefined
-                  }
+                  homeOdds={bestMoneyline.home}
+                  awayOdds={bestMoneyline.away}
                   homeTeam={game.teams.home}
                   awayTeam={game.teams.away}
                 />
               </div>
             )}
 
-          {/* Spread - FIXED: bestSpread is Record<string, number> */}
+          {/* Spread */}
           {bestSpread &&
-            (bestSpread.home !== undefined ||
-              bestSpread.away !== undefined) && (
+            (bestSpread.home || bestSpread.away) && (
               <div>
                 <div className="text-xs text-gray-500 mb-1 font-semibold">
                   Spread
                 </div>
                 <SpreadDisplay
-                  homeOdds={
-                    bestSpread.home !== undefined
-                      ? {
-                          priceAmerican: bestSpread.home,
-                          point: bestSpread.homePoint,
-                        }
-                      : undefined
-                  }
-                  awayOdds={
-                    bestSpread.away !== undefined
-                      ? {
-                          priceAmerican: bestSpread.away,
-                          point: bestSpread.awayPoint,
-                        }
-                      : undefined
-                  }
+                  homeOdds={bestSpread.home}
+                  awayOdds={bestSpread.away}
                   homeTeam={game.teams.home}
                   awayTeam={game.teams.away}
                 />
               </div>
             )}
 
-          {/* Totals - FIXED: bestTotals is Record<string, number> */}
+          {/* Totals */}
           {bestTotals &&
-            (bestTotals.over !== undefined ||
-              bestTotals.under !== undefined) && (
+            (bestTotals.over || bestTotals.under) && (
               <div>
                 <div className="text-xs text-gray-500 mb-1 font-semibold">
                   Total
                 </div>
                 <TotalsDisplay
-                  overOdds={
-                    bestTotals.over !== undefined
-                      ? {
-                          priceAmerican: bestTotals.over,
-                          point: bestTotals.point,
-                        }
-                      : undefined
-                  }
-                  underOdds={
-                    bestTotals.under !== undefined
-                      ? {
-                          priceAmerican: bestTotals.under,
-                          point: bestTotals.point,
-                        }
-                      : undefined
-                  }
+                  overOdds={bestTotals.over}
+                  underOdds={bestTotals.under}
                 />
               </div>
             )}

@@ -8,7 +8,62 @@
 import { useState, useEffect } from "react";
 import { collection, doc, onSnapshot, Timestamp } from "firebase/firestore";
 import { db } from "../lib/firebase";
-import { EventWithOdds, BookOdds, Odds, MarketType } from "../types/events";
+import {
+  EventWithOdds,
+  BookOdds,
+  OddsMap,
+  EventMarketType,
+  OddsEntry,
+  OutcomeOdds,
+} from "../types/events";
+import { americanToDecimal, decimalToAmerican } from "../lib/utils";
+
+interface NormalizedOutcomeOdds {
+  entry: OddsEntry;
+  decimal: number;
+  hasAmerican: boolean;
+}
+
+function normalizeOutcomeOdds(
+  raw: OutcomeOdds | null | undefined
+): NormalizedOutcomeOdds | null {
+  if (!raw || typeof raw !== "object") {
+    return null;
+  }
+
+  let priceAmerican =
+    typeof raw.priceAmerican === "number" ? raw.priceAmerican : undefined;
+  const hasAmerican = priceAmerican !== undefined;
+  let priceDecimal =
+    typeof raw.priceDecimal === "number" ? raw.priceDecimal : undefined;
+
+  if (priceAmerican === undefined && priceDecimal !== undefined) {
+    const americanValue = Number(decimalToAmerican(priceDecimal));
+    if (!Number.isNaN(americanValue)) {
+      priceAmerican = americanValue;
+    }
+  }
+
+  if (priceDecimal === undefined && priceAmerican !== undefined) {
+    priceDecimal = americanToDecimal(priceAmerican);
+  }
+
+  if (priceDecimal === undefined) {
+    return null;
+  }
+
+  const point = typeof raw.point === "number" ? raw.point : undefined;
+
+  return {
+    entry: {
+      priceAmerican,
+      priceDecimal,
+      point,
+    },
+    decimal: priceDecimal,
+    hasAmerican,
+  };
+}
 
 interface UseEventOddsReturn {
   event: EventWithOdds | null;
@@ -52,7 +107,7 @@ export function useEventOdds(eventId: string | undefined): UseEventOddsReturn {
 
     // Function to subscribe to all markets
     const subscribeToMarkets = (evId: string, baseEv: EventWithOdds) => {
-      const markets: MarketType[] = ["h2h", "spreads", "totals"];
+      const markets: EventMarketType[] = ["h2h", "spreads", "totals"];
       const unsubscribers: (() => void)[] = [];
 
       markets.forEach((marketId) => {
@@ -77,7 +132,7 @@ export function useEventOdds(eventId: string | undefined): UseEventOddsReturn {
                 bookOddsMap[bookDoc.id] = {
                   bookId: bookDoc.id,
                   updatedAt: bookData.latest.updatedAt,
-                  odds: bookData.latest.odds as Odds,
+                  odds: bookData.latest.odds as OddsMap,
                 };
               }
             });
@@ -175,10 +230,12 @@ export function useEventOdds(eventId: string | undefined): UseEventOddsReturn {
  */
 export function useBestOdds(
   eventId: string | undefined,
-  marketType: MarketType
+  marketType: EventMarketType
 ) {
   const { event, loading, error } = useEventOdds(eventId);
-  const [bestOdds, setBestOdds] = useState<Record<string, number> | null>(null);
+  const [bestOdds, setBestOdds] = useState<Record<string, OddsEntry> | null>(
+    null
+  );
 
   useEffect(() => {
     if (!event || !event.markets) {
@@ -193,27 +250,35 @@ export function useBestOdds(
     }
 
     // Calculate best odds for each outcome
-    const best: Record<string, number> = {};
+    const best: Record<string, OddsEntry> = {};
+    const bestMeta: Record<string, { decimal: number; hasAmerican: boolean }> =
+      {};
 
     Object.values(marketOdds).forEach((bookOdds) => {
       const odds = bookOdds.odds;
 
       Object.entries(odds).forEach(([outcome, entry]) => {
-        if (!entry) return;
+        const normalized = normalizeOutcomeOdds(entry as OutcomeOdds);
+        if (!normalized) return;
 
-        // Get the price (prefer decimal, fallback to american)
-        const price = entry.priceDecimal || entry.priceAmerican;
-        if (price === undefined) return;
-
-        // For decimal odds, higher is better
-        // For american odds, more positive is better for plus odds, less negative is better for minus odds
-        if (!best[outcome] || price > best[outcome]) {
-          best[outcome] = price;
+        const current = bestMeta[outcome];
+        if (
+          !current ||
+          normalized.decimal > current.decimal ||
+          (normalized.decimal === current.decimal &&
+            normalized.hasAmerican &&
+            !current.hasAmerican)
+        ) {
+          best[outcome] = normalized.entry;
+          bestMeta[outcome] = {
+            decimal: normalized.decimal,
+            hasAmerican: normalized.hasAmerican,
+          };
         }
       });
     });
 
-    setBestOdds(best);
+    setBestOdds(Object.keys(best).length ? best : null);
   }, [event, marketType]);
 
   return { bestOdds, loading, error };
@@ -235,17 +300,25 @@ export function useBestOdds(
  * }
  * ```
  */
+interface OddsComparisonEntry {
+  value: OddsEntry;
+  valueDecimal: number;
+  best: OddsEntry;
+  bestDecimal: number;
+  isBest: boolean;
+  difference: number;
+}
+
 export function useOddsComparison(
   eventId: string | undefined,
-  marketType: MarketType,
+  marketType: EventMarketType,
   bookId: string
 ) {
   const { event, loading, error } = useEventOdds(eventId);
   const { bestOdds } = useBestOdds(eventId, marketType);
-  const [comparison, setComparison] = useState<Record<
-    string,
-    { value: number; best: number; isBest: boolean; difference: number }
-  > | null>(null);
+  const [comparison, setComparison] = useState<
+    Record<string, OddsComparisonEntry> | null
+  >(null);
 
   useEffect(() => {
     if (!event || !bestOdds || !event.markets) {
@@ -260,29 +333,35 @@ export function useOddsComparison(
     }
 
     const bookOdds = marketOdds[bookId].odds;
-    const comp: Record<
-      string,
-      { value: number; best: number; isBest: boolean; difference: number }
-    > = {};
+    const comp: Record<string, OddsComparisonEntry> = {};
 
     Object.entries(bookOdds).forEach(([outcome, entry]) => {
-      if (!entry) return;
+      const normalized = normalizeOutcomeOdds(entry as OutcomeOdds);
+      if (!normalized) return;
 
-      const value = entry.priceDecimal || entry.priceAmerican;
-      if (value === undefined) return;
+      const bestEntry = bestOdds[outcome];
+      if (!bestEntry) return;
 
-      const best = bestOdds[outcome];
-      if (best === undefined) return;
+      const bestDecimal =
+        bestEntry.priceDecimal !== undefined
+          ? bestEntry.priceDecimal
+          : bestEntry.priceAmerican !== undefined
+          ? americanToDecimal(bestEntry.priceAmerican)
+          : undefined;
+
+      if (bestDecimal === undefined) return;
 
       comp[outcome] = {
-        value,
-        best,
-        isBest: value === best,
-        difference: value - best,
+        value: normalized.entry,
+        valueDecimal: normalized.decimal,
+        best: bestEntry,
+        bestDecimal,
+        isBest: Math.abs(normalized.decimal - bestDecimal) < 1e-6,
+        difference: normalized.decimal - bestDecimal,
       };
     });
 
-    setComparison(comp);
+    setComparison(Object.keys(comp).length ? comp : null);
   }, [event, bestOdds, marketType, bookId]);
 
   return { comparison, loading, error };
