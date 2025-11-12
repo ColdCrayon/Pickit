@@ -65,19 +65,18 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
   const nextGame = upcomingGames[0];
 
   return (
-    // ✅ UPDATED: Blue/gray background instead of blue-900
     <div className="min-h-screen bg-gray-900 text-white">
       <main
         className={`relative z-10 transition-all duration-300 ${
           isSidebarOpen ? "ml-64" : ""
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 pt-24 pb-8 min-h-screen">
+        <div className="max-w-7xl mx-auto px-6 pt-24 pb-8">
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-2">
               <LayoutDashboard className="w-8 h-8 text-yellow-400" />
-              <h1 className="text-4xl font-bold">Dashboard</h1>
+              <h1 className="text-4xl font-bold">Pro Dashboard</h1>
             </div>
             <p className="text-gray-400">
               Your command center for smart betting decisions
@@ -112,15 +111,15 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
             />
           </div>
 
-          {/* Watchlist Section - Full Width */}
+          {/* Next Upcoming Game */}
           <div className="mb-8">
             <DashboardCard
-              title="My Watchlist"
+              title="Next Game"
               icon={<Star className="w-5 h-5 text-yellow-400" />}
               action={
                 <Link
                   to="/browse-events"
-                  className="flex items-center gap-2 px-4 py-2 bg-yellow-500/20 text-yellow-400 rounded-xl hover:bg-yellow-500/30 transition"
+                  className="flex items-center gap-2 px-4 py-2 bg-yellow-500/20 text-yellow-400 rounded-xl hover:bg-yellow-500/30 transition text-sm"
                 >
                   <Plus className="w-4 h-4" />
                   Add Games
@@ -187,6 +186,11 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
             >
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
                 <QuickLink
+                  to="/my-tickets"
+                  label="My Tickets"
+                  description="View your saved tickets"
+                />
+                <QuickLink
                   to="/browse-events"
                   label="Browse Events"
                   description="Add games to watchlist"
@@ -217,9 +221,9 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
                   description="View current NHL odds"
                 />
                 <QuickLink
-                  to="/articles"
-                  label="Free Picks"
-                  description="Browse settled picks"
+                  to="/Account"
+                  label="Account Settings"
+                  description="Manage your profile"
                 />
               </div>
             </DashboardCard>
