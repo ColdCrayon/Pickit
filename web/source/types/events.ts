@@ -54,6 +54,22 @@ export interface OddsEntry {
   point?: number;
 }
 
+export type EventMarketType = "h2h" | "spreads" | "totals";
+
+export interface OutcomeOdds {
+  priceAmerican?: number;
+  priceDecimal?: number;
+  point?: number;
+}
+
+export type OddsMap = Record<string, OutcomeOdds | null>;
+
+export interface BookOdds {
+  bookId: string;
+  updatedAt: Timestamp;
+  odds: OddsMap;
+}
+
 /**
  * Odds for a specific outcome from a bookmaker
  */
@@ -98,15 +114,18 @@ export interface Event {
   expiresAt?: Timestamp;
 
   // Markets subcollection (populated when queried)
-  markets?: {
-    [marketKey: string]: Market;
-  };
+  markets?:
+    | {
+        [marketKey: string]: Market;
+      }
+    | Record<EventMarketType, Record<string, BookOdds>>;
 }
 
 /**
  * Event with odds data (used in components)
  */
 export interface EventWithOdds extends Event {
+  markets: Record<EventMarketType, Record<string, BookOdds>>;
   odds?: {
     moneyline?: Odds[];
     spread?: Odds[];

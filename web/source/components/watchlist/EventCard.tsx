@@ -5,7 +5,7 @@
  * Includes "Add to Watchlist" button
  *
  * FIXES:
- * - Properly handles bestOdds as Record<string, number> (not objects)
+ * - Properly handles bestOdds as Record<string, OddsEntry>
  * - Fixed "[object Object]" display issue
  */
 
@@ -73,7 +73,7 @@ export const EventCard: React.FC<EventCardProps> = ({
   } = useWatchlist(user?.uid);
   const [adding, setAdding] = useState(false);
 
-  // Get best odds for display - returns Record<string, number>
+  // Get best odds for display - returns Record<string, OddsEntry>
   const { bestOdds: bestMoneyline } = useBestOdds(event.id, "h2h");
   const { bestOdds: bestSpread } = useBestOdds(event.id, "spreads");
   const { bestOdds: bestTotals } = useBestOdds(event.id, "totals");
@@ -180,81 +180,45 @@ export const EventCard: React.FC<EventCardProps> = ({
             <span>Best Available Odds</span>
           </div>
 
-          {/* Moneyline - FIXED: bestMoneyline is Record<string, number> */}
-          {bestMoneyline && (
+          {/* Moneyline */}
+          {bestMoneyline && (bestMoneyline.home || bestMoneyline.away) && (
             <div>
               <div className="text-xs text-gray-500 mb-1 font-semibold">
                 Moneyline
               </div>
               <MoneylineDisplay
-                homeOdds={
-                  bestMoneyline.home !== undefined
-                    ? { priceAmerican: bestMoneyline.home }
-                    : undefined
-                }
-                awayOdds={
-                  bestMoneyline.away !== undefined
-                    ? { priceAmerican: bestMoneyline.away }
-                    : undefined
-                }
+                homeOdds={bestMoneyline.home}
+                awayOdds={bestMoneyline.away}
                 homeTeam={event.teams.home}
                 awayTeam={event.teams.away}
               />
             </div>
           )}
 
-          {/* Spread - FIXED: bestSpread is Record<string, number> */}
-          {bestSpread && (
+          {/* Spread */}
+          {bestSpread && (bestSpread.home || bestSpread.away) && (
             <div>
               <div className="text-xs text-gray-500 mb-1 font-semibold">
                 Spread
               </div>
               <SpreadDisplay
-                homeOdds={
-                  bestSpread.home !== undefined
-                    ? {
-                        priceAmerican: bestSpread.home,
-                        point: bestSpread.homePoint,
-                      }
-                    : undefined
-                }
-                awayOdds={
-                  bestSpread.away !== undefined
-                    ? {
-                        priceAmerican: bestSpread.away,
-                        point: bestSpread.awayPoint,
-                      }
-                    : undefined
-                }
+                homeOdds={bestSpread.home}
+                awayOdds={bestSpread.away}
                 homeTeam={event.teams.home}
                 awayTeam={event.teams.away}
               />
             </div>
           )}
 
-          {/* Totals - FIXED: bestTotals is Record<string, number> */}
-          {bestTotals && (
+          {/* Totals */}
+          {bestTotals && (bestTotals.over || bestTotals.under) && (
             <div>
               <div className="text-xs text-gray-500 mb-1 font-semibold">
                 Total
               </div>
               <TotalsDisplay
-                overOdds={
-                  bestTotals.over !== undefined
-                    ? {
-                        priceAmerican: bestTotals.over,
-                        point: bestTotals.point,
-                      }
-                    : undefined
-                }
-                underOdds={
-                  bestTotals.under !== undefined
-                    ? {
-                        priceAmerican: bestTotals.under,
-                        point: bestTotals.point,
-                      }
-                    : undefined
-                }
+                overOdds={bestTotals.over}
+                underOdds={bestTotals.under}
               />
             </div>
           )}
