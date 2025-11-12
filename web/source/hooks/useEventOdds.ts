@@ -48,43 +48,7 @@ export function useEventOdds(eventId: string | undefined): UseEventOddsReturn {
     setError(null);
 
     const eventRef = doc(db, "events", eventId);
-
-    // Subscribe to event document
-    const unsubscribeEvent = onSnapshot(
-      eventRef,
-      (eventDoc) => {
-        if (!eventDoc.exists()) {
-          setError("Event not found");
-          setLoading(false);
-          return;
-        }
-
-        const eventData = eventDoc.data();
-        const baseEvent: EventWithOdds = {
-          id: eventDoc.id,
-          sport: eventData.sport,
-          teams: eventData.teams,
-          startTime: eventData.startTime,
-          lastOddsUpdate: eventData.lastOddsUpdate,
-          expiresAt: eventData.expiresAt,
-          markets: {
-            h2h: {},
-            spreads: {},
-            totals: {},
-          },
-        };
-
-        setEvent(baseEvent);
-
-        // Now subscribe to markets
-        subscribeToMarkets(eventId, baseEvent);
-      },
-      (err) => {
-        console.error("Error fetching event:", err);
-        setError(err.message || "Failed to fetch event");
-        setLoading(false);
-      }
-    );
+    let unsubscribeMarkets: (() => void) | null = null;
 
     // Function to subscribe to all markets
     const subscribeToMarkets = (evId: string, baseEv: EventWithOdds) => {
@@ -146,9 +110,49 @@ export function useEventOdds(eventId: string | undefined): UseEventOddsReturn {
       return () => unsubscribers.forEach((unsub) => unsub());
     };
 
+    // Subscribe to event document
+    const unsubscribeEvent = onSnapshot(
+      eventRef,
+      (eventDoc) => {
+        if (!eventDoc.exists()) {
+          unsubscribeMarkets?.();
+          unsubscribeMarkets = null;
+          setError("Event not found");
+          setLoading(false);
+          return;
+        }
+
+        const eventData = eventDoc.data();
+        const baseEvent: EventWithOdds = {
+          id: eventDoc.id,
+          sport: eventData.sport,
+          teams: eventData.teams,
+          startTime: eventData.startTime,
+          lastOddsUpdate: eventData.lastOddsUpdate,
+          expiresAt: eventData.expiresAt,
+          markets: {
+            h2h: {},
+            spreads: {},
+            totals: {},
+          },
+        };
+
+        setEvent(baseEvent);
+
+        // Now subscribe to markets
+        unsubscribeMarkets?.();
+        unsubscribeMarkets = subscribeToMarkets(eventId, baseEvent);
+      },
+      (err) => {
+        console.error("Error fetching event:", err);
+        setError(err.message || "Failed to fetch event");
+        setLoading(false);
+      }
+    );
     // Cleanup
     return () => {
       unsubscribeEvent();
+      unsubscribeMarkets?.();
     };
   }, [eventId]);
 
