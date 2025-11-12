@@ -1,5 +1,6 @@
 /**
  * web/source/lib/constants.ts
+ * FIXED: Changed USER_TICKETS collection name to match Firestore structure
  */
 
 export const SPORTS = ["NFL", "NBA", "MLB", "NHL"] as const;
@@ -22,7 +23,7 @@ export const ROUTES = {
   FREE_PICKS_ALL: "/free-picks/all",
   FREE_PICKS_LEAGUE: "/free-picks/:league",
   ARTICLE: "/news/:slug",
-  MY_TICKETS: "/my-tickets", // NEW: User's saved tickets page
+  MY_TICKETS: "/my-tickets",
 } as const;
 
 export const SPORT_ROUTES = {
@@ -38,7 +39,7 @@ export const COLLECTIONS = {
   ARB_TICKETS: "arbTickets",
   GAME_TICKETS: "gameTickets",
   ARTICLES: "articles",
-  USER_TICKETS: "tickets", // NEW: Subcollection under users/{uid}/tickets
+  USER_TICKETS: "savedTickets", // ✅ FIXED: Changed from "tickets" to "savedTickets"
 } as const;
 
 // User roles
@@ -47,7 +48,7 @@ export const USER_ROLES = {
   ADMIN: "isAdmin",
 } as const;
 
-// NEW: Ticket types
+// Ticket types
 export const TICKET_TYPES = {
   ARB: "arb",
   GAME: "game",

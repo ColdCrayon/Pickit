@@ -55,11 +55,11 @@ service cloud.firestore {
         ||
         // Admins can write any user doc (including setting flags)
         isAdmin();
-
-      match /tickets/{ticketId} {
-        allow read: if canManageTicket(userId);
-        allow create, update: if canManageTicket(userId) && validTicketData(userId, ticketId);
-        allow delete: if canManageTicket(userId);
+      
+      // NEW: Saved Tickets Subcollection
+      match /savedTickets/{ticketId} {
+        // Users can read/write their own saved tickets
+        allow read, write: if isSignedIn() && request.auth.uid == userId;
       }
     }
 
@@ -79,7 +79,7 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // ----- NEW: Events Collection (from odds-ingestor) -----
+    // ----- Events Collection (from odds-ingestor) -----
     match /events/{eventId} {
       // Allow any signed-in user to read events
       allow read: if isSignedIn();
@@ -102,6 +102,12 @@ service cloud.firestore {
           }
         }
       }
+    }
+
+    // ----- Watchlists (User watchlist data) -----
+    match /watchlists/{userId} {
+      // Users can only read/write their own watchlist
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
     }
 
     // ----- Articles Collection -----

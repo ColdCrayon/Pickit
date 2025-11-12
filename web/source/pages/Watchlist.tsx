@@ -1,316 +1,162 @@
 /**
- * Watchlist Page - COMPLETE VERSION
+ * Watchlist Page - WITH BROWSE EVENTS BUTTON
  *
- * Main watchlist page showing user's tracked games, teams, and markets
- * Includes add/remove functionality and live odds updates
+ * Full watchlist page showing all saved games with odds
+ * Added "Browse Events" button in header for easy access
  */
 
-import React, { useState } from "react";
-import { Star, Plus, Trash2, Filter, Search } from "lucide-react";
+import React from "react";
+import { Link } from "react-router-dom";
+import { Star, Plus, TrendingUp } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { useWatchlist } from "../hooks/useWatchlist";
-import {
-  WatchlistGame,
-  WatchlistTeam,
-  WatchlistMarket,
-} from "../types/watchlist";
 import { WatchlistGameItem } from "../components/watchlist/WatchlistGameItem";
+import { Footer } from "../components";
 
-interface WatchlistProps {
-  isSidebarOpen?: boolean;
-}
-
-/**
- * Watchlist Page Component
- */
-const Watchlist: React.FC<WatchlistProps> = ({ isSidebarOpen = false }) => {
+const Watchlist: React.FC = () => {
   const { user } = useAuth();
-  const {
-    watchlist,
-    loading,
-    error,
-    removeGame,
-    removeTeam,
-    removeMarket,
-    totalItems,
-  } = useWatchlist(user?.uid);
-
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filterType, setFilterType] = useState<
-    "all" | "games" | "teams" | "markets"
-  >("all");
-
-  // Filter watchlist items
-  const filteredGames =
-    watchlist?.games.filter((game) => {
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        return (
-          game.teams.home.toLowerCase().includes(query) ||
-          game.teams.away.toLowerCase().includes(query) ||
-          game.league.toLowerCase().includes(query)
-        );
-      }
-      return true;
-    }) || [];
-
-  const filteredTeams =
-    watchlist?.teams.filter((team) => {
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        return (
-          team.name.toLowerCase().includes(query) ||
-          team.league.toLowerCase().includes(query)
-        );
-      }
-      return true;
-    }) || [];
-
-  const filteredMarkets = watchlist?.markets || [];
-
-  const showGames = filterType === "all" || filterType === "games";
-  const showTeams = filterType === "all" || filterType === "teams";
-  const showMarkets = filterType === "all" || filterType === "markets";
+  const { watchlist, removeGame, loading, error, totalItems } = useWatchlist(
+    user?.uid
+  );
 
   return (
-    <main
-      className={`relative z-10 min-h-screen transition-all duration-300 ${
-        isSidebarOpen ? "md:ml-64" : ""
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-6 py-24">
-        {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white">
+      <div className="container mx-auto px-4 py-8 max-w-6xl mt-12">
+        {/* Header with Browse Events Button */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-3">
               <Star className="w-8 h-8 text-yellow-400" />
-              <div>
-                <h1 className="text-3xl font-bold text-white">My Watchlist</h1>
-                <p className="text-gray-400 mt-1">
-                  Tracking {totalItems} item{totalItems !== 1 ? "s" : ""}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Search and Filter */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            {/* Search */}
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search games, teams..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400 transition"
-              />
+              <h1 className="text-4xl font-bold">My Watchlist</h1>
             </div>
 
-            {/* Filter */}
-            <div className="flex gap-2 overflow-x-auto">
-              <button
-                onClick={() => setFilterType("all")}
-                className={`px-4 py-2 rounded-lg whitespace-nowrap transition ${
-                  filterType === "all"
-                    ? "bg-yellow-400 text-black font-semibold"
-                    : "bg-white/5 hover:bg-white/10 text-gray-300"
-                }`}
-              >
-                All ({totalItems})
-              </button>
-              <button
-                onClick={() => setFilterType("games")}
-                className={`px-4 py-2 rounded-lg whitespace-nowrap transition ${
-                  filterType === "games"
-                    ? "bg-yellow-400 text-black font-semibold"
-                    : "bg-white/5 hover:bg-white/10 text-gray-300"
-                }`}
-              >
-                Games ({watchlist?.games.length || 0})
-              </button>
-              <button
-                onClick={() => setFilterType("teams")}
-                className={`px-4 py-2 rounded-lg whitespace-nowrap transition ${
-                  filterType === "teams"
-                    ? "bg-yellow-400 text-black font-semibold"
-                    : "bg-white/5 hover:bg-white/10 text-gray-300"
-                }`}
-              >
-                Teams ({watchlist?.teams.length || 0})
-              </button>
-              <button
-                onClick={() => setFilterType("markets")}
-                className={`px-4 py-2 rounded-lg whitespace-nowrap transition ${
-                  filterType === "markets"
-                    ? "bg-yellow-400 text-black font-semibold"
-                    : "bg-white/5 hover:bg-white/10 text-gray-300"
-                }`}
-              >
-                Markets ({watchlist?.markets.length || 0})
-              </button>
-            </div>
+            {/* Browse Events Button */}
+            <Link
+              to="/browse-events"
+              className="flex items-center gap-2 px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold rounded-xl transition-all hover:scale-105"
+            >
+              <Plus className="w-5 h-5" />
+              Browse Events
+            </Link>
           </div>
+
+          <p className="text-gray-400">
+            Track odds changes and get notifications for your saved games
+          </p>
+
+          {totalItems > 0 && (
+            <p className="text-sm text-gray-500 mt-2">
+              {totalItems} item{totalItems !== 1 ? "s" : ""} tracked
+            </p>
+          )}
         </div>
 
         {/* Loading State */}
         {loading && (
-          <div className="text-center py-12">
-            <div className="inline-block w-8 h-8 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
-            <p className="mt-4 text-gray-400">Loading watchlist...</p>
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center">
+              <div className="inline-block w-12 h-12 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mb-4"></div>
+              <p className="text-gray-400">Loading your watchlist...</p>
+            </div>
           </div>
         )}
 
         {/* Error State */}
         {error && (
           <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6 text-center">
-            <p className="text-red-400 mb-4">{error}</p>
+            <p className="text-red-400 mb-4">Error: {error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 rounded-lg transition"
+            >
+              Try Again
+            </button>
           </div>
         )}
 
         {/* Empty State */}
-        {!loading && !error && totalItems === 0 && (
-          <div className="text-center py-12">
-            <Star className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-white mb-2">
-              No items in your watchlist
-            </h3>
-            <p className="text-gray-400 mb-6">
-              Start tracking games, teams, and markets to stay updated
-            </p>
-            <a
-              href="/event-browser"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-yellow-400 text-black rounded-xl font-semibold hover:bg-yellow-300 transition"
-            >
-              <Plus className="w-5 h-5" />
-              Browse Events
-            </a>
-          </div>
-        )}
-
-        {/* Content */}
-        {!loading && !error && totalItems > 0 && (
-          <div className="space-y-6">
-            {/* Games Section */}
-            {showGames && filteredGames.length > 0 && (
-              <div>
-                <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                  <span>Games</span>
-                  <span className="text-sm text-gray-400">
-                    ({filteredGames.length})
-                  </span>
-                </h2>
-                <div className="grid gap-4">
-                  {filteredGames.map((game) => (
-                    <WatchlistGameItem
-                      key={game.id}
-                      game={game}
-                      onRemove={removeGame}
-                      showOdds={true}
-                    />
-                  ))}
+        {!loading &&
+          !error &&
+          (!watchlist?.games || watchlist.games.length === 0) && (
+            <div className="flex items-center justify-center py-20">
+              <div className="text-center max-w-md">
+                <div className="mb-6">
+                  <div className="w-24 h-24 bg-gradient-to-br from-yellow-400/20 to-orange-500/20 rounded-full mx-auto flex items-center justify-center">
+                    <Star className="w-12 h-12 text-yellow-400" />
+                  </div>
                 </div>
-              </div>
-            )}
 
-            {/* Teams Section */}
-            {showTeams && filteredTeams.length > 0 && (
-              <div>
-                <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                  <span>Teams</span>
-                  <span className="text-sm text-gray-400">
-                    ({filteredTeams.length})
-                  </span>
+                <h2 className="text-2xl font-bold mb-3">
+                  Your Watchlist is Empty
                 </h2>
-                <div className="grid gap-4 md:grid-cols-2">
-                  {filteredTeams.map((team) => (
-                    <div
-                      key={team.id}
-                      className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/[0.07] transition"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-white mb-1">
-                            {team.name}
-                          </h3>
-                          <p className="text-sm text-gray-400">{team.league}</p>
-                        </div>
-                        <button
-                          onClick={() => removeTeam(team.id)}
-                          className="p-2 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition"
-                          title="Remove team"
-                        >
-                          <Trash2 className="w-4 h-4 text-red-400" />
-                        </button>
-                      </div>
+
+                <p className="text-gray-400 mb-8 leading-relaxed">
+                  Start tracking your favorite teams, upcoming games, and
+                  betting markets. Get notified when odds change and stay ahead
+                  of the game.
+                </p>
+
+                <Link
+                  to="/browse-events"
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold rounded-xl transition-all hover:scale-105"
+                >
+                  <TrendingUp className="w-5 h-5" />
+                  Browse Events
+                </Link>
+
+                <div className="mt-10 pt-8 border-t border-white/10">
+                  <h3 className="text-sm font-semibold mb-4 text-gray-300">
+                    What you can track:
+                  </h3>
+                  <div className="grid grid-cols-1 gap-3 text-sm text-gray-400 text-left">
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                      <span>Upcoming games across NFL, NBA, MLB, NHL</span>
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Markets Section */}
-            {showMarkets && filteredMarkets.length > 0 && (
-              <div>
-                <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                  <span>Markets</span>
-                  <span className="text-sm text-gray-400">
-                    ({filteredMarkets.length})
-                  </span>
-                </h2>
-                <div className="grid gap-4">
-                  {filteredMarkets.map((market) => (
-                    <div
-                      key={`${market.eventId}-${market.marketType}`}
-                      className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/[0.07] transition"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-white mb-1">
-                            {market.marketType}
-                          </h3>
-                          <p className="text-sm text-gray-400">
-                            Event ID: {market.eventId}
-                          </p>
-                          {market.alertThreshold && (
-                            <p className="text-xs text-yellow-400 mt-1">
-                              Alert threshold: {market.alertThreshold}%
-                            </p>
-                          )}
-                        </div>
-                        <button
-                          onClick={() =>
-                            removeMarket(market.eventId, market.marketType)
-                          }
-                          className="p-2 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition"
-                          title="Remove market"
-                        >
-                          <Trash2 className="w-4 h-4 text-red-400" />
-                        </button>
-                      </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                      <span>Live odds updates from multiple sportsbooks</span>
                     </div>
-                  ))}
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                      <span>Notifications when betting lines move</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* No Results */}
-            {((showGames && filteredGames.length === 0) ||
-              (showTeams && filteredTeams.length === 0) ||
-              (showMarkets && filteredMarkets.length === 0)) &&
-              searchQuery && (
-                <div className="text-center py-12">
-                  <p className="text-gray-400">
-                    No results found for "{searchQuery}"
-                  </p>
-                </div>
-              )}
-          </div>
-        )}
+        {/* Games List */}
+        {!loading &&
+          !error &&
+          watchlist?.games &&
+          watchlist.games.length > 0 && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-gray-300">
+                  Games ({watchlist.games.length})
+                </h2>
+                <p className="text-sm text-gray-500">
+                  Showing all tracked games
+                </p>
+              </div>
+
+              {watchlist.games.map((game) => (
+                <WatchlistGameItem
+                  key={game.id}
+                  game={game}
+                  onRemove={removeGame}
+                  showOdds={true}
+                />
+              ))}
+            </div>
+          )}
       </div>
-    </main>
+
+      <Footer />
+    </div>
   );
 };
 
-// ✅ CRITICAL: Export as default for App.tsx routing
 export default Watchlist;

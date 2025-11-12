@@ -1,19 +1,19 @@
 /**
- * WatchlistGameItem Component - FIXED VERSION
+ * WatchlistGameItem Component - FIXED ODDS DISPLAY
  *
  * Displays a watchlisted game with live odds updates
- * Includes remove button and notification settings
+ * Includes remove button
  *
  * FIXES:
- * - Robust Timestamp/Date handling in formatEventTime
- * - Better error handling for malformed date objects
- * - Proper null/undefined checks
+ * - Properly handles bestOdds as Record<string, number>
+ * - Fixed "[object Object]" display issue
+ * - Robust Timestamp handling
  */
 
 import React, { useState } from "react";
-import { Trash2, Calendar, Bell, BellOff, ExternalLink } from "lucide-react";
+import { Trash2, Calendar, TrendingUp } from "lucide-react";
 import { WatchlistGame } from "../../types/watchlist";
-import { useEventOdds } from "../../hooks/useEventOdds";
+import { useBestOdds } from "../../hooks/useEventOdds";
 import { MoneylineDisplay, SpreadDisplay, TotalsDisplay } from "./OddsDisplay";
 import { Timestamp } from "firebase/firestore";
 
@@ -29,13 +29,11 @@ interface WatchlistGameItemProps {
  */
 function formatEventTime(startTime: Date | Timestamp | any): string {
   try {
-    // Handle null/undefined
     if (!startTime) {
       console.warn("[WatchlistGameItem] startTime is null/undefined");
       return "Unknown";
     }
 
-    // Convert to Date if it's a Timestamp
     let date: Date;
 
     if (startTime instanceof Timestamp) {
@@ -46,20 +44,16 @@ function formatEventTime(startTime: Date | Timestamp | any): string {
       typeof startTime === "object" &&
       typeof startTime.toDate === "function"
     ) {
-      // Handle Timestamp-like objects (Firestore Timestamp proxies)
       date = startTime.toDate();
     } else if (typeof startTime === "string" || typeof startTime === "number") {
-      // Handle string/number timestamps as fallback
       date = new Date(startTime);
     } else if (typeof startTime === "object" && startTime.seconds) {
-      // Handle raw Firestore Timestamp format {seconds, nanoseconds}
       date = new Date(startTime.seconds * 1000);
     } else {
       console.error("[WatchlistGameItem] Invalid startTime format:", startTime);
       return "Unknown";
     }
 
-    // Validate the date
     if (isNaN(date.getTime())) {
       console.error("[WatchlistGameItem] Invalid date:", date);
       return "Invalid Date";
@@ -87,9 +81,9 @@ function formatEventTime(startTime: Date | Timestamp | any): string {
     if (diffHours < 24) {
       if (diffHours < 1) {
         const diffMins = Math.floor(diffMs / (1000 * 60));
-        return `Starts in ${diffMins}m`;
+        return `in ${diffMins}m`;
       }
-      return `Starts in ${diffHours}h`;
+      return `in ${diffHours}h`;
     }
 
     // If within 7 days, show days
@@ -114,36 +108,29 @@ function formatEventTime(startTime: Date | Timestamp | any): string {
   }
 }
 
-/**
- * Get best odds from a market
- */
-function getBestOdds(
-  marketOdds: Record<string, any> | undefined,
-  outcome: string
-): number | undefined {
-  if (!marketOdds) return undefined;
-
-  let best: number | undefined;
-  Object.values(marketOdds).forEach((bookOdds: any) => {
-    const odds = bookOdds.odds?.[outcome];
-    if (odds && (best === undefined || odds > best)) {
-      best = odds;
-    }
-  });
-
-  return best;
-}
-
 export const WatchlistGameItem: React.FC<WatchlistGameItemProps> = ({
   game,
   onRemove,
   showOdds = true,
 }) => {
   const [removing, setRemoving] = useState(false);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
-  // Fetch live odds for this event
-  const { event, loading: oddsLoading } = useEventOdds(game.id);
+  // Get best odds - returns Record<string, number>
+  const { bestOdds: bestMoneyline, loading: moneylineLoading } = useBestOdds(
+    game.id,
+    "h2h"
+  );
+  const { bestOdds: bestSpread, loading: spreadLoading } = useBestOdds(
+    game.id,
+    "spreads"
+  );
+  const { bestOdds: bestTotals, loading: totalsLoading } = useBestOdds(
+    game.id,
+    "totals"
+  );
+
+  const oddsLoading = moneylineLoading || spreadLoading || totalsLoading;
+  const hasOdds = bestMoneyline || bestSpread || bestTotals;
 
   const handleRemove = async () => {
     if (removing) return;
@@ -157,11 +144,6 @@ export const WatchlistGameItem: React.FC<WatchlistGameItemProps> = ({
     } finally {
       setRemoving(false);
     }
-  };
-
-  const toggleNotifications = () => {
-    setNotificationsEnabled(!notificationsEnabled);
-    // TODO: Implement notification toggle in Firestore
   };
 
   return (
@@ -187,142 +169,117 @@ export const WatchlistGameItem: React.FC<WatchlistGameItemProps> = ({
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex items-center gap-2">
-          {/* Notifications Toggle */}
-          <button
-            onClick={toggleNotifications}
-            className="p-2 bg-white/5 hover:bg-white/10 rounded-lg transition"
-            title={
-              notificationsEnabled
-                ? "Disable notifications"
-                : "Enable notifications"
-            }
-          >
-            {notificationsEnabled ? (
-              <Bell className="w-4 h-4 text-yellow-400" />
-            ) : (
-              <BellOff className="w-4 h-4 text-gray-400" />
-            )}
-          </button>
-
-          {/* Remove Button */}
-          <button
-            onClick={handleRemove}
-            disabled={removing}
-            className="p-2 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition disabled:opacity-50"
-            title="Remove from watchlist"
-          >
-            <Trash2 className="w-4 h-4 text-red-400" />
-          </button>
-        </div>
+        {/* Remove Button */}
+        <button
+          onClick={handleRemove}
+          disabled={removing}
+          className="p-2 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition disabled:opacity-50"
+          title="Remove from watchlist"
+        >
+          <Trash2 className="w-4 h-4 text-red-400" />
+        </button>
       </div>
 
       {/* Odds Display */}
-      {showOdds && event?.markets && (
+      {showOdds && hasOdds && (
         <div className="pt-3 border-t border-white/10 space-y-3">
           <div className="flex items-center gap-1 text-xs text-gray-400 mb-2">
+            <TrendingUp className="w-3 h-3" />
             <span>Live Odds</span>
             {oddsLoading && (
               <span className="ml-2 text-yellow-400 animate-pulse">●</span>
             )}
           </div>
 
-          {/* Moneyline */}
-          {event.markets.h2h && (
-            <div>
-              <div className="text-xs text-gray-500 mb-1 font-semibold">
-                Moneyline
+          {/* Moneyline - FIXED: bestMoneyline is Record<string, number> */}
+          {bestMoneyline &&
+            (bestMoneyline.home !== undefined ||
+              bestMoneyline.away !== undefined) && (
+              <div>
+                <div className="text-xs text-gray-500 mb-1 font-semibold">
+                  Moneyline
+                </div>
+                <MoneylineDisplay
+                  homeOdds={
+                    bestMoneyline.home !== undefined
+                      ? { priceAmerican: bestMoneyline.home }
+                      : undefined
+                  }
+                  awayOdds={
+                    bestMoneyline.away !== undefined
+                      ? { priceAmerican: bestMoneyline.away }
+                      : undefined
+                  }
+                  homeTeam={game.teams.home}
+                  awayTeam={game.teams.away}
+                />
               </div>
-              <MoneylineDisplay
-                homeOdds={
-                  getBestOdds(event.markets.h2h, "home")
-                    ? { priceAmerican: getBestOdds(event.markets.h2h, "home")! }
-                    : undefined
-                }
-                awayOdds={
-                  getBestOdds(event.markets.h2h, "away")
-                    ? { priceAmerican: getBestOdds(event.markets.h2h, "away")! }
-                    : undefined
-                }
-                homeTeam={game.teams.home}
-                awayTeam={game.teams.away}
-              />
-            </div>
-          )}
+            )}
 
-          {/* Spread */}
-          {event.markets.spreads && (
-            <div>
-              <div className="text-xs text-gray-500 mb-1 font-semibold">
-                Spread
+          {/* Spread - FIXED: bestSpread is Record<string, number> */}
+          {bestSpread &&
+            (bestSpread.home !== undefined ||
+              bestSpread.away !== undefined) && (
+              <div>
+                <div className="text-xs text-gray-500 mb-1 font-semibold">
+                  Spread
+                </div>
+                <SpreadDisplay
+                  homeOdds={
+                    bestSpread.home !== undefined
+                      ? {
+                          priceAmerican: bestSpread.home,
+                          point: bestSpread.homePoint,
+                        }
+                      : undefined
+                  }
+                  awayOdds={
+                    bestSpread.away !== undefined
+                      ? {
+                          priceAmerican: bestSpread.away,
+                          point: bestSpread.awayPoint,
+                        }
+                      : undefined
+                  }
+                  homeTeam={game.teams.home}
+                  awayTeam={game.teams.away}
+                />
               </div>
-              <SpreadDisplay
-                homeOdds={
-                  getBestOdds(event.markets.spreads, "home")
-                    ? {
-                        priceAmerican: getBestOdds(
-                          event.markets.spreads,
-                          "home"
-                        )!,
-                        point: 0, // TODO: Get actual point from market data
-                      }
-                    : undefined
-                }
-                awayOdds={
-                  getBestOdds(event.markets.spreads, "away")
-                    ? {
-                        priceAmerican: getBestOdds(
-                          event.markets.spreads,
-                          "away"
-                        )!,
-                        point: 0, // TODO: Get actual point from market data
-                      }
-                    : undefined
-                }
-                homeTeam={game.teams.home}
-                awayTeam={game.teams.away}
-              />
-            </div>
-          )}
+            )}
 
-          {/* Totals */}
-          {event.markets.totals && (
-            <div>
-              <div className="text-xs text-gray-500 mb-1 font-semibold">
-                Total
+          {/* Totals - FIXED: bestTotals is Record<string, number> */}
+          {bestTotals &&
+            (bestTotals.over !== undefined ||
+              bestTotals.under !== undefined) && (
+              <div>
+                <div className="text-xs text-gray-500 mb-1 font-semibold">
+                  Total
+                </div>
+                <TotalsDisplay
+                  overOdds={
+                    bestTotals.over !== undefined
+                      ? {
+                          priceAmerican: bestTotals.over,
+                          point: bestTotals.point,
+                        }
+                      : undefined
+                  }
+                  underOdds={
+                    bestTotals.under !== undefined
+                      ? {
+                          priceAmerican: bestTotals.under,
+                          point: bestTotals.point,
+                        }
+                      : undefined
+                  }
+                />
               </div>
-              <TotalsDisplay
-                overOdds={
-                  getBestOdds(event.markets.totals, "over")
-                    ? {
-                        priceAmerican: getBestOdds(
-                          event.markets.totals,
-                          "over"
-                        )!,
-                        point: 0, // TODO: Get actual point from market data
-                      }
-                    : undefined
-                }
-                underOdds={
-                  getBestOdds(event.markets.totals, "under")
-                    ? {
-                        priceAmerican: getBestOdds(
-                          event.markets.totals,
-                          "under"
-                        )!,
-                        point: 0, // TODO: Get actual point from market data
-                      }
-                    : undefined
-                }
-              />
-            </div>
-          )}
+            )}
         </div>
       )}
 
       {/* No Odds Available */}
-      {showOdds && !event?.markets && !oddsLoading && (
+      {showOdds && !hasOdds && !oddsLoading && (
         <div className="pt-3 border-t border-white/10 text-center text-sm text-gray-500">
           No odds available
         </div>
