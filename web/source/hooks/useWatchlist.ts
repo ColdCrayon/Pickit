@@ -1,24 +1,15 @@
 /**
- * useWatchlist Hook - COMPLETE FIX
+ * useWatchlist Hook - FIXED serverTimestamp() ERROR
  *
  * Manages user's watchlist with real-time updates from Firestore.
  * Handles adding/removing games, teams, and markets.
  *
- * FIXES:
- * - Added normalizeWatchlistData() to convert Firestore object format to array format
- * - Handles games stored as {0: {}, 1: {}} instead of [{}, {}]
- * - Uses setDoc() instead of arrayUnion() to ensure proper array format
- * - Safely handles missing or malformed watchlist data
+ * FIX: Replaced serverTimestamp() with new Date() for array items
+ * Firestore does not support serverTimestamp() inside arrays
  */
 
 import { useState, useEffect, useCallback } from "react";
-import {
-  doc,
-  onSnapshot,
-  setDoc,
-  getDoc,
-  serverTimestamp,
-} from "firebase/firestore";
+import { doc, onSnapshot, setDoc, getDoc, Timestamp } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import {
   WatchlistGame,
@@ -55,12 +46,8 @@ interface UseWatchlistReturn {
 }
 
 /**
- * CRITICAL FIX: Normalize watchlist data from Firestore
- *
- * Firestore sometimes stores arrays as objects with numeric keys like:
- * { 0: {...}, 1: {...}, 2: {...} }
- *
- * This function converts them back to proper arrays: [{...}, {...}, {...}]
+ * Normalize watchlist data from Firestore
+ * Converts object format to array format if needed
  */
 function normalizeWatchlistData(data: any): Watchlist {
   const normalize = (value: any): any[] => {
@@ -73,7 +60,6 @@ function normalizeWatchlistData(data: any): Watchlist {
       const isNumericKeys = keys.every((k) => !isNaN(Number(k)));
 
       if (isNumericKeys && keys.length > 0) {
-        // Sort by numeric key and extract values
         return keys
           .map(Number)
           .sort((a, b) => a - b)
@@ -91,12 +77,6 @@ function normalizeWatchlistData(data: any): Watchlist {
   };
 }
 
-/**
- * Hook to manage user's watchlist
- *
- * @param userId - The user's Firebase Auth UID
- * @returns Watchlist data and methods to add/remove items
- */
 export function useWatchlist(userId?: string): UseWatchlistReturn {
   const [watchlist, setWatchlist] = useState<Watchlist>({
     games: [],
@@ -113,7 +93,6 @@ export function useWatchlist(userId?: string): UseWatchlistReturn {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Subscribe to user document for real-time updates
   useEffect(() => {
     if (!userId) {
       setLoading(false);
@@ -131,7 +110,6 @@ export function useWatchlist(userId?: string): UseWatchlistReturn {
           const data = snapshot.data();
           console.log("[useWatchlist] Raw data from Firestore:", data);
 
-          // Use normalizeWatchlistData to handle object-to-array conversion
           const normalizedWatchlist = normalizeWatchlistData(
             data.watchlist || {}
           );
@@ -174,12 +152,10 @@ export function useWatchlist(userId?: string): UseWatchlistReturn {
 
       const userRef = doc(db, "users", userId);
 
-      // First, get current data to check for duplicates
       const snapshot = await getDoc(userRef);
       const data = snapshot.data();
       const currentWatchlist = normalizeWatchlistData(data?.watchlist || {});
 
-      // Check if game already exists
       const exists = currentWatchlist.games.some((g) => g.id === game.id);
       if (exists) {
         console.log("[useWatchlist] Game already in watchlist:", game.id);
@@ -188,12 +164,12 @@ export function useWatchlist(userId?: string): UseWatchlistReturn {
 
       console.log("[useWatchlist] Adding game:", game);
 
+      // ✅ FIX: Use Timestamp.now() instead of serverTimestamp()
       const gameWithTimestamp: WatchlistGame = {
         ...game,
-        addedAt: serverTimestamp() as any,
+        addedAt: Timestamp.now(),
       };
 
-      // Important: Use array format, not arrayUnion
       const newGames = [...currentWatchlist.games, gameWithTimestamp];
 
       await setDoc(
@@ -219,12 +195,10 @@ export function useWatchlist(userId?: string): UseWatchlistReturn {
 
       const userRef = doc(db, "users", userId);
 
-      // Get current watchlist
       const snapshot = await getDoc(userRef);
       const data = snapshot.data();
       const currentWatchlist = normalizeWatchlistData(data?.watchlist || {});
 
-      // Filter out the game
       const newGames = currentWatchlist.games.filter((g) => g.id !== gameId);
 
       await setDoc(
@@ -249,9 +223,11 @@ export function useWatchlist(userId?: string): UseWatchlistReturn {
       console.log("[useWatchlist] Adding team:", team);
 
       const userRef = doc(db, "users", userId);
+
+      // ✅ FIX: Use Timestamp.now() instead of serverTimestamp()
       const teamWithTimestamp: WatchlistTeam = {
         ...team,
-        addedAt: serverTimestamp() as any,
+        addedAt: Timestamp.now(),
       };
 
       const snapshot = await getDoc(userRef);
@@ -314,9 +290,11 @@ export function useWatchlist(userId?: string): UseWatchlistReturn {
       console.log("[useWatchlist] Adding market:", market);
 
       const userRef = doc(db, "users", userId);
+
+      // ✅ FIX: Use Timestamp.now() instead of serverTimestamp()
       const marketWithTimestamp: WatchlistMarket = {
         ...market,
-        addedAt: serverTimestamp() as any,
+        addedAt: Timestamp.now(),
       };
 
       const snapshot = await getDoc(userRef);
@@ -413,7 +391,6 @@ export function useWatchlist(userId?: string): UseWatchlistReturn {
     }
   }, [userId]);
 
-  // Calculate total items
   const totalItems =
     watchlist.games.length + watchlist.teams.length + watchlist.markets.length;
 

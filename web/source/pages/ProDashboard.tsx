@@ -163,16 +163,18 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
                     showOdds={true}
                   />
 
-                  <Link
-                    to="/watchlist"
-                    className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 hover:border-yellow-400/50 transition group"
-                  >
-                    <span className="text-yellow-400 font-semibold group-hover:text-yellow-300 transition">
-                      View All {watchlist.games.length} Game
-                      {watchlist.games.length !== 1 ? "s" : ""}
-                    </span>
-                    <ArrowRight className="w-5 h-5 text-yellow-400 group-hover:text-yellow-300 group-hover:translate-x-1 transition-all" />
-                  </Link>
+                  {watchlist.games.length > 1 && (
+                    <Link
+                      to="/watchlist"
+                      className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 hover:border-yellow-400/50 transition group"
+                    >
+                      <span className="text-yellow-400 font-semibold group-hover:text-yellow-300 transition">
+                        View All {watchlist.games.length} Game
+                        {watchlist.games.length !== 1 ? "s" : ""}
+                      </span>
+                      <ArrowRight className="w-5 h-5 text-yellow-400 group-hover:text-yellow-300 group-hover:translate-x-1 transition-all" />
+                    </Link>
+                  )}
                 </div>
               )}
             </DashboardCard>
