@@ -1,83 +1,78 @@
 /**
- * EventBrowser Page - DYNAMIC SPORTS VERSION
+ * EventBrowser Page - DEBUG VERSION
  *
- * Browse upcoming events from Firebase and add them to watchlist
- * Dynamically fetches ALL available sports from database
- *
- * CHANGES:
- * - Removed hardcoded SPORTS array
- * - Now fetches ALL events regardless of sport
- * - Dynamically builds sport filter buttons from actual data
- * - Extended date range to 30 days
- * - Increased limits to 200 per sport
+ * Added extensive logging to diagnose why NBA filter isn't showing
  */
 
 import React, { useState, useMemo } from "react";
 import { Search, Filter, Calendar, TrendingUp } from "lucide-react";
-import { useAvailableEvents } from "../hooks/useAvailableEvents";
+import {
+  useAvailableEvents,
+  useMultiSportEvents,
+} from "../hooks/useAvailableEvents";
 import { EventCard } from "../components/watchlist/EventCard";
-import { SportKey, League } from "../types/events";
+import { SportKey, leagueToSportKey, League } from "../types/events";
 
-// Sport key to display name mapping
-const SPORT_LABELS: Record<SportKey, League> = {
-  americanfootball_nfl: "NFL",
-  basketball_nba: "NBA",
-  icehockey_nhl: "NHL",
-  baseball_mlb: "MLB",
-  basketball_ncaab: "NCAAB",
-  americanfootball_ncaaf: "NCAAF",
-};
+const SPORTS: { key: SportKey; label: League }[] = [
+  { key: "americanfootball_nfl", label: "NFL" },
+  { key: "basketball_nba", label: "NBA" },
+  { key: "icehockey_nhl", label: "NHL" },
+  { key: "baseball_mlb", label: "MLB" },
+];
+
+console.log("[EventBrowser] SPORTS array defined:", SPORTS);
 
 export default function EventBrowser() {
   const [selectedSport, setSelectedSport] = useState<SportKey | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // ✅ CHANGED: Fetch ALL events without sport filter
-  const { events, loading, error, refresh } = useAvailableEvents({
-    sport: selectedSport !== "all" ? selectedSport : undefined,
-    limit: 500, // Increased limit to get all events
+  console.log("[EventBrowser] Component rendered", {
+    selectedSport,
+    searchQuery,
+    SPORTS,
   });
 
-  // ✅ NEW: Dynamically determine available sports from fetched events
-  const availableSports = useMemo(() => {
-    const sportsSet = new Set<SportKey>();
-    events.forEach((event) => {
-      if (event.sport) {
-        sportsSet.add(event.sport);
-      }
-    });
-    return Array.from(sportsSet).sort();
-  }, [events]);
+  const sportKeys = useMemo(() => SPORTS.map((s) => s.key), []);
 
-  // Filter events by search query and selected sport
-  const filteredEvents = useMemo(() => {
-    return events.filter((event) => {
-      // Filter by selected sport
-      if (selectedSport !== "all" && event.sport !== selectedSport) {
-        return false;
-      }
+  console.log("[EventBrowser] sportKeys memoized:", sportKeys);
 
-      // Filter by search query
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        return (
-          event.teams.home.toLowerCase().includes(query) ||
-          event.teams.away.toLowerCase().includes(query)
-        );
-      }
+  // Fetch events based on selected sport
+  const singleSportResult = useAvailableEvents({
+    sport: selectedSport !== "all" ? selectedSport : undefined,
+    limit: 50,
+  });
 
-      return true;
-    });
-  }, [events, selectedSport, searchQuery]);
+  const multiSportResult = useMultiSportEvents(sportKeys, { limit: 50 });
 
-  // Count events per sport
-  const eventCountPerSport = useMemo(() => {
-    const counts: Record<string, number> = {};
-    events.forEach((event) => {
-      counts[event.sport] = (counts[event.sport] || 0) + 1;
-    });
-    return counts;
-  }, [events]);
+  const { events, loading, error, refresh } =
+    selectedSport === "all" ? multiSportResult : singleSportResult;
+
+  console.log("[EventBrowser] Events state:", {
+    eventCount: events.length,
+    loading,
+    error,
+    selectedSport,
+    eventsBreakdown: events.reduce((acc, e) => {
+      acc[e.sport] = (acc[e.sport] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>),
+  });
+
+  // Filter events by search query
+  const filteredEvents = events.filter((event) => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      event.teams.home.toLowerCase().includes(query) ||
+      event.teams.away.toLowerCase().includes(query)
+    );
+  });
+
+  console.log("[EventBrowser] Filtered events:", {
+    originalCount: events.length,
+    filteredCount: filteredEvents.length,
+    searchQuery,
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white">
@@ -92,14 +87,6 @@ export default function EventBrowser() {
             Add upcoming games to your watchlist to track odds and receive
             notifications
           </p>
-          {/* Show total events available */}
-          {!loading && !error && (
-            <p className="text-sm text-gray-500 mt-2">
-              📊 Total events available: {events.length} across{" "}
-              {availableSports.length} sport
-              {availableSports.length !== 1 ? "s" : ""}
-            </p>
-          )}
         </div>
 
         {/* Filters */}
@@ -116,10 +103,13 @@ export default function EventBrowser() {
             />
           </div>
 
-          {/* Sport Filter Tabs - Dynamically Generated */}
+          {/* Sport Filter Tabs */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2">
             <button
-              onClick={() => setSelectedSport("all")}
+              onClick={() => {
+                console.log("[EventBrowser] Clicked All Sports");
+                setSelectedSport("all");
+              }}
               className={`px-4 py-2 rounded-lg whitespace-nowrap transition ${
                 selectedSport === "all"
                   ? "bg-yellow-400 text-black font-semibold"
@@ -128,20 +118,31 @@ export default function EventBrowser() {
             >
               All Sports ({events.length})
             </button>
-            {availableSports.map((sportKey) => (
-              <button
-                key={sportKey}
-                onClick={() => setSelectedSport(sportKey)}
-                className={`px-4 py-2 rounded-lg whitespace-nowrap transition ${
-                  selectedSport === sportKey
-                    ? "bg-yellow-400 text-black font-semibold"
-                    : "bg-white/5 hover:bg-white/10 text-gray-300"
-                }`}
-              >
-                {SPORT_LABELS[sportKey] || sportKey.toUpperCase()} (
-                {eventCountPerSport[sportKey] || 0})
-              </button>
-            ))}
+            {SPORTS.map((sport) => {
+              const sportEventCount = events.filter(
+                (e) => e.sport === sport.key
+              ).length;
+              console.log(
+                `[EventBrowser] Rendering button for ${sport.label}:`,
+                sport
+              );
+              return (
+                <button
+                  key={sport.key}
+                  onClick={() => {
+                    console.log(`[EventBrowser] Clicked ${sport.label}`);
+                    setSelectedSport(sport.key);
+                  }}
+                  className={`px-4 py-2 rounded-lg whitespace-nowrap transition ${
+                    selectedSport === sport.key
+                      ? "bg-yellow-400 text-black font-semibold"
+                      : "bg-white/5 hover:bg-white/10 text-gray-300"
+                  }`}
+                >
+                  {sport.label} ({sportEventCount})
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -151,9 +152,7 @@ export default function EventBrowser() {
           {loading && (
             <div className="text-center py-12">
               <div className="inline-block w-8 h-8 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
-              <p className="mt-4 text-gray-400">
-                Loading events from Firebase...
-              </p>
+              <p className="mt-4 text-gray-400">Loading events...</p>
             </div>
           )}
 
@@ -180,11 +179,6 @@ export default function EventBrowser() {
                   Try adjusting your search or filters
                 </p>
               )}
-              {!searchQuery && events.length === 0 && (
-                <p className="text-sm text-gray-500 mt-4">
-                  💡 Tip: Run your odds ingestion service to populate events
-                </p>
-              )}
             </div>
           )}
 
@@ -194,9 +188,6 @@ export default function EventBrowser() {
               <div className="mb-4 text-sm text-gray-400">
                 Showing {filteredEvents.length} event
                 {filteredEvents.length !== 1 ? "s" : ""}
-                {searchQuery && ` matching "${searchQuery}"`}
-                {selectedSport !== "all" &&
-                  ` in ${SPORT_LABELS[selectedSport] || selectedSport}`}
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredEvents.map((event) => (
