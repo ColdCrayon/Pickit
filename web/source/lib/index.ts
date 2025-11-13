@@ -9,6 +9,7 @@ export {
   auth,
   googleProvider,
   db,
+  functions,
   upsertUserDoc,
   // NEW: FCM exports
   requestNotificationPermission,
@@ -86,3 +87,6 @@ export type { TicketInput } from "./tickets";
 
 // User Roles
 export { setUserRoles } from "./setRoles";
+
+// Payments
+export { getStripe } from "./stripe";

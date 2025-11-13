@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { httpsCallable } from "firebase/functions";
+
 import { Footer } from "../components";
+import { getStripe, functions } from "../lib";
+import { useAuth } from "../hooks/useAuth";
 
 const logo = "/logo.png";
 
@@ -32,6 +36,65 @@ const tiers = [
 
 const Upgrade: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleUpgrade = async () => {
+    setError(null);
+
+    if (!user) {
+      setError("Please sign in to upgrade your plan.");
+      navigate("/login");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const createCheckoutSession = httpsCallable(functions, "createCheckoutSession");
+      const result = await createCheckoutSession({
+        uid: user.uid,
+        email: user.email ?? undefined,
+        returnUrl: `${window.location.origin}/account`,
+      });
+
+      const data = (result.data || {}) as {
+        sessionId?: string;
+        billingPortalUrl?: string;
+      };
+
+      if (data.billingPortalUrl) {
+        window.location.assign(data.billingPortalUrl);
+        return;
+      }
+
+      if (!data.sessionId) {
+        throw new Error("Unable to start checkout. Please try again later.");
+      }
+
+      const stripe = await getStripe();
+      if (!stripe) {
+        throw new Error("Stripe is not configured.");
+      }
+
+      const { error: stripeError } = await stripe.redirectToCheckout({
+        sessionId: data.sessionId,
+      });
+
+      if (stripeError) {
+        throw new Error(stripeError.message);
+      }
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "An unexpected error occurred while starting checkout.";
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
@@ -73,8 +136,12 @@ const Upgrade: React.FC = () => {
               {/* Button wrapper sits at the bottom */}
               <div className="mt-auto">
                 {tier.highlighted ? (
-                  <button className="w-full py-3 bg-black text-yellow-500/90 font-semibold rounded-xl hover:bg-gray-800">
-                    Upgrade to Pro
+                  <button
+                    className="w-full py-3 bg-black text-yellow-500/90 font-semibold rounded-xl hover:bg-gray-800 disabled:opacity-60 disabled:cursor-not-allowed"
+                    onClick={handleUpgrade}
+                    disabled={loading}
+                  >
+                    {loading ? "Redirecting..." : "Upgrade to Pro"}
                   </button>
                 ) : (
                   <button className="w-full py-3 bg-gray-800 text-white font-semibold rounded-xl hover:bg-gray-700">
@@ -82,6 +149,11 @@ const Upgrade: React.FC = () => {
                   </button>
                 )}
               </div>
+              {tier.highlighted && error && (
+                <p className="mt-4 text-sm text-red-400" role="alert">
+                  {error}
+                </p>
+              )}
             </div>
           ))}
         </div>

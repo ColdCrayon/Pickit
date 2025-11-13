@@ -10,7 +10,7 @@
  */
 
 const { setGlobalOptions } = require("firebase-functions/v2/options");
-const { onCall } = require("firebase-functions/v2/https");
+const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { onSchedule } = require("firebase-functions/v2/scheduler");
 const {
   onDocumentCreated,
@@ -20,6 +20,8 @@ const logger = require("firebase-functions/logger");
 
 const admin = require("firebase-admin");
 const { getFirestore, Timestamp } = require("firebase-admin/firestore");
+
+const Stripe = require("stripe");
 
 const {
   sendBatchNotifications,
@@ -32,6 +34,19 @@ setGlobalOptions({ maxInstances: 10 });
 if (!admin.apps.length) {
   admin.initializeApp();
 }
+
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+const STRIPE_PRICE_ID = process.env.STRIPE_PRICE_ID;
+const STRIPE_SUCCESS_URL = process.env.STRIPE_SUCCESS_URL;
+const STRIPE_CANCEL_URL = process.env.STRIPE_CANCEL_URL;
+const STRIPE_PORTAL_RETURN_URL = process.env.STRIPE_PORTAL_RETURN_URL;
+
+const stripeClient =
+  STRIPE_SECRET_KEY != null && STRIPE_SECRET_KEY !== ""
+    ? new Stripe(STRIPE_SECRET_KEY, {
+        apiVersion: "2024-09-30",
+      })
+    : null;
 
 // ============================================================================
 // EXISTING FUNCTIONS (unchanged)
@@ -72,6 +87,107 @@ exports.setUserRoles = onCall({ cors: true }, async (request) => {
 
   logger.info(`Updated claims for ${uid}`, { isAdmin, isPremium });
   return { ok: true, uid, isAdmin: !!isAdmin, isPremium: !!isPremium };
+});
+
+exports.createCheckoutSession = onCall({ cors: true }, async (request) => {
+  if (!stripeClient) {
+    throw new HttpsError(
+      "failed-precondition",
+      "Stripe is not configured on the server."
+    );
+  }
+
+  const caller = request.auth;
+
+  if (!caller) {
+    throw new HttpsError("unauthenticated", "Authentication is required.");
+  }
+
+  const { uid, email, returnUrl } = request.data || {};
+
+  if (!uid || caller.uid !== uid) {
+    throw new HttpsError(
+      "failed-precondition",
+      "A valid uid matching the authenticated user is required."
+    );
+  }
+
+  const customerEmail = email || caller.token.email;
+
+  if (!customerEmail) {
+    throw new HttpsError(
+      "failed-precondition",
+      "The user must have an email address to start checkout."
+    );
+  }
+
+  const db = getFirestore();
+
+  try {
+    const userDoc = await db.collection("users").doc(uid).get();
+    const userData = userDoc.exists ? userDoc.data() : {};
+
+    const portalReturnUrl =
+      returnUrl ||
+      STRIPE_PORTAL_RETURN_URL ||
+      STRIPE_SUCCESS_URL ||
+      `${request.rawRequest?.headers?.origin || ""}/account`;
+
+    if (userData && userData.stripeCustomerId) {
+      const portalSession = await stripeClient.billingPortal.sessions.create({
+        customer: userData.stripeCustomerId,
+        return_url: portalReturnUrl,
+      });
+
+      return { billingPortalUrl: portalSession.url };
+    }
+
+    if (!STRIPE_PRICE_ID) {
+      throw new HttpsError(
+        "failed-precondition",
+        "STRIPE_PRICE_ID is not configured."
+      );
+    }
+
+    if (!STRIPE_SUCCESS_URL || !STRIPE_CANCEL_URL) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Stripe success and cancel URLs must be configured."
+      );
+    }
+
+    const session = await stripeClient.checkout.sessions.create({
+      mode: "subscription",
+      payment_method_types: ["card"],
+      customer_email: customerEmail,
+      line_items: [
+        {
+          price: STRIPE_PRICE_ID,
+          quantity: 1,
+        },
+      ],
+      allow_promotion_codes: true,
+      success_url: STRIPE_SUCCESS_URL,
+      cancel_url: STRIPE_CANCEL_URL,
+      metadata: {
+        firebaseUid: uid,
+      },
+    });
+
+    return { sessionId: session.id };
+  } catch (error) {
+    logger.error("Failed to create checkout session", error);
+    if (error instanceof HttpsError) {
+      throw error;
+    }
+    throw new HttpsError(
+      "unknown",
+      error?.message || "Unable to create checkout session.",
+      {
+        code: error?.code,
+      }
+    );
+  }
 });
 
 /**
