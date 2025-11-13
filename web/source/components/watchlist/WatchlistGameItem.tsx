@@ -1,21 +1,20 @@
 /**
- * WatchlistGameItem Component - PROPERLY DISPLAYS AMERICAN ODDS
+ * WatchlistGameItem Component - FETCHES EVENT DATA
  *
- * Individual watchlist game card with odds display
- * Used in the Watchlist page
+ * Now fetches full event data from Firestore since watchlist only stores event IDs
  *
- * FIX: Works with updated useBestOdds that returns OddsEntry objects
+ * FIX: Uses useEventOdds hook to fetch complete event data
  */
 
 import React, { useState } from "react";
 import { X, Calendar, TrendingUp } from "lucide-react";
-import { Event, sportKeyToLeague } from "../../types/events";
-import { useBestOdds } from "../../hooks/useEventOdds";
+import { sportKeyToLeague } from "../../types/events";
+import { useEventOdds, useBestOdds } from "../../hooks/useEventOdds";
 import { MoneylineDisplay, SpreadDisplay, TotalsDisplay } from "./OddsDisplay";
 import { Timestamp } from "firebase/firestore";
 
 interface WatchlistGameItemProps {
-  game: Event;
+  gameId: string; // Just the ID now, not full game object
   onRemove: (gameId: string) => Promise<void>;
   showOdds?: boolean;
 }
@@ -61,23 +60,26 @@ function formatEventTime(startTime: Timestamp | Date): string {
 }
 
 export const WatchlistGameItem: React.FC<WatchlistGameItemProps> = ({
-  game,
+  gameId,
   onRemove,
   showOdds = true,
 }) => {
   const [removing, setRemoving] = useState(false);
 
-  // Get best odds - returns Record<string, OddsEntry>
+  // Fetch the complete event data
+  const { event, loading: eventLoading } = useEventOdds(gameId);
+
+  // Get best odds
   const { bestOdds: bestMoneyline, loading: moneylineLoading } = useBestOdds(
-    game.id,
+    gameId,
     "h2h"
   );
   const { bestOdds: bestSpread, loading: spreadLoading } = useBestOdds(
-    game.id,
+    gameId,
     "spreads"
   );
   const { bestOdds: bestTotals, loading: totalsLoading } = useBestOdds(
-    game.id,
+    gameId,
     "totals"
   );
 
@@ -89,7 +91,7 @@ export const WatchlistGameItem: React.FC<WatchlistGameItemProps> = ({
 
     setRemoving(true);
     try {
-      await onRemove(game.id);
+      await onRemove(gameId);
     } catch (error) {
       console.error("[WatchlistGameItem] Error removing game:", error);
       alert("Failed to remove game from watchlist");
@@ -98,6 +100,18 @@ export const WatchlistGameItem: React.FC<WatchlistGameItemProps> = ({
     }
   };
 
+  // Loading state
+  if (eventLoading || !event) {
+    return (
+      <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+        <div className="animate-pulse space-y-3">
+          <div className="h-4 bg-white/10 rounded w-1/3"></div>
+          <div className="h-6 bg-white/10 rounded w-3/4"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/[0.07] transition">
       {/* Header */}
@@ -105,18 +119,18 @@ export const WatchlistGameItem: React.FC<WatchlistGameItemProps> = ({
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xs font-semibold text-yellow-400 px-2 py-0.5 bg-yellow-400/10 rounded">
-              {sportKeyToLeague(game.sport)}
+              {sportKeyToLeague(event.sport)}
             </span>
             <span className="text-xs text-gray-400 flex items-center gap-1">
               <Calendar className="w-3 h-3" />
-              {formatEventTime(game.startTime)}
+              {formatEventTime(event.startTime)}
             </span>
           </div>
 
           {/* Teams */}
           <div className="space-y-1">
             <div className="text-white font-semibold">
-              {game.teams.away} @ {game.teams.home}
+              {event.teams.away} @ {event.teams.home}
             </div>
           </div>
         </div>
@@ -154,7 +168,7 @@ export const WatchlistGameItem: React.FC<WatchlistGameItemProps> = ({
                 <span>Best Available Odds</span>
               </div>
 
-              {/* Moneyline - Using OddsEntry objects directly */}
+              {/* Moneyline */}
               {bestMoneyline && (bestMoneyline.home || bestMoneyline.away) && (
                 <div>
                   <div className="text-xs text-gray-500 mb-1 font-semibold">
@@ -163,13 +177,13 @@ export const WatchlistGameItem: React.FC<WatchlistGameItemProps> = ({
                   <MoneylineDisplay
                     homeOdds={bestMoneyline.home}
                     awayOdds={bestMoneyline.away}
-                    homeTeam={game.teams.home}
-                    awayTeam={game.teams.away}
+                    homeTeam={event.teams.home}
+                    awayTeam={event.teams.away}
                   />
                 </div>
               )}
 
-              {/* Spread - Using OddsEntry objects directly */}
+              {/* Spread */}
               {bestSpread && (bestSpread.home || bestSpread.away) && (
                 <div>
                   <div className="text-xs text-gray-500 mb-1 font-semibold">
@@ -178,13 +192,13 @@ export const WatchlistGameItem: React.FC<WatchlistGameItemProps> = ({
                   <SpreadDisplay
                     homeOdds={bestSpread.home}
                     awayOdds={bestSpread.away}
-                    homeTeam={game.teams.home}
-                    awayTeam={game.teams.away}
+                    homeTeam={event.teams.home}
+                    awayTeam={event.teams.away}
                   />
                 </div>
               )}
 
-              {/* Totals - Using OddsEntry objects directly */}
+              {/* Totals */}
               {bestTotals && (bestTotals.over || bestTotals.under) && (
                 <div>
                   <div className="text-xs text-gray-500 mb-1 font-semibold">

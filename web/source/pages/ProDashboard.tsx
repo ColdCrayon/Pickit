@@ -1,8 +1,7 @@
 /**
- * ProDashboard - WITH BLUE GRADIENT BACKGROUND
+ * ProDashboard - UPDATED FOR ID-ONLY WATCHLIST
  *
- * Updated to use standard blue/gray background with subtle gradient
- * Matches the MyTickets page styling
+ * Updated to work with new watchlist storage that only keeps game IDs
  */
 
 import React from "react";
@@ -17,7 +16,6 @@ import {
   Plus,
   ArrowRight,
 } from "lucide-react";
-import { Timestamp } from "firebase/firestore";
 import { Footer } from "../components";
 import { useAuth } from "../hooks/useAuth";
 import { useWatchlist } from "../hooks/useWatchlist";
@@ -36,33 +34,8 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
     totalItems,
   } = useWatchlist(user?.uid);
 
-  const upcomingGames = React.useMemo(() => {
-    if (!watchlist?.games) return [];
-
-    const now = new Date();
-
-    return watchlist.games
-      .filter((game) => {
-        const gameTime =
-          game.startTime instanceof Timestamp
-            ? game.startTime.toDate()
-            : new Date(game.startTime);
-        return gameTime > now;
-      })
-      .sort((a, b) => {
-        const aTime =
-          a.startTime instanceof Timestamp
-            ? a.startTime.toMillis()
-            : new Date(a.startTime).getTime();
-        const bTime =
-          b.startTime instanceof Timestamp
-            ? b.startTime.toMillis()
-            : new Date(b.startTime).getTime();
-        return aTime - bTime;
-      });
-  }, [watchlist?.games]);
-
-  const nextGame = upcomingGames[0];
+  // Just show first game from watchlist - WatchlistGameItem handles data fetching
+  const firstGameId = watchlist?.games?.[0]?.id;
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
@@ -135,30 +108,11 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
                 </div>
               ) : !watchlist?.games || watchlist.games.length === 0 ? (
                 <WatchlistEmptyState />
-              ) : upcomingGames.length === 0 ? (
-                <div className="flex items-center justify-center text-center py-12">
-                  <div>
-                    <Star className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">
-                      No upcoming games
-                    </h3>
-                    <p className="text-gray-400 mb-6">
-                      All your tracked games have already started or finished.
-                    </p>
-                    <Link
-                      to="/browse-events"
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold rounded-lg transition"
-                    >
-                      <Plus className="w-5 h-5" />
-                      Add More Games
-                    </Link>
-                  </div>
-                </div>
               ) : (
                 <div className="space-y-4">
                   <WatchlistGameItem
-                    key={nextGame.id}
-                    game={nextGame}
+                    key={firstGameId}
+                    gameId={firstGameId}
                     onRemove={removeGame}
                     showOdds={true}
                   />

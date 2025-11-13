@@ -1,8 +1,7 @@
 /**
- * Watchlist Page - WITH BROWSE EVENTS BUTTON
+ * Watchlist Page - UPDATED FOR ID-ONLY STORAGE
  *
- * Full watchlist page showing all saved games with odds
- * Added "Browse Events" button in header for easy access
+ * Updated to work with new watchlist storage that only keeps game IDs
  */
 
 import React from "react";
@@ -22,7 +21,7 @@ const Watchlist: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white">
       <div className="container mx-auto px-4 py-8 max-w-6xl mt-12">
-        {/* Header with Browse Events Button */}
+        {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-3">
@@ -30,7 +29,6 @@ const Watchlist: React.FC = () => {
               <h1 className="text-4xl font-bold">My Watchlist</h1>
             </div>
 
-            {/* Browse Events Button */}
             <Link
               to="/browse-events"
               className="flex items-center gap-2 px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold rounded-xl transition-all hover:scale-105"
@@ -91,9 +89,8 @@ const Watchlist: React.FC = () => {
                 </h2>
 
                 <p className="text-gray-400 mb-8 leading-relaxed">
-                  Start tracking your favorite teams, upcoming games, and
-                  betting markets. Get notified when odds change and stay ahead
-                  of the game.
+                  Start tracking your favorite upcoming games. Get notified when
+                  odds change and stay ahead of the game.
                 </p>
 
                 <Link
@@ -145,7 +142,7 @@ const Watchlist: React.FC = () => {
               {watchlist.games.map((game) => (
                 <WatchlistGameItem
                   key={game.id}
-                  game={game}
+                  gameId={game.id}
                   onRemove={removeGame}
                   showOdds={true}
                 />
