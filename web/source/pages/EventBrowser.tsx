@@ -1,10 +1,7 @@
 /**
- * EventBrowser Page - FIXED VERSION
+ * EventBrowser Page - DEBUG VERSION
  *
- * Browse upcoming events from The Odds API and add them to watchlist
- * Supports filtering by sport and date range
- *
- * FIX: Memoized sports array to prevent infinite re-render loop
+ * Added extensive logging to diagnose why NBA filter isn't showing
  */
 
 import React, { useState, useMemo } from "react";
@@ -23,13 +20,21 @@ const SPORTS: { key: SportKey; label: League }[] = [
   { key: "baseball_mlb", label: "MLB" },
 ];
 
+console.log("[EventBrowser] SPORTS array defined:", SPORTS);
+
 export default function EventBrowser() {
   const [selectedSport, setSelectedSport] = useState<SportKey | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // ✅ FIX: Memoize the sports array so it doesn't recreate on every render
-  // This was causing infinite loop because array reference changed each render
+  console.log("[EventBrowser] Component rendered", {
+    selectedSport,
+    searchQuery,
+    SPORTS,
+  });
+
   const sportKeys = useMemo(() => SPORTS.map((s) => s.key), []);
+
+  console.log("[EventBrowser] sportKeys memoized:", sportKeys);
 
   // Fetch events based on selected sport
   const singleSportResult = useAvailableEvents({
@@ -42,6 +47,17 @@ export default function EventBrowser() {
   const { events, loading, error, refresh } =
     selectedSport === "all" ? multiSportResult : singleSportResult;
 
+  console.log("[EventBrowser] Events state:", {
+    eventCount: events.length,
+    loading,
+    error,
+    selectedSport,
+    eventsBreakdown: events.reduce((acc, e) => {
+      acc[e.sport] = (acc[e.sport] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>),
+  });
+
   // Filter events by search query
   const filteredEvents = events.filter((event) => {
     if (!searchQuery) return true;
@@ -50,6 +66,12 @@ export default function EventBrowser() {
       event.teams.home.toLowerCase().includes(query) ||
       event.teams.away.toLowerCase().includes(query)
     );
+  });
+
+  console.log("[EventBrowser] Filtered events:", {
+    originalCount: events.length,
+    filteredCount: filteredEvents.length,
+    searchQuery,
   });
 
   return (
@@ -84,28 +106,43 @@ export default function EventBrowser() {
           {/* Sport Filter Tabs */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2">
             <button
-              onClick={() => setSelectedSport("all")}
+              onClick={() => {
+                console.log("[EventBrowser] Clicked All Sports");
+                setSelectedSport("all");
+              }}
               className={`px-4 py-2 rounded-lg whitespace-nowrap transition ${
                 selectedSport === "all"
                   ? "bg-yellow-400 text-black font-semibold"
                   : "bg-white/5 hover:bg-white/10 text-gray-300"
               }`}
             >
-              All Sports
+              All Sports ({events.length})
             </button>
-            {SPORTS.map((sport) => (
-              <button
-                key={sport.key}
-                onClick={() => setSelectedSport(sport.key)}
-                className={`px-4 py-2 rounded-lg whitespace-nowrap transition ${
-                  selectedSport === sport.key
-                    ? "bg-yellow-400 text-black font-semibold"
-                    : "bg-white/5 hover:bg-white/10 text-gray-300"
-                }`}
-              >
-                {sport.label}
-              </button>
-            ))}
+            {SPORTS.map((sport) => {
+              const sportEventCount = events.filter(
+                (e) => e.sport === sport.key
+              ).length;
+              console.log(
+                `[EventBrowser] Rendering button for ${sport.label}:`,
+                sport
+              );
+              return (
+                <button
+                  key={sport.key}
+                  onClick={() => {
+                    console.log(`[EventBrowser] Clicked ${sport.label}`);
+                    setSelectedSport(sport.key);
+                  }}
+                  className={`px-4 py-2 rounded-lg whitespace-nowrap transition ${
+                    selectedSport === sport.key
+                      ? "bg-yellow-400 text-black font-semibold"
+                      : "bg-white/5 hover:bg-white/10 text-gray-300"
+                  }`}
+                >
+                  {sport.label} ({sportEventCount})
+                </button>
+              );
+            })}
           </div>
         </div>
 

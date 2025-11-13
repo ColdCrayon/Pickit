@@ -1,12 +1,10 @@
 /**
- * EventCard Component - FIXED ODDS DISPLAY
+ * EventCard Component - PROPERLY DISPLAYS AMERICAN ODDS
  *
- * Displays an event with teams, start time, and best odds
+ * Displays an event with teams, start time, and best odds in American format
  * Includes "Add to Watchlist" button
  *
- * FIXES:
- * - Properly handles bestOdds as Record<string, OddsEntry>
- * - Fixed "[object Object]" display issue
+ * FIX: Works with updated useBestOdds that returns OddsEntry objects
  */
 
 import React, { useState } from "react";
@@ -26,7 +24,6 @@ interface EventCardProps {
 
 /**
  * Format date/time for display
- * Handles both Timestamp and Date objects
  */
 function formatEventTime(startTime: Timestamp | Date): string {
   try {
@@ -37,17 +34,14 @@ function formatEventTime(startTime: Timestamp | Date): string {
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffDays = Math.floor(diffHours / 24);
 
-    // If within 24 hours, show relative time
     if (diffHours < 24 && diffHours > 0) {
       return `in ${diffHours}h`;
     }
 
-    // If within 7 days, show days
     if (diffDays < 7 && diffDays > 0) {
       return `in ${diffDays}d`;
     }
 
-    // Otherwise show date
     return date.toLocaleDateString(undefined, {
       month: "short",
       day: "numeric",
@@ -73,73 +67,38 @@ export const EventCard: React.FC<EventCardProps> = ({
   } = useWatchlist(user?.uid);
   const [adding, setAdding] = useState(false);
 
-  // Get best odds for display - returns Record<string, OddsEntry>
+  // Get best odds - now returns Record<string, OddsEntry>
   const { bestOdds: bestMoneyline } = useBestOdds(event.id, "h2h");
   const { bestOdds: bestSpread } = useBestOdds(event.id, "spreads");
   const { bestOdds: bestTotals } = useBestOdds(event.id, "totals");
 
   // Check if already in watchlist
-  const isInWatchlist = watchlist?.games.some((g) => g.id === event.id);
+  const isInWatchlist = watchlist.games.some((game) => game.id === event.id);
 
-  const league = sportKeyToLeague(event.sport);
-
-  const handleAddToWatchlist = async () => {
-    if (!user) {
-      alert("Please sign in to add games to your watchlist");
-      return;
-    }
-
-    if (isInWatchlist) {
-      return; // Already added
-    }
+  const handleAdd = async () => {
+    if (!user || adding || isInWatchlist) return;
 
     setAdding(true);
     try {
-      // FIXED: Ensure startTime is always a Timestamp
-      let startTimeTimestamp: Timestamp;
-
-      if (event.startTime instanceof Timestamp) {
-        startTimeTimestamp = event.startTime;
-      } else if (event.startTime instanceof Date) {
-        startTimeTimestamp = Timestamp.fromDate(event.startTime);
-      } else if (
-        typeof event.startTime === "object" &&
-        event.startTime.toDate
-      ) {
-        startTimeTimestamp = event.startTime as Timestamp;
-      } else {
-        console.error("[EventCard] Invalid startTime format:", event.startTime);
-        throw new Error("Invalid event start time");
-      }
-
-      await addGame({
-        id: event.id,
-        league: league as "NFL" | "NBA" | "MLB" | "NHL",
-        teams: event.teams,
-        startTime: startTimeTimestamp,
-      });
-
-      if (onAddSuccess) {
-        onAddSuccess();
-      }
-    } catch (error: any) {
+      // addGame now just takes the event ID
+      await addGame(event.id);
+      onAddSuccess?.();
+    } catch (error) {
       console.error("[EventCard] Error adding to watchlist:", error);
-      if (!error.message.includes("already in watchlist")) {
-        alert(error.message || "Failed to add to watchlist");
-      }
+      alert("Failed to add event to watchlist");
     } finally {
       setAdding(false);
     }
   };
 
   return (
-    <div className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 transition">
+    <div className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/[0.07] transition">
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-2">
             <span className="text-xs font-semibold text-yellow-400 px-2 py-0.5 bg-yellow-400/10 rounded">
-              {league}
+              {sportKeyToLeague(event.sport)}
             </span>
             <span className="text-xs text-gray-400 flex items-center gap-1">
               <Calendar className="w-3 h-3" />
@@ -149,16 +108,16 @@ export const EventCard: React.FC<EventCardProps> = ({
 
           {/* Teams */}
           <div className="space-y-1">
-            <div className="text-white font-semibold">{event.teams.away}</div>
-            <div className="text-gray-400 text-sm">@</div>
-            <div className="text-white font-semibold">{event.teams.home}</div>
+            <div className="text-white font-semibold">
+              {event.teams.away} @ {event.teams.home}
+            </div>
           </div>
         </div>
 
         {/* Add to Watchlist Button */}
         <button
-          onClick={handleAddToWatchlist}
-          disabled={isInWatchlist || adding || watchlistLoading}
+          onClick={handleAdd}
+          disabled={adding || isInWatchlist}
           className={`p-2 rounded-lg transition ${
             isInWatchlist
               ? "bg-yellow-400/20 text-yellow-400 cursor-default"
@@ -180,7 +139,7 @@ export const EventCard: React.FC<EventCardProps> = ({
             <span>Best Available Odds</span>
           </div>
 
-          {/* Moneyline */}
+          {/* Moneyline - Using OddsEntry objects directly */}
           {bestMoneyline && (bestMoneyline.home || bestMoneyline.away) && (
             <div>
               <div className="text-xs text-gray-500 mb-1 font-semibold">
@@ -195,7 +154,7 @@ export const EventCard: React.FC<EventCardProps> = ({
             </div>
           )}
 
-          {/* Spread */}
+          {/* Spread - Using OddsEntry objects directly */}
           {bestSpread && (bestSpread.home || bestSpread.away) && (
             <div>
               <div className="text-xs text-gray-500 mb-1 font-semibold">
@@ -210,7 +169,7 @@ export const EventCard: React.FC<EventCardProps> = ({
             </div>
           )}
 
-          {/* Totals */}
+          {/* Totals - Using OddsEntry objects directly */}
           {bestTotals && (bestTotals.over || bestTotals.under) && (
             <div>
               <div className="text-xs text-gray-500 mb-1 font-semibold">
