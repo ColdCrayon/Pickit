@@ -1,97 +1,49 @@
 /**
- * WatchlistGameItem Component - FIXED ODDS DISPLAY
+ * WatchlistGameItem Component - PROPERLY DISPLAYS AMERICAN ODDS
  *
- * Displays a watchlisted game with live odds updates
- * Includes remove button
+ * Individual watchlist game card with odds display
+ * Used in the Watchlist page
  *
- * FIXES:
- * - Properly handles bestOdds as Record<string, number>
- * - Fixed "[object Object]" display issue
- * - Robust Timestamp handling
+ * FIX: Works with updated useBestOdds that returns OddsEntry objects
  */
 
 import React, { useState } from "react";
-import { Trash2, Calendar, TrendingUp } from "lucide-react";
-import { WatchlistGame } from "../../types/watchlist";
+import { X, Calendar, TrendingUp } from "lucide-react";
+import { Event, sportKeyToLeague } from "../../types/events";
 import { useBestOdds } from "../../hooks/useEventOdds";
 import { MoneylineDisplay, SpreadDisplay, TotalsDisplay } from "./OddsDisplay";
 import { Timestamp } from "firebase/firestore";
 
 interface WatchlistGameItemProps {
-  game: WatchlistGame;
+  game: Event;
   onRemove: (gameId: string) => Promise<void>;
   showOdds?: boolean;
 }
 
 /**
- * Format date/time for display
- * Handles both Date objects and Firestore Timestamps robustly
+ * Format event time relative to now
  */
-function formatEventTime(startTime: Date | Timestamp | any): string {
+function formatEventTime(startTime: Timestamp | Date): string {
   try {
-    if (!startTime) {
-      console.warn("[WatchlistGameItem] startTime is null/undefined");
-      return "Unknown";
-    }
-
-    let date: Date;
-
-    if (startTime instanceof Timestamp) {
-      date = startTime.toDate();
-    } else if (startTime instanceof Date) {
-      date = startTime;
-    } else if (
-      typeof startTime === "object" &&
-      typeof startTime.toDate === "function"
-    ) {
-      date = startTime.toDate();
-    } else if (typeof startTime === "string" || typeof startTime === "number") {
-      date = new Date(startTime);
-    } else if (typeof startTime === "object" && startTime.seconds) {
-      date = new Date(startTime.seconds * 1000);
-    } else {
-      console.error("[WatchlistGameItem] Invalid startTime format:", startTime);
-      return "Unknown";
-    }
-
-    if (isNaN(date.getTime())) {
-      console.error("[WatchlistGameItem] Invalid date:", date);
-      return "Invalid Date";
-    }
-
+    const date =
+      startTime instanceof Timestamp ? startTime.toDate() : startTime;
     const now = new Date();
     const diffMs = date.getTime() - now.getTime();
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffDays = Math.floor(diffHours / 24);
 
-    // If game already started or passed
-    if (diffMs < 0) {
-      const absDiffHours = Math.abs(diffHours);
-      if (absDiffHours < 24) {
-        return "Final";
-      } else {
-        return date.toLocaleDateString(undefined, {
-          month: "short",
-          day: "numeric",
-        });
-      }
+    if (diffHours < 0) {
+      return "Started";
     }
 
-    // If within 24 hours, show relative time
     if (diffHours < 24) {
-      if (diffHours < 1) {
-        const diffMins = Math.floor(diffMs / (1000 * 60));
-        return `in ${diffMins}m`;
-      }
       return `in ${diffHours}h`;
     }
 
-    // If within 7 days, show days
     if (diffDays < 7) {
       return `in ${diffDays}d`;
     }
 
-    // Otherwise show full date
     return date.toLocaleDateString(undefined, {
       month: "short",
       day: "numeric",
@@ -115,7 +67,7 @@ export const WatchlistGameItem: React.FC<WatchlistGameItemProps> = ({
 }) => {
   const [removing, setRemoving] = useState(false);
 
-  // Get best odds - returns Record<string, number>
+  // Get best odds - returns Record<string, OddsEntry>
   const { bestOdds: bestMoneyline, loading: moneylineLoading } = useBestOdds(
     game.id,
     "h2h"
@@ -153,7 +105,7 @@ export const WatchlistGameItem: React.FC<WatchlistGameItemProps> = ({
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xs font-semibold text-yellow-400 px-2 py-0.5 bg-yellow-400/10 rounded">
-              {game.league}
+              {sportKeyToLeague(game.sport)}
             </span>
             <span className="text-xs text-gray-400 flex items-center gap-1">
               <Calendar className="w-3 h-3" />
@@ -163,9 +115,9 @@ export const WatchlistGameItem: React.FC<WatchlistGameItemProps> = ({
 
           {/* Teams */}
           <div className="space-y-1">
-            <div className="text-white font-semibold">{game.teams.away}</div>
-            <div className="text-gray-400 text-sm">@</div>
-            <div className="text-white font-semibold">{game.teams.home}</div>
+            <div className="text-white font-semibold">
+              {game.teams.away} @ {game.teams.home}
+            </div>
           </div>
         </div>
 
@@ -173,115 +125,79 @@ export const WatchlistGameItem: React.FC<WatchlistGameItemProps> = ({
         <button
           onClick={handleRemove}
           disabled={removing}
-          className="p-2 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition disabled:opacity-50"
+          className="p-2 rounded-lg bg-white/5 hover:bg-red-500/20 text-gray-300 hover:text-red-400 transition"
           title="Remove from watchlist"
         >
-          <Trash2 className="w-4 h-4 text-red-400" />
+          <X className="w-5 h-5" />
         </button>
       </div>
 
       {/* Odds Display */}
-      {showOdds && hasOdds && (
-        <div className="pt-3 border-t border-white/10 space-y-3">
-          <div className="flex items-center gap-1 text-xs text-gray-400 mb-2">
-            <TrendingUp className="w-3 h-3" />
-            <span>Live Odds</span>
-            {oddsLoading && (
-              <span className="ml-2 text-yellow-400 animate-pulse">●</span>
-            )}
-          </div>
+      {showOdds && (
+        <div className="pt-3 border-t border-white/10">
+          {oddsLoading && (
+            <div className="text-center text-gray-400 text-sm py-2">
+              Loading odds...
+            </div>
+          )}
 
-          {/* Moneyline - FIXED: bestMoneyline is Record<string, number> */}
-          {bestMoneyline &&
-            (bestMoneyline.home !== undefined ||
-              bestMoneyline.away !== undefined) && (
-              <div>
-                <div className="text-xs text-gray-500 mb-1 font-semibold">
-                  Moneyline
-                </div>
-                <MoneylineDisplay
-                  homeOdds={
-                    bestMoneyline.home !== undefined
-                      ? { priceAmerican: bestMoneyline.home }
-                      : undefined
-                  }
-                  awayOdds={
-                    bestMoneyline.away !== undefined
-                      ? { priceAmerican: bestMoneyline.away }
-                      : undefined
-                  }
-                  homeTeam={game.teams.home}
-                  awayTeam={game.teams.away}
-                />
+          {!oddsLoading && !hasOdds && (
+            <div className="text-center text-gray-500 text-sm py-2">
+              No odds available
+            </div>
+          )}
+
+          {!oddsLoading && hasOdds && (
+            <div className="space-y-3">
+              <div className="flex items-center gap-1 text-xs text-gray-400 mb-2">
+                <TrendingUp className="w-3 h-3" />
+                <span>Best Available Odds</span>
               </div>
-            )}
 
-          {/* Spread - FIXED: bestSpread is Record<string, number> */}
-          {bestSpread &&
-            (bestSpread.home !== undefined ||
-              bestSpread.away !== undefined) && (
-              <div>
-                <div className="text-xs text-gray-500 mb-1 font-semibold">
-                  Spread
+              {/* Moneyline - Using OddsEntry objects directly */}
+              {bestMoneyline && (bestMoneyline.home || bestMoneyline.away) && (
+                <div>
+                  <div className="text-xs text-gray-500 mb-1 font-semibold">
+                    Moneyline
+                  </div>
+                  <MoneylineDisplay
+                    homeOdds={bestMoneyline.home}
+                    awayOdds={bestMoneyline.away}
+                    homeTeam={game.teams.home}
+                    awayTeam={game.teams.away}
+                  />
                 </div>
-                <SpreadDisplay
-                  homeOdds={
-                    bestSpread.home !== undefined
-                      ? {
-                          priceAmerican: bestSpread.home,
-                          point: bestSpread.homePoint,
-                        }
-                      : undefined
-                  }
-                  awayOdds={
-                    bestSpread.away !== undefined
-                      ? {
-                          priceAmerican: bestSpread.away,
-                          point: bestSpread.awayPoint,
-                        }
-                      : undefined
-                  }
-                  homeTeam={game.teams.home}
-                  awayTeam={game.teams.away}
-                />
-              </div>
-            )}
+              )}
 
-          {/* Totals - FIXED: bestTotals is Record<string, number> */}
-          {bestTotals &&
-            (bestTotals.over !== undefined ||
-              bestTotals.under !== undefined) && (
-              <div>
-                <div className="text-xs text-gray-500 mb-1 font-semibold">
-                  Total
+              {/* Spread - Using OddsEntry objects directly */}
+              {bestSpread && (bestSpread.home || bestSpread.away) && (
+                <div>
+                  <div className="text-xs text-gray-500 mb-1 font-semibold">
+                    Spread
+                  </div>
+                  <SpreadDisplay
+                    homeOdds={bestSpread.home}
+                    awayOdds={bestSpread.away}
+                    homeTeam={game.teams.home}
+                    awayTeam={game.teams.away}
+                  />
                 </div>
-                <TotalsDisplay
-                  overOdds={
-                    bestTotals.over !== undefined
-                      ? {
-                          priceAmerican: bestTotals.over,
-                          point: bestTotals.point,
-                        }
-                      : undefined
-                  }
-                  underOdds={
-                    bestTotals.under !== undefined
-                      ? {
-                          priceAmerican: bestTotals.under,
-                          point: bestTotals.point,
-                        }
-                      : undefined
-                  }
-                />
-              </div>
-            )}
-        </div>
-      )}
+              )}
 
-      {/* No Odds Available */}
-      {showOdds && !hasOdds && !oddsLoading && (
-        <div className="pt-3 border-t border-white/10 text-center text-sm text-gray-500">
-          No odds available
+              {/* Totals - Using OddsEntry objects directly */}
+              {bestTotals && (bestTotals.over || bestTotals.under) && (
+                <div>
+                  <div className="text-xs text-gray-500 mb-1 font-semibold">
+                    Total
+                  </div>
+                  <TotalsDisplay
+                    overOdds={bestTotals.over}
+                    underOdds={bestTotals.under}
+                  />
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>
