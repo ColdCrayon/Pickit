@@ -76,7 +76,7 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-2">
               <LayoutDashboard className="w-8 h-8 text-yellow-400" />
-              <h1 className="text-4xl font-bold">Pro Dashboard</h1>
+              <h1 className="text-4xl font-bold">Dashboard</h1>
             </div>
             <p className="text-gray-400">
               Your command center for smart betting decisions

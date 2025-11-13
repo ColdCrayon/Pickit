@@ -1,13 +1,12 @@
 /**
- * useAvailableEvents Hook - INFINITE LOOP FIX
+ * useAvailableEvents Hook - EXTENDED DATE RANGE
  *
- * Queries the /events collection to fetch upcoming games that users can add to their watchlist.
- * Supports filtering by sport, date range, and pagination.
+ * Queries the /events collection to fetch upcoming games.
  *
- * FIXES:
- * - Stabilized useCallback dependencies to prevent infinite re-renders
- * - Used JSON.stringify for array comparison in dependencies
- * - Fixed sports array reference causing infinite loop
+ * CHANGES:
+ * - Extended default date range from 7 days to 30 days
+ * - Added better logging for debugging
+ * - Increased default limits
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -37,14 +36,6 @@ interface UseAvailableEventsReturn {
  *
  * @param filters - Optional filters for sport, date range, limit
  * @returns Events array, loading state, error, and refresh function
- *
- * @example
- * ```tsx
- * const { events, loading, error } = useAvailableEvents({
- *   sport: 'basketball_nba',
- *   limit: 20
- * });
- * ```
  */
 export function useAvailableEvents(
   filters: EventFilters = {}
@@ -72,15 +63,16 @@ export function useAvailableEvents(
         ? Timestamp.fromDate(filters.startDate)
         : now;
 
+      // ✅ CHANGED: Extended from 7 days to 30 days
       const endDate = filters.endDate
         ? Timestamp.fromDate(filters.endDate)
-        : Timestamp.fromMillis(now.toMillis() + 7 * 24 * 60 * 60 * 1000); // Default 7 days
+        : Timestamp.fromMillis(now.toMillis() + 30 * 24 * 60 * 60 * 1000);
 
       constraints.push(
         where("startTime", ">=", startDate),
         where("startTime", "<=", endDate),
         orderBy("startTime", "asc"),
-        limit(filters.limit || 50)
+        limit(filters.limit || 200) // ✅ CHANGED: Increased from 50 to 200
       );
 
       const eventsQuery = query(collection(db, "events"), ...constraints);
@@ -88,7 +80,10 @@ export function useAvailableEvents(
 
       console.log(`[useAvailableEvents] Fetched ${snapshot.size} events`, {
         sport: filters.sport || "all",
-        filters,
+        dateRange: `${startDate.toDate().toLocaleDateString()} - ${endDate
+          .toDate()
+          .toLocaleDateString()}`,
+        limit: filters.limit || 200,
       });
 
       const eventsList: Event[] = snapshot.docs.map(
@@ -100,7 +95,7 @@ export function useAvailableEvents(
       );
 
       setEvents(eventsList);
-      setHasMore(snapshot.size === (filters.limit || 50));
+      setHasMore(snapshot.size === (filters.limit || 200));
     } catch (err: any) {
       console.error("[useAvailableEvents] Error:", err);
       setError(err.message || "Failed to fetch events");
@@ -110,7 +105,7 @@ export function useAvailableEvents(
     }
   }, [
     filters.sport,
-    filters.startDate?.getTime(), // Use getTime() for stable Date comparison
+    filters.startDate?.getTime(),
     filters.endDate?.getTime(),
     filters.limit,
   ]);
@@ -130,8 +125,6 @@ export function useAvailableEvents(
 
 /**
  * Hook to fetch events from multiple sports
- *
- * FIXED: Now uses stable dependencies to prevent infinite re-renders
  *
  * @param sports - Array of sport keys to fetch
  * @param filters - Optional filters
@@ -153,7 +146,7 @@ export function useMultiSportEvents(
 
       console.log(`[useMultiSportEvents] Fetching events for sports:`, sports);
 
-      // If no sports specified or empty array, fetch ALL events without sport filter
+      // If no sports specified, fetch ALL events without sport filter
       if (!sports || sports.length === 0) {
         const constraints: QueryConstraint[] = [];
 
@@ -162,22 +155,28 @@ export function useMultiSportEvents(
           ? Timestamp.fromDate(filters.startDate)
           : now;
 
+        // ✅ CHANGED: Extended from 7 days to 30 days
         const endDate = filters.endDate
           ? Timestamp.fromDate(filters.endDate)
-          : Timestamp.fromMillis(now.toMillis() + 7 * 24 * 60 * 60 * 1000);
+          : Timestamp.fromMillis(now.toMillis() + 30 * 24 * 60 * 60 * 1000);
 
         constraints.push(
           where("startTime", ">=", startDate),
           where("startTime", "<=", endDate),
           orderBy("startTime", "asc"),
-          limit(filters.limit || 100)
+          limit(filters.limit || 200) // ✅ CHANGED: Increased from 100 to 200
         );
 
         const eventsQuery = query(collection(db, "events"), ...constraints);
         const snapshot = await getDocs(eventsQuery);
 
         console.log(
-          `[useMultiSportEvents] Fetched ${snapshot.size} events (all sports)`
+          `[useMultiSportEvents] Fetched ${snapshot.size} events (all sports)`,
+          {
+            dateRange: `${startDate.toDate().toLocaleDateString()} - ${endDate
+              .toDate()
+              .toLocaleDateString()}`,
+          }
         );
 
         const eventsList: Event[] = snapshot.docs.map(
@@ -189,12 +188,12 @@ export function useMultiSportEvents(
         );
 
         setEvents(eventsList);
-        setHasMore(snapshot.size === (filters.limit || 100));
+        setHasMore(snapshot.size === (filters.limit || 200));
         setLoading(false);
         return;
       }
 
-      // Fetch events for each sport in PARALLEL using Promise.all
+      // Fetch events for each sport in PARALLEL
       const eventPromises = sports.map(async (sport) => {
         const constraints: QueryConstraint[] = [where("sport", "==", sport)];
 
@@ -203,15 +202,16 @@ export function useMultiSportEvents(
           ? Timestamp.fromDate(filters.startDate)
           : now;
 
+        // ✅ CHANGED: Extended from 7 days to 30 days
         const endDate = filters.endDate
           ? Timestamp.fromDate(filters.endDate)
-          : Timestamp.fromMillis(now.toMillis() + 7 * 24 * 60 * 60 * 1000);
+          : Timestamp.fromMillis(now.toMillis() + 30 * 24 * 60 * 60 * 1000);
 
         constraints.push(
           where("startTime", ">=", startDate),
           where("startTime", "<=", endDate),
           orderBy("startTime", "asc"),
-          limit(filters.limit || 50)
+          limit(filters.limit || 200) // ✅ CHANGED: Increased from 50 to 200
         );
 
         try {
@@ -231,11 +231,11 @@ export function useMultiSportEvents(
           );
         } catch (err) {
           console.warn(`[useMultiSportEvents] Failed to fetch ${sport}:`, err);
-          return []; // Return empty array if this sport fails
+          return [];
         }
       });
 
-      // Wait for ALL queries to complete in parallel
+      // Wait for ALL queries to complete
       const results = await Promise.all(eventPromises);
 
       // Flatten and sort by start time
@@ -252,7 +252,7 @@ export function useMultiSportEvents(
       );
 
       setEvents(allEvents);
-      setHasMore(allEvents.length >= (filters.limit || 50) * sports.length);
+      setHasMore(allEvents.length >= (filters.limit || 200) * sports.length);
     } catch (err: any) {
       console.error("[useMultiSportEvents] Error:", err);
       setError(err.message || "Failed to fetch events");
@@ -261,7 +261,7 @@ export function useMultiSportEvents(
       setLoading(false);
     }
   }, [
-    JSON.stringify(sports), // ✅ FIX: Use JSON.stringify for stable array comparison
+    JSON.stringify(sports),
     filters.startDate?.getTime(),
     filters.endDate?.getTime(),
     filters.limit,
