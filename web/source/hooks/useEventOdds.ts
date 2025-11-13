@@ -291,9 +291,6 @@ export function useOddsComparison(
       const bestEntry = bestOdds[outcome];
       if (!bestEntry) return;
 
-      const bestEntry = bestOdds[outcome];
-      if (!bestEntry) return;
-
       const bookValue = entry.priceDecimal || entry.priceAmerican;
       const bestValue = bestEntry.priceDecimal || bestEntry.priceAmerican;
 
