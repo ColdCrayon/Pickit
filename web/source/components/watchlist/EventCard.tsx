@@ -80,6 +80,7 @@ export const EventCard: React.FC<EventCardProps> = ({
 
     setAdding(true);
     try {
+      // addGame now just takes the event ID
       await addGame(event.id);
       onAddSuccess?.();
     } catch (error) {
