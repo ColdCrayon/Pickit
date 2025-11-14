@@ -13,6 +13,7 @@ import { auth, db, googleProvider } from "../lib/firebase";
 import { upsertUserDoc } from "../lib/firebase";
 import { useUserPlan } from "../hooks";
 import { useNotifications } from "../hooks/useNotifications";
+import NotificationSettings from "../components/notifications/NotificationSettings";
 import {
   BarChart3,
   TrendingUp,
@@ -356,6 +357,21 @@ const Account: React.FC = () => {
                     </div>
                   </div>
                 </Card>
+              </div>
+
+              {/* NOTIFICATION SETTINGS - REPLACE EXISTING CARD */}
+              <div className="mt-10">
+                <div className="mb-6">
+                  <h2 className="text-2xl font-bold mb-2">
+                    Notification Settings
+                  </h2>
+                  <p className="text-gray-400">
+                    Manage your push notification preferences for odds changes,
+                    saved tickets, and game alerts
+                  </p>
+                </div>
+
+                <NotificationSettings />
               </div>
 
               {/* Subscription Info Card (for Premium users) */}

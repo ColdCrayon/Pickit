@@ -14,7 +14,10 @@
   },
   "jest": {
     "testEnvironment": "node",
-    "roots": ["<rootDir>/__tests__", "<rootDir>/web"],
+    "roots": [
+      "<rootDir>/__tests__",
+      "<rootDir>/web"
+    ],
     "transform": {
       "^.+\\.(t|j)sx?$": [
         "ts-jest",
@@ -23,12 +26,24 @@
         }
       ]
     },
-    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
     "testMatch": [
       "**/__tests__/**/*.test.(ts|js)"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      ".integration.test.js"
     ]
   },
   "dependencies": {
-    "firebase-admin": "^13.5.0"
+    "firebase-admin": "^13.5.0",
+    "firebase-functions": "^7.0.0"
   }
 }

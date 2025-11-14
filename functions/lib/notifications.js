@@ -5,8 +5,8 @@
  * Handles sending push notifications to users
  */
 
-const admin = require("firebase-admin");
-const logger = require("firebase-functions/logger");
+const admin = require('firebase-admin');
+const logger = require('firebase-functions/logger');
 
 /**
  * Send a notification to a single user
@@ -20,7 +20,7 @@ async function sendNotificationToUser(userId, title, body, data = {}) {
   try {
     const userDoc = await admin
       .firestore()
-      .collection("users")
+      .collection('users')
       .doc(userId)
       .get();
 
@@ -55,7 +55,7 @@ async function sendNotificationToUser(userId, title, body, data = {}) {
       },
       webpush: {
         fcmOptions: {
-          link: data.link || "https://yourdomain.com",
+          link: data.link || 'https://yourdomain.com',
         },
       },
     };
@@ -66,13 +66,13 @@ async function sendNotificationToUser(userId, title, body, data = {}) {
   } catch (error) {
     // Handle invalid token errors
     if (
-      error.code === "messaging/invalid-registration-token" ||
-      error.code === "messaging/registration-token-not-registered"
+      error.code === 'messaging/invalid-registration-token' ||
+      error.code === 'messaging/registration-token-not-registered'
     ) {
       logger.warn(`Invalid FCM token for user ${userId}, removing...`);
       await admin
         .firestore()
-        .collection("users")
+        .collection('users')
         .doc(userId)
         .update({ fcmToken: null });
     } else {
@@ -96,7 +96,7 @@ async function sendBatchNotifications(userIds, title, body, data = {}) {
   );
 
   const success = results.filter(
-    (r) => r.status === "fulfilled" && r.value
+    (r) => r.status === 'fulfilled' && r.value
   ).length;
   const failed = results.length - success;
 
@@ -113,14 +113,14 @@ async function sendBatchNotifications(userIds, title, body, data = {}) {
 async function getUsersWithSavedTicket(ticketId, ticketType) {
   const snapshot = await admin
     .firestore()
-    .collectionGroup("savedTickets")
-    .where("ticketId", "==", ticketId)
-    .where("ticketType", "==", ticketType)
+    .collectionGroup('savedTickets')
+    .where('ticketId', '==', ticketId)
+    .where('ticketType', '==', ticketType)
     .get();
 
   return snapshot.docs.map((doc) => {
     // Extract userId from document path: users/{userId}/savedTickets/{ticketId}
-    const pathParts = doc.ref.path.split("/");
+    const pathParts = doc.ref.path.split('/');
     return pathParts[1]; // users/{userId}/savedTickets/{ticketId}
   });
 }
