@@ -1,19 +1,21 @@
-import { useEffect, useState } from "react";
-import { getAuth, onAuthStateChanged, getIdTokenResult } from "firebase/auth";
+import type { ReactNode } from "react";
+import { Navigate } from "react-router-dom";
+import { useUserPlan } from "../../hooks";
 
-export function AdminGuard({ children }: { children: React.ReactNode }) {
-  const [ok, setOk] = useState<boolean | null>(null);
+export function AdminGuard({ children }: { children: ReactNode }) {
+  const { user, isAdmin, loading } = useUserPlan();
 
-  useEffect(() => {
-    const auth = getAuth();
-    return onAuthStateChanged(auth, async (u) => {
-      if (!u) return setOk(false);
-      const tok = await getIdTokenResult(u, true);
-      setOk(!!tok.claims.isAdmin);
-    });
-  }, []);
+  if (loading) {
+    return <div className="p-6">Checking admin…</div>;
+  }
 
-  if (ok === null) return <div className="p-6">Checking admin…</div>;
-  if (!ok) return <div className="p-6">Admins only.</div>;
+  if (!user) {
+    return <Navigate to="/account" replace />;
+  }
+
+  if (!isAdmin) {
+    return <Navigate to="/" replace />;
+  }
+
   return <>{children}</>;
 }
