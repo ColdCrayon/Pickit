@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useUserPlan } from "../hooks";
-import { Navbar, SidebarNav } from "../components";
+import { AdminGuard, Navbar, SidebarNav } from "../components";
 import { ProGuard } from "../components/guards/ProGuard";
 
 // Pages
@@ -126,7 +126,14 @@ function App() {
           <Route path="/free-picks/:league" element={<FreePicksLeague />} />
 
           {/* Admin Dashboard - Protected route */}
-          <Route path="/admin" element={<AdminDashboard />} />
+          <Route
+            path="/admin"
+            element={
+              <AdminGuard>
+                <AdminDashboard />
+              </AdminGuard>
+            }
+          />
 
           {/* Catch-all redirect */}
           <Route path="*" element={<Navigate to="/" replace />} />
