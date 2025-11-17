@@ -15,10 +15,24 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { Footer } from "../components";
-import { useEvents } from "../hooks/useEvents";
+import { useAvailableEvents } from "../hooks/useAvailableEvents";
 import { OddsComparisonTable } from "../components/odds/OddsComparisonTable";
 import { EventMarketType, SportKey } from "../types/events";
-import { formatDistanceToNow } from "date-fns";
+
+// Simple time formatting function
+const formatTimeUntil = (date: Date): string => {
+  const now = new Date();
+  const diff = date.getTime() - now.getTime();
+
+  if (diff < 0) return "Started";
+
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const days = Math.floor(hours / 24);
+
+  if (days > 0) return `in ${days} day${days > 1 ? "s" : ""}`;
+  if (hours > 0) return `in ${hours} hour${hours > 1 ? "s" : ""}`;
+  return "Starting soon";
+};
 
 const OddsComparison: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -28,7 +42,7 @@ const OddsComparison: React.FC = () => {
     searchParams.get("event")
   );
 
-  const { events, loading, refetch } = useEvents({
+  const { events, loading, refresh } = useAvailableEvents({
     sport: selectedSport === "all" ? undefined : selectedSport,
     limit: 20,
   });
@@ -81,7 +95,7 @@ const OddsComparison: React.FC = () => {
               </div>
             </div>
             <button
-              onClick={() => refetch()}
+              onClick={() => refresh()}
               className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition"
             >
               <RefreshCw className="w-4 h-4" />
@@ -161,7 +175,7 @@ const OddsComparison: React.FC = () => {
                       const isSelected = event.id === selectedEventId;
                       const startTime = event.startTime?.toDate();
                       const timeUntil = startTime
-                        ? formatDistanceToNow(startTime, { addSuffix: true })
+                        ? formatTimeUntil(startTime)
                         : "";
 
                       return (

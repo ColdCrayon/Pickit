@@ -7,11 +7,25 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { BarChart3, ArrowRight, TrendingUp } from "lucide-react";
-import { useEvents } from "../../../hooks/useEvents";
-import { formatDistanceToNow } from "date-fns";
+import { useAvailableEvents } from "../../hooks/useAvailableEvents";
+
+// Simple time formatting function
+const formatTimeUntil = (date: Date): string => {
+  const now = new Date();
+  const diff = date.getTime() - now.getTime();
+
+  if (diff < 0) return "Started";
+
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const days = Math.floor(hours / 24);
+
+  if (days > 0) return `in ${days} day${days > 1 ? "s" : ""}`;
+  if (hours > 0) return `in ${hours} hour${hours > 1 ? "s" : ""}`;
+  return "Starting soon";
+};
 
 export const OddsComparisonPreview: React.FC = () => {
-  const { events, loading } = useEvents({ limit: 3 });
+  const { events, loading } = useAvailableEvents({ limit: 3 });
 
   if (loading) {
     return (
@@ -53,9 +67,7 @@ export const OddsComparisonPreview: React.FC = () => {
         {events && events.length > 0 ? (
           events.slice(0, 3).map((event) => {
             const startTime = event.startTime?.toDate();
-            const timeUntil = startTime
-              ? formatDistanceToNow(startTime, { addSuffix: true })
-              : "";
+            const timeUntil = startTime ? formatTimeUntil(startTime) : "";
 
             return (
               <Link
