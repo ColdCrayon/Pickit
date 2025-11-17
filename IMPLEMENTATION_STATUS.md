@@ -5,7 +5,7 @@
 
 ---
 
-## âœ… Phase 0: Core Infrastructure (COMPLETED)
+## [COMPLETED] Phase 0: Core Infrastructure
 
 ### Firebase & Authentication
 
@@ -50,7 +50,7 @@
 
 ---
 
-## âœ… Phase 1: Core User Features (COMPLETED)
+## [COMPLETED] Phase 1: Core User Features
 
 ### Public Pages
 
@@ -83,7 +83,7 @@
 
 ---
 
-## âœ… Phase 2: Premium Features - Core (COMPLETED)
+## [COMPLETED] Phase 2: Premium Features - Core
 
 ### Watchlist System
 
@@ -119,7 +119,7 @@
 
 ---
 
-## ðŸš§ Phase 3: Premium Features - Enhanced (IN PROGRESS)
+## [IN PROGRESS] Phase 3: Premium Features - Enhanced
 
 ### Dashboard Enhancements
 
@@ -166,7 +166,7 @@
 
 ---
 
-## ðŸ"‹ Phase 4: Advanced Analytics (PLANNED)
+## [PLANNED] Phase 4: Advanced Analytics
 
 ### Picks Performance Tracking
 
@@ -204,7 +204,7 @@
 
 ---
 
-## 📱 Phase 5: Mobile & UX Polish (PLANNED)
+## [PLANNED] Phase 5: Mobile & UX Polish
 
 ### Mobile Optimization
 
@@ -229,7 +229,7 @@
 
 ---
 
-## ðŸŽ¯ Phase 6: Community & AI (FUTURE)
+## [FUTURE] Phase 6: Community & AI
 
 ### Community Features
 
@@ -261,7 +261,7 @@
 
 ---
 
-## ðŸ› Known Issues & Technical Debt
+## Known Issues & Technical Debt
 
 ### High Priority
 
@@ -286,7 +286,7 @@
 
 ---
 
-## 📊 Metrics & Monitoring
+## Metrics & Monitoring
 
 ### Currently Tracked
 
@@ -305,7 +305,7 @@
 
 ---
 
-## 🔑 Environment Variables Required
+## Environment Variables Required
 
 ### Web App (.env)
 
@@ -356,7 +356,7 @@ FUTURE_WINDOW_MS=172800000
 
 ---
 
-## 📅 Timeline Estimates
+## Timeline Estimates
 
 ### Phase 3 (Enhanced Premium) - **4-6 weeks**
 
@@ -384,7 +384,7 @@ FUTURE_WINDOW_MS=172800000
 
 ---
 
-## 🎯 Success Criteria
+## Success Criteria
 
 ### MVP (Phases 0-2)
 
