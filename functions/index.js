@@ -84,7 +84,8 @@ exports.settleTickets = onSchedule(
     const db = getFirestore();
     const now = Timestamp.now();
 
-    const batch = db.batch();
+    const gameRefs = [];
+    const arbRefs = [];
 
     // Game Tickets
     const gameSnapshot = await db
@@ -94,7 +95,7 @@ exports.settleTickets = onSchedule(
       .get();
 
     gameSnapshot.forEach((doc) => {
-      batch.update(doc.ref, { serverSettled: true });
+      gameRefs.push(doc.ref);
     });
 
     // Arbitrage Tickets
@@ -105,11 +106,25 @@ exports.settleTickets = onSchedule(
       .get();
 
     arbSnapshot.forEach((doc) => {
-      batch.update(doc.ref, { serverSettled: true });
+      arbRefs.push(doc.ref);
     });
 
-    if (!gameSnapshot.empty || !arbSnapshot.empty) {
+    const refsToSettle = [...gameRefs, ...arbRefs];
+
+    for (let i = 0; i < refsToSettle.length; i += 500) {
+      const batch = db.batch();
+      const slice = refsToSettle.slice(i, i + 500);
+
+      slice.forEach((ref) => {
+        batch.update(ref, { serverSettled: true });
+      });
+
       await batch.commit();
+      logger.info(
+        `Settled batch ${Math.floor(i / 500) + 1}: ${i + slice.length}/${
+          refsToSettle.length
+        } tickets`
+      );
     }
 
     logger.info(
