@@ -16,11 +16,8 @@ export type TicketInput = {
 
 export async function createTicket(input: TicketInput) {
   const col = collection(db, "gameTickets");
-  const id = new Date()
-    .toISOString()
-    .replace(/[-:TZ.]/g, "")
-    .slice(0, 14);
-  const ref = doc(col, id);
+  const ref = doc(col);
+  const id = ref.id;
 
   // explicit normalization (no undefined)
   const record: any = {
