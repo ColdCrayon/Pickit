@@ -1,381 +1,267 @@
 /**
  * functions/lib/watchlist-monitor.js
  *
- * Monitors watchlist items for odds changes and sends notifications
+ * UPDATED VERSION - Uses user's custom threshold preference
+ * Monitors watchlist for significant odds changes and sends notifications
  */
 
 const admin = require('firebase-admin');
 const logger = require('firebase-functions/logger');
-const { sendBatchNotifications } = require('./notifications');
 
 /**
- * Check if odds have changed significantly
+ * Check if odds change is significant enough to notify
  * @param {number} oldOdds - Previous odds value
  * @param {number} newOdds - New odds value
- * @param {number} threshold - Percentage threshold (default 5%)
+ * @param {number} thresholdPercent - Threshold percentage (e.g., 10 for 10%)
  * @return {boolean} True if change exceeds threshold
  */
-function hasSignificantOddsChange(oldOdds, newOdds, threshold = 5) {
+function hasSignificantOddsChange(oldOdds, newOdds, thresholdPercent = 10) {
   if (!oldOdds || !newOdds) return false;
+  if (oldOdds === newOdds) return false;
 
   const changePercent = Math.abs(
     ((newOdds - oldOdds) / Math.abs(oldOdds)) * 100
   );
-  return changePercent >= threshold;
+
+  return changePercent >= thresholdPercent;
 }
 
 /**
- * Format odds change for notification
+ * Format odds change for display
  * @param {number} oldOdds - Previous odds
  * @param {number} newOdds - New odds
- * @return {string} Formatted odds change string
+ * @return {string} Formatted string like "-110 ↑ -150"
  */
 function formatOddsChange(oldOdds, newOdds) {
+  const oldStr = oldOdds > 0 ? `+${oldOdds}` : `${oldOdds}`;
+  const newStr = newOdds > 0 ? `+${newOdds}` : `${newOdds}`;
   const direction = newOdds > oldOdds ? '↑' : '↓';
-  return `${oldOdds > 0 ? '+' : ''}${oldOdds} ${direction} ${
-    newOdds > 0 ? '+' : ''
-  }${newOdds}`;
+
+  return `${oldStr} ${direction} ${newStr}`;
 }
 
 /**
- * Find all users watching a specific event
- * @param {string} eventId - Event ID to search for
- * @return {Promise<string[]>} Array of user IDs
- */
-async function getUsersWatchingEvent(eventId) {
-  const db = admin.firestore();
-
-  // Query users who have this game in their watchlist
-  const usersSnapshot = await db
-    .collection('users')
-    .where('watchlist.games', 'array-contains-any', [{ id: eventId }])
-    .get();
-
-  const userIds = [];
-  usersSnapshot.forEach((doc) => {
-    const data = doc.data();
-
-    // Check if notifications are enabled
-    if (data.watchlistSettings?.enableNotifications !== false) {
-      userIds.push(doc.id);
-    }
-  });
-
-  return userIds;
-}
-
-/**
- * Check if enough time has passed since last notification
- * @param {FirebaseFirestore.Timestamp} lastNotified - Last notification time
- * @param {number} minIntervalMinutes - Minimum interval in minutes
- * @return {boolean} True if enough time has passed
- */
-function canSendNotification(lastNotified, minIntervalMinutes = 60) {
-  if (!lastNotified) return true;
-
-  const now = Date.now();
-  const lastNotifiedTime = lastNotified.toMillis();
-  const minutesSince = (now - lastNotifiedTime) / (1000 * 60);
-
-  return minutesSince >= minIntervalMinutes;
-}
-
-/**
- * Monitor odds changes for watchlist items
- * @param {object} beforeData - Event data before update
- * @param {object} afterData - Event data after update
- * @param {string} eventId - Event ID
+ * Notify users watching an event when odds change significantly
+ * NOW USES USER'S CUSTOM THRESHOLD FROM watchlistSettings.alertThreshold
+ *
+ * @param {string} eventId - The ID of the event that was updated
+ * @param {Object} beforeData - The event data before the update
+ * @param {Object} afterData - The event data after the update
  * @return {Promise<void>}
  */
-async function monitorWatchlistOddsChanges(beforeData, afterData, eventId) {
-  try {
-    logger.info(`Checking odds changes for event: ${eventId}`);
+async function notifyWatchingUsers(eventId, beforeData, afterData) {
+  const db = admin.firestore();
+  const changes = [];
 
-    // Get markets from before/after
-    const beforeMarkets = beforeData.markets || {};
-    const afterMarkets = afterData.markets || {};
+  logger.info(`Checking odds changes for event: ${eventId}`);
 
-    // Track significant changes
-    const changes = [];
+  // Detect ALL odds changes across sportsbooks
+  for (const [sportsbook, beforeMarkets] of Object.entries(
+    beforeData.markets || {}
+  )) {
+    const afterMarkets = afterData.markets?.[sportsbook];
+    if (!afterMarkets) continue;
 
-    // Check each market type
-    for (const marketKey of Object.keys(afterMarkets)) {
-      const beforeMarket = beforeMarkets[marketKey];
-      const afterMarket = afterMarkets[marketKey];
+    const beforeSpread = beforeMarkets.spread || {};
+    const afterSpread = afterMarkets.spread || {};
+    const beforeML = beforeMarkets.moneyline || {};
+    const afterML = afterMarkets.moneyline || {};
+    const beforeTotals = beforeMarkets.totals || {};
+    const afterTotals = afterMarkets.totals || {};
 
-      if (!beforeMarket || !afterMarket) continue;
-
-      // Check spread changes
-      if (beforeMarket.spread && afterMarket.spread) {
-        const beforeSpread = beforeMarket.spread;
-        const afterSpread = afterMarket.spread;
-
-        // Check home spread odds
-        if (hasSignificantOddsChange(beforeSpread.home, afterSpread.home, 10)) {
-          changes.push({
-            market: 'spread',
-            team: 'home',
-            oldOdds: beforeSpread.home,
-            newOdds: afterSpread.home,
-          });
-        }
-
-        // Check away spread odds
-        if (hasSignificantOddsChange(beforeSpread.away, afterSpread.away, 10)) {
-          changes.push({
-            market: 'spread',
-            team: 'away',
-            oldOdds: beforeSpread.away,
-            newOdds: afterSpread.away,
-          });
-        }
-      }
-
-      // Check moneyline changes
-      if (beforeMarket.moneyline && afterMarket.moneyline) {
-        const beforeML = beforeMarket.moneyline;
-        const afterML = afterMarket.moneyline;
-
-        if (hasSignificantOddsChange(beforeML.home, afterML.home, 10)) {
-          changes.push({
-            market: 'moneyline',
-            team: 'home',
-            oldOdds: beforeML.home,
-            newOdds: afterML.home,
-          });
-        }
-
-        if (hasSignificantOddsChange(beforeML.away, afterML.away, 10)) {
-          changes.push({
-            market: 'moneyline',
-            team: 'away',
-            oldOdds: beforeML.away,
-            newOdds: afterML.away,
-          });
-        }
-      }
-
-      // Check totals changes
-      if (beforeMarket.totals && afterMarket.totals) {
-        const beforeTotals = beforeMarket.totals;
-        const afterTotals = afterMarket.totals;
-
-        if (hasSignificantOddsChange(beforeTotals.over, afterTotals.over, 10)) {
-          changes.push({
-            market: 'totals',
-            bet: 'over',
-            oldOdds: beforeTotals.over,
-            newOdds: afterTotals.over,
-          });
-        }
-
-        if (
-          hasSignificantOddsChange(beforeTotals.under, afterTotals.under, 10)
-        ) {
-          changes.push({
-            market: 'totals',
-            bet: 'under',
-            oldOdds: beforeTotals.under,
-            newOdds: afterTotals.under,
-          });
-        }
-      }
+    // Store ALL changes (we'll filter per-user by their threshold later)
+    // Spread changes
+    if (beforeSpread.home !== afterSpread.home) {
+      changes.push({
+        market: 'spread',
+        side: 'home',
+        before: beforeSpread.home,
+        after: afterSpread.home,
+        sportsbook,
+      });
     }
-
-    // If no significant changes, exit
-    if (changes.length === 0) {
-      logger.info(`No significant odds changes for event: ${eventId}`);
-      return;
-    }
-
-    logger.info(
-      `Found ${changes.length} significant odds changes for ` +
-        `event: ${eventId}`
-    );
-
-    // Find users watching this event
-    const userIds = await getUsersWatchingEvent(eventId);
-
-    if (userIds.length === 0) {
-      logger.info(`No users watching event: ${eventId}`);
-      return;
-    }
-
-    // Get event details for notification
-    const teams = afterData.teams || {};
-    const matchup = `${teams.away} @ ${teams.home}`;
-
-    // Check rate limiting for each user
-    const db = admin.firestore();
-    const eligibleUsers = [];
-
-    for (const userId of userIds) {
-      const userDoc = await db.collection('users').doc(userId).get();
-      const userData = userDoc.data();
-
-      const lastNotifications = userData?.lastNotifications || {};
-      const lastNotified = lastNotifications[eventId];
-
-      if (canSendNotification(lastNotified, 60)) {
-        eligibleUsers.push(userId);
-      } else {
-        logger.info(`Skipping notification for user ${userId} (rate limited)`);
-      }
-    }
-
-    if (eligibleUsers.length === 0) {
-      logger.info(`All users rate limited for event: ${eventId}`);
-      return;
-    }
-
-    // Send notifications to eligible users
-    const title = 'Odds Alert! 📊';
-    const body = `${matchup} odds moved: ${formatOddsChange(
-      changes[0].oldOdds,
-      changes[0].newOdds
-    )}`;
-    const data = {
-      type: 'odds_change',
-      eventId,
-      link: '/watchlist',
-    };
-
-    const result = await sendBatchNotifications(
-      eligibleUsers,
-      title,
-      body,
-      data
-    );
-
-    logger.info(
-      `Sent ${result.success}/${eligibleUsers.length} notifications ` +
-        `for event: ${eventId}`
-    );
-
-    // Update lastNotifications timestamp for each user
-    const batch = db.batch();
-    const now = admin.firestore.Timestamp.now();
-
-    for (const userId of eligibleUsers) {
-      const userRef = db.collection('users').doc(userId);
-      batch.update(userRef, {
-        [`lastNotifications.${eventId}`]: now,
+    if (beforeSpread.away !== afterSpread.away) {
+      changes.push({
+        market: 'spread',
+        side: 'away',
+        before: beforeSpread.away,
+        after: afterSpread.away,
+        sportsbook,
       });
     }
 
-    await batch.commit();
-  } catch (error) {
-    logger.error('Error monitoring watchlist odds changes:', error);
-  }
-}
-
-/**
- * Send game start notifications
- * Checks for games starting in the next hour and notifies users
- * @return {Promise<void>}
- */
-async function sendGameStartNotifications() {
-  try {
-    logger.info('Checking for games starting soon...');
-
-    const db = admin.firestore();
-    const now = admin.firestore.Timestamp.now();
-    const oneHourFromNow = admin.firestore.Timestamp.fromMillis(
-      now.toMillis() + 60 * 60 * 1000
-    );
-
-    // Find events starting in the next hour
-    const eventsSnapshot = await db
-      .collection('events')
-      .where('startTime', '>', now)
-      .where('startTime', '<=', oneHourFromNow)
-      .get();
-
-    if (eventsSnapshot.empty) {
-      logger.info('No games starting in the next hour');
-      return;
+    // Moneyline changes
+    if (beforeML.home !== afterML.home) {
+      changes.push({
+        market: 'moneyline',
+        side: 'home',
+        before: beforeML.home,
+        after: afterML.home,
+        sportsbook,
+      });
+    }
+    if (beforeML.away !== afterML.away) {
+      changes.push({
+        market: 'moneyline',
+        side: 'away',
+        before: beforeML.away,
+        after: afterML.away,
+        sportsbook,
+      });
     }
 
-    logger.info(`Found ${eventsSnapshot.size} games starting in the next hour`);
+    // Totals changes
+    if (beforeTotals.over !== afterTotals.over) {
+      changes.push({
+        market: 'totals',
+        side: 'over',
+        before: beforeTotals.over,
+        after: afterTotals.over,
+        sportsbook,
+      });
+    }
+    if (beforeTotals.under !== afterTotals.under) {
+      changes.push({
+        market: 'totals',
+        side: 'under',
+        before: beforeTotals.under,
+        after: afterTotals.under,
+        sportsbook,
+      });
+    }
+  }
 
-    // For each event, find users watching it and send notifications
-    for (const eventDoc of eventsSnapshot.docs) {
-      const eventId = eventDoc.id;
-      const eventData = eventDoc.data();
-      const teams = eventData.teams || {};
-      const matchup = `${teams.away} @ ${teams.home}`;
-      const startTime = eventData.startTime;
+  if (changes.length === 0) {
+    logger.info(`No odds changes detected for event: ${eventId}`);
+    return;
+  }
 
-      // Find users watching this game
-      const userIds = await getUsersWatchingEvent(eventId);
+  logger.info(
+    `Detected ${changes.length} total odds changes for event: ${eventId}`
+  );
 
-      if (userIds.length === 0) continue;
+  // Find users watching this event
+  const usersSnapshot = await db.collection('users').get();
+  const watchingUsers = [];
 
-      // Check if we already sent this notification
-      const eligibleUsers = [];
+  for (const userDoc of usersSnapshot.docs) {
+    const userData = userDoc.data();
+    const games = userData.watchlist?.games || [];
 
-      for (const userId of userIds) {
-        const userDoc = await db.collection('users').doc(userId).get();
-        const userData = userDoc.data();
+    const isWatching = games.some((game) => game.id === eventId);
 
-        const lastNotifications = userData?.lastNotifications || {};
-        const lastNotified = lastNotifications[`game_start_${eventId}`];
+    if (isWatching && userData.fcmToken && userData.notificationsEnabled) {
+      // ✅ GET USER'S CUSTOM THRESHOLD (default to 10% if not set)
+      const userThreshold = userData.watchlistSettings?.alertThreshold || 10;
 
-        // Only send once per game
-        if (!lastNotified) {
-          eligibleUsers.push(userId);
+      // ✅ FILTER CHANGES BY USER'S PERSONAL THRESHOLD
+      const significantChanges = changes.filter((change) => {
+        return hasSignificantOddsChange(
+          change.before,
+          change.after,
+          userThreshold
+        );
+      });
+
+      if (significantChanges.length > 0) {
+        watchingUsers.push({
+          userId: userDoc.id,
+          fcmToken: userData.fcmToken,
+          changes: significantChanges,
+          threshold: userThreshold,
+        });
+      } else {
+        logger.info(
+          `User ${userDoc.id} watching but no changes meet their ${userThreshold}% threshold`
+        );
+      }
+    }
+  }
+
+  if (watchingUsers.length === 0) {
+    logger.info(`No users with significant changes for event: ${eventId}`);
+    return;
+  }
+
+  logger.info(
+    `Sending notifications to ${watchingUsers.length} users for event: ${eventId}`
+  );
+
+  // Send notifications with rate limiting
+  let sentCount = 0;
+
+  for (const user of watchingUsers) {
+    try {
+      // Check rate limit (1 notification per hour per event)
+      const userDoc = await db.collection('users').doc(user.userId).get();
+      const userData = userDoc.data();
+      const lastNotified = userData.lastNotifications?.[eventId];
+
+      if (lastNotified) {
+        const minutesSince =
+          (Date.now() - lastNotified.toMillis()) / (1000 * 60);
+        if (minutesSince < 60) {
+          logger.info(
+            `Skipping notification for user ${
+              user.userId
+            } (rate limited - ${minutesSince.toFixed(1)} min ago)`
+          );
+          continue;
         }
       }
 
-      if (eligibleUsers.length === 0) continue;
+      // Format notification message
+      const changeDescriptions = user.changes
+        .slice(0, 2) // Show first 2 changes
+        .map(
+          (c) => `${c.market} ${c.side}: ${formatOddsChange(c.before, c.after)}`
+        )
+        .join(', ');
 
-      // Calculate minutes until game starts
-      const minutesUntil = Math.round(
-        (startTime.toMillis() - now.toMillis()) / (1000 * 60)
-      );
+      const moreChanges =
+        user.changes.length > 2 ? ` +${user.changes.length - 2} more` : '';
 
-      // Send notifications
-      const title = 'Game Starting Soon! ⏰';
-      const body = `${matchup} starts in ${minutesUntil} minutes`;
-      const data = {
-        type: 'game_start',
-        eventId,
-        link: '/browse-events',
-      };
+      // Send FCM notification
+      await admin.messaging().send({
+        token: user.fcmToken,
+        notification: {
+          title: `Odds Alert: ${afterData.teams?.home} vs ${afterData.teams?.away}`,
+          body: `${changeDescriptions}${moreChanges}`,
+        },
+        data: {
+          eventId,
+          type: 'odds_change',
+          changesCount: user.changes.length.toString(),
+        },
+      });
 
-      const result = await sendBatchNotifications(
-        eligibleUsers,
-        title,
-        body,
-        data
-      );
-
-      logger.info(
-        `Sent ${result.success}/${eligibleUsers.length} game start ` +
-          `notifications for: ${matchup}`
-      );
-
-      // Update notification sent flag
-      const batch = db.batch();
-      const notifTime = admin.firestore.Timestamp.now();
-
-      for (const userId of eligibleUsers) {
-        const userRef = db.collection('users').doc(userId);
-        batch.update(userRef, {
-          [`lastNotifications.game_start_${eventId}`]: notifTime,
+      // Update last notification time
+      await db
+        .collection('users')
+        .doc(user.userId)
+        .update({
+          [`lastNotifications.${eventId}`]: admin.firestore.Timestamp.now(),
         });
-      }
 
-      await batch.commit();
+      sentCount++;
+      logger.info(
+        `✅ Sent notification to user ${user.userId} (threshold: ${user.threshold}%)`
+      );
+    } catch (error) {
+      logger.error(
+        `Failed to send notification to user ${user.userId}:`,
+        error
+      );
     }
-  } catch (error) {
-    logger.error('Error sending game start notifications:', error);
   }
+
+  logger.info(
+    `Sent ${sentCount}/${watchingUsers.length} notifications for event: ${eventId}`
+  );
 }
 
 module.exports = {
-  monitorWatchlistOddsChanges,
-  sendGameStartNotifications,
   hasSignificantOddsChange,
   formatOddsChange,
+  notifyWatchingUsers,
 };

@@ -1,7 +1,7 @@
 /**
  * web/source/components/notifications/NotificationSettings.tsx
  *
- * Comprehensive notification settings panel
+ * Comprehensive notification settings panel with improved slider
  */
 
 import React, { useState, useEffect } from "react";
@@ -17,6 +17,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { useNotifications } from "../../hooks/useNotifications";
 import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "../../lib/firebase";
+import { useWatchlist } from "../../hooks/useWatchlist";
 
 interface NotificationPreferences {
   oddsChanges: boolean;
@@ -48,6 +49,7 @@ export const NotificationSettings: React.FC = () => {
     useState<NotificationPreferences>(DEFAULT_PREFERENCES);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const { watchlistSettings, updateSettings } = useWatchlist(user?.uid);
 
   // Load preferences from Firestore
   useEffect(() => {
@@ -98,14 +100,6 @@ export const NotificationSettings: React.FC = () => {
     const newPreferences = {
       ...preferences,
       [key]: !preferences[key],
-    };
-    savePreferences(newPreferences);
-  };
-
-  const handleOddsThresholdChange = (value: number) => {
-    const newPreferences = {
-      ...preferences,
-      minOddsChangePercent: value,
     };
     savePreferences(newPreferences);
   };
@@ -215,56 +209,121 @@ export const NotificationSettings: React.FC = () => {
           <h3 className="text-lg font-semibold mb-4">Notification Types</h3>
 
           <div className="space-y-4">
-            {/* Odds Changes */}
-            <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
-              <div className="flex items-center gap-3">
-                <TrendingUp className="w-5 h-5 text-yellow-400" />
-                <div>
-                  <div className="font-medium">Odds Changes</div>
-                  <div className="text-sm text-gray-400">
-                    Alert when watchlist item odds move significantly
+            {/* Odds Changes with Threshold Slider */}
+            <div className="p-4 bg-white/5 rounded-lg">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <TrendingUp className="w-5 h-5 text-yellow-400" />
+                  <div>
+                    <div className="font-medium">Odds Changes</div>
+                    <div className="text-sm text-gray-400">
+                      Alert when watchlist item odds move significantly
+                    </div>
                   </div>
                 </div>
-              </div>
-              <button
-                onClick={() => handleToggle("oddsChanges")}
-                disabled={saving}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${
-                  preferences.oddsChanges ? "bg-blue-500" : "bg-gray-600"
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
-                    preferences.oddsChanges ? "translate-x-6" : "translate-x-1"
-                  }`}
-                />
-              </button>
-            </div>
-
-            {/* Odds Change Threshold */}
-            {preferences.oddsChanges && (
-              <div className="ml-8 p-4 bg-white/5 rounded-lg">
-                <label className="block text-sm font-medium mb-2">
-                  Minimum Odds Change: {preferences.minOddsChangePercent}%
-                </label>
-                <input
-                  type="range"
-                  min="5"
-                  max="25"
-                  step="5"
-                  value={preferences.minOddsChangePercent}
-                  onChange={(e) =>
-                    handleOddsThresholdChange(Number(e.target.value))
-                  }
+                <button
+                  onClick={() => handleToggle("oddsChanges")}
                   disabled={saving}
-                  className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer accent-blue-500"
-                />
-                <div className="flex justify-between text-xs text-gray-400 mt-1">
-                  <span>5%</span>
-                  <span>25%</span>
-                </div>
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${
+                    preferences.oddsChanges ? "bg-blue-500" : "bg-gray-600"
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
+                      preferences.oddsChanges
+                        ? "translate-x-6"
+                        : "translate-x-1"
+                    }`}
+                  />
+                </button>
               </div>
-            )}
+
+              {/* Odds Change Threshold Slider - Only show when enabled */}
+              {preferences.oddsChanges && (
+                <div className="mt-4 pt-4 border-t border-white/10">
+                  <div className="flex items-baseline justify-between mb-3">
+                    <label className="font-medium text-sm">
+                      Alert Threshold
+                    </label>
+                    <span className="text-xl font-bold text-yellow-400">
+                      {watchlistSettings.alertThreshold}%
+                    </span>
+                  </div>
+
+                  {/* Slider with smooth dragging and progress bar */}
+                  <input
+                    type="range"
+                    min="1"
+                    max="50"
+                    value={watchlistSettings.alertThreshold}
+                    onChange={(e) => {
+                      updateSettings({
+                        alertThreshold: Number(e.target.value),
+                      });
+                    }}
+                    style={{
+                      background: `linear-gradient(to right, 
+                        rgb(250, 204, 21) 0%, 
+                        rgb(250, 204, 21) ${
+                          ((watchlistSettings.alertThreshold - 1) / 49) * 100
+                        }%, 
+                        rgba(255, 255, 255, 0.1) ${
+                          ((watchlistSettings.alertThreshold - 1) / 49) * 100
+                        }%, 
+                        rgba(255, 255, 255, 0.1) 100%)`,
+                    }}
+                    className="w-full h-2 rounded-lg appearance-none cursor-pointer outline-none
+                      [&::-webkit-slider-thumb]:appearance-none
+                      [&::-webkit-slider-thumb]:w-5
+                      [&::-webkit-slider-thumb]:h-5
+                      [&::-webkit-slider-thumb]:rounded-full
+                      [&::-webkit-slider-thumb]:bg-yellow-400
+                      [&::-webkit-slider-thumb]:cursor-grab
+                      [&::-webkit-slider-thumb]:active:cursor-grabbing
+                      [&::-webkit-slider-thumb]:shadow-[0_0_0_4px_rgba(0,0,0,0.8)]
+                      [&::-webkit-slider-thumb]:transition-shadow
+                      [&::-webkit-slider-thumb]:hover:shadow-[0_0_0_6px_rgba(0,0,0,0.8)]
+                      [&::-moz-range-thumb]:w-5
+                      [&::-moz-range-thumb]:h-5
+                      [&::-moz-range-thumb]:rounded-full
+                      [&::-moz-range-thumb]:bg-yellow-400
+                      [&::-moz-range-thumb]:border-0
+                      [&::-moz-range-thumb]:cursor-grab
+                      [&::-moz-range-thumb]:active:cursor-grabbing"
+                  />
+
+                  {/* Labels */}
+                  <div className="flex justify-between text-xs text-gray-400 mt-2">
+                    <span>1%</span>
+                    <span>25%</span>
+                    <span>50%</span>
+                  </div>
+
+                  {/* Dynamic description */}
+                  <div className="mt-2 text-xs text-gray-500">
+                    <p>
+                      Get notified when odds change by{" "}
+                      <span className="text-yellow-400 font-semibold">
+                        {watchlistSettings.alertThreshold}%
+                      </span>{" "}
+                      or more
+                    </p>
+                    <p className="mt-1">
+                      {watchlistSettings.alertThreshold <= 5 &&
+                        "Very sensitive - frequent alerts"}
+                      {watchlistSettings.alertThreshold > 5 &&
+                        watchlistSettings.alertThreshold <= 15 &&
+                        "Moderate - balanced alerts"}
+                      {watchlistSettings.alertThreshold > 15 &&
+                        watchlistSettings.alertThreshold <= 30 &&
+                        "Conservative - important changes only"}
+                      {watchlistSettings.alertThreshold > 30 &&
+                        "Very conservative - major changes only"}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Game Starts */}
             <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg">

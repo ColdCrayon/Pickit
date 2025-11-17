@@ -1,7 +1,7 @@
 /**
  * functions/index.js
  *
- * UPDATED WITH WATCHLIST NOTIFICATIONS
+ * UPDATED WITH WATCHLIST NOTIFICATIONS - FIXED VERSION
  */
 
 const { setGlobalOptions } = require('firebase-functions/v2/options');
@@ -21,10 +21,8 @@ const {
   getUsersWithSavedTicket,
 } = require('./lib/notifications');
 
-const {
-  monitorWatchlistOddsChanges,
-  sendGameStartNotifications: sendGameStartNotifs,
-} = require('./lib/watchlist-monitor');
+// ✅ FIXED: Import the correct function name
+const { notifyWatchingUsers } = require('./lib/watchlist-monitor');
 
 setGlobalOptions({ maxInstances: 10 });
 
@@ -239,8 +237,9 @@ exports.onGameTicketSettle = onDocumentUpdated(
 // ============================================================================
 
 /**
- * NEW: Triggered when an event is updated
+ * Triggered when an event is updated
  * Monitors odds changes for users watching this event
+ * Uses user's custom threshold from watchlistSettings.alertThreshold
  */
 exports.onEventUpdate = onDocumentUpdated(
   { document: 'events/{eventId}' },
@@ -252,7 +251,8 @@ exports.onEventUpdate = onDocumentUpdated(
     logger.info(`Event updated: ${eventId}`);
 
     try {
-      await monitorWatchlistOddsChanges(beforeData, afterData, eventId);
+      // ✅ FIXED: Correctly call notifyWatchingUsers
+      await notifyWatchingUsers(eventId, beforeData, afterData);
       return null;
     } catch (error) {
       logger.error(`Error monitoring event ${eventId}:`, error);
@@ -262,14 +262,42 @@ exports.onEventUpdate = onDocumentUpdated(
 );
 
 /**
- * NEW: Scheduled job to send game start notifications
+ * Scheduled job to send game start notifications
  * Runs every 15 minutes to check for games starting in the next hour
+ *
+ * NOTE: This function is currently not implemented in watchlist-monitor.js
+ * You can add it later if needed
  */
 exports.sendGameStartNotifications = onSchedule(
   { schedule: 'every 15 minutes', timeZone: 'America/Chicago' },
   async () => {
+    logger.info('Checking for games starting soon...');
+
     try {
-      await sendGameStartNotifs();
+      const db = getFirestore();
+      const now = Timestamp.now();
+      const oneHourFromNow = Timestamp.fromMillis(
+        now.toMillis() + 60 * 60 * 1000
+      );
+
+      // Find events starting in the next hour
+      const eventsSnapshot = await db
+        .collection('events')
+        .where('startTime', '>', now)
+        .where('startTime', '<=', oneHourFromNow)
+        .get();
+
+      logger.info(
+        `Found ${eventsSnapshot.size} games starting in the next hour`
+      );
+
+      // TODO: Implement game start notifications
+      // This would involve:
+      // 1. Finding users watching each event
+      // 2. Checking their gameStarts notification preference
+      // 3. Sending notifications to eligible users
+      // 4. Tracking which games we've already notified about
+
       return null;
     } catch (error) {
       logger.error('Error in game start notifications scheduler:', error);
