@@ -117,30 +117,51 @@ async function writeEventBundle(eventBundle) {
   const eventRef = db.collection("events").doc(eventId);
   const batch = db.batch();
 
-  // Fallback in case base.expiresAt was missing or you are backfilling older docs:
   const fallbackExpiresAt = admin.firestore.Timestamp.fromDate(
     new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
   );
 
-  // Always upsert top-level event doc, ensuring expiresAt is present
+  // Build embedded markets with CORRECT KEYS
+  const embeddedMarkets = {};
+
+  for (const u of updates) {
+    const { marketId, bookId, odds, updatedAt } = u;
+
+    // MAP API KEYS TO BETTING TERMS
+    const marketKey =
+      marketId === "h2h"
+        ? "moneyline"
+        : marketId === "spreads"
+        ? "spread"
+        : marketId === "totals"
+        ? "totals"
+        : marketId;
+
+    // Initialize sportsbook if not exists
+    if (!embeddedMarkets[bookId]) {
+      embeddedMarkets[bookId] = {};
+    }
+
+    // Add odds data with correct market key
+    embeddedMarkets[bookId][marketKey] = {
+      ...pruneUndefinedDeep(odds),
+      lastUpdate: admin.firestore.Timestamp.fromDate(updatedAt),
+    };
+  }
+
+  // Write event with embedded markets
   batch.set(
     eventRef,
     {
       ...base,
       expiresAt: base?.expiresAt ?? fallbackExpiresAt,
+      markets: embeddedMarkets,
+      lastOddsUpdate: admin.firestore.FieldValue.serverTimestamp(),
     },
     { merge: true }
   );
 
-  // Record lastOddsUpdate for prioritization during scanning
-  await db.doc(`events/${eventId}`).set({
-    sport: base.sport,
-    startTime: base.startTime,
-    lastOddsUpdate: admin.firestore.FieldValue.serverTimestamp(),
-  }, { merge: true });
-
-
-  // Write markets/books
+  // Also keep subcollections for backward compatibility
   for (const u of updates) {
     const marketRef = eventRef.collection("markets").doc(u.marketId);
     const bookRef = marketRef.collection("books").doc(u.bookId);
@@ -148,7 +169,6 @@ async function writeEventBundle(eventBundle) {
     const cleanedOdds = pruneUndefinedDeep(u.odds);
     const updatedAt = admin.firestore.Timestamp.fromDate(u.updatedAt);
 
-    // latest
     batch.set(
       bookRef,
       {
@@ -160,15 +180,12 @@ async function writeEventBundle(eventBundle) {
       { merge: true }
     );
 
-    // history (snapshots)
     const tsId = String(u.updatedAt.getTime());
     batch.set(
       bookRef.collection("snapshots").doc(tsId),
       {
         updatedAt,
         odds: cleanedOdds,
-        // If you plan TTL on snapshots too, set their own expiresAt here:
-        // expiresAt: admin.firestore.Timestamp.fromDate(new Date(u.updatedAt.getTime() + 3 * 24 * 60 * 60 * 1000)),
       },
       { merge: true }
     );
@@ -176,9 +193,8 @@ async function writeEventBundle(eventBundle) {
 
   await batch.commit();
 
-  // Optional: sanity log to confirm the write
   console.log(
-    `[writeEventBundle] upserted event ${eventId} (expiresAt ensured) with ${updates.length} book updates`
+    `[writeEventBundle] upserted event ${eventId} with ${updates.length} book updates`
   );
 }
 
@@ -219,11 +235,14 @@ app.post("/ingestscan", async (req, res) => {
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
     // Trigger arbitrage scan
-    const response = await fetch(`${ARB_ENGINE_URL}/scan?market=all&windowHours=12&limit=50`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ trigger: "post-ingest" }),
-    });
+    const response = await fetch(
+      `${ARB_ENGINE_URL}/scan?market=all&windowHours=12&limit=50`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ trigger: "post-ingest" }),
+      }
+    );
 
     const scanResult = await response.json();
     console.log("Triggered arbitrage scan:", scanResult);

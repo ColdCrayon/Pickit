@@ -1,12 +1,52 @@
 /**
  * functions/lib/watchlist-monitor.js
  *
- * UPDATED VERSION - Uses user's custom threshold preference
- * Monitors watchlist for significant odds changes and sends notifications
+ * FIXED VERSION - Handles both priceAmerican and priceDecimal
  */
 
-const admin = require('firebase-admin');
-const logger = require('firebase-functions/logger');
+const admin = require("firebase-admin");
+const logger = require("firebase-functions/logger");
+
+/**
+ * Extract odds value from market data
+ * Handles both priceAmerican and priceDecimal formats
+ * @param {Object|number} marketData - Market data object or number
+ * @return {number|null} Extracted odds value in American format
+ */
+function extractOddsValue(marketData) {
+  if (!marketData) return null;
+
+  // Handle object format: { priceAmerican: -110 } or { priceDecimal: 1.91 }
+  if (typeof marketData === "object") {
+    if (marketData.priceAmerican != null) {
+      return marketData.priceAmerican;
+    }
+    if (marketData.priceDecimal != null) {
+      // Convert decimal to american for consistency in comparison
+      return decimalToAmerican(marketData.priceDecimal);
+    }
+  }
+
+  // Handle direct number format: -110
+  if (typeof marketData === "number") {
+    return marketData;
+  }
+
+  return null;
+}
+
+/**
+ * Convert decimal odds to American odds
+ * @param {number} decimal - Decimal odds (e.g., 1.91, 2.50)
+ * @return {number} American odds (e.g., -110, +150)
+ */
+function decimalToAmerican(decimal) {
+  if (decimal >= 2.0) {
+    return Math.round((decimal - 1) * 100);
+  } else {
+    return Math.round(-100 / (decimal - 1));
+  }
+}
 
 /**
  * Check if odds change is significant enough to notify
@@ -35,14 +75,13 @@ function hasSignificantOddsChange(oldOdds, newOdds, thresholdPercent = 10) {
 function formatOddsChange(oldOdds, newOdds) {
   const oldStr = oldOdds > 0 ? `+${oldOdds}` : `${oldOdds}`;
   const newStr = newOdds > 0 ? `+${newOdds}` : `${newOdds}`;
-  const direction = newOdds > oldOdds ? '↑' : '↓';
+  const direction = newOdds > oldOdds ? "↑" : "↓";
 
   return `${oldStr} ${direction} ${newStr}`;
 }
 
 /**
  * Notify users watching an event when odds change significantly
- * NOW USES USER'S CUSTOM THRESHOLD FROM watchlistSettings.alertThreshold
  *
  * @param {string} eventId - The ID of the event that was updated
  * @param {Object} beforeData - The event data before the update
@@ -62,70 +101,94 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
     const afterMarkets = afterData.markets?.[sportsbook];
     if (!afterMarkets) continue;
 
+    // Check spread
     const beforeSpread = beforeMarkets.spread || {};
     const afterSpread = afterMarkets.spread || {};
+
+    const beforeSpreadHome = extractOddsValue(beforeSpread.home);
+    const afterSpreadHome = extractOddsValue(afterSpread.home);
+    const beforeSpreadAway = extractOddsValue(beforeSpread.away);
+    const afterSpreadAway = extractOddsValue(afterSpread.away);
+
+    if (
+      beforeSpreadHome !== afterSpreadHome &&
+      beforeSpreadHome &&
+      afterSpreadHome
+    ) {
+      changes.push({
+        market: "spread",
+        side: "home",
+        before: beforeSpreadHome,
+        after: afterSpreadHome,
+        sportsbook,
+      });
+    }
+    if (
+      beforeSpreadAway !== afterSpreadAway &&
+      beforeSpreadAway &&
+      afterSpreadAway
+    ) {
+      changes.push({
+        market: "spread",
+        side: "away",
+        before: beforeSpreadAway,
+        after: afterSpreadAway,
+        sportsbook,
+      });
+    }
+
+    // Check moneyline
     const beforeML = beforeMarkets.moneyline || {};
     const afterML = afterMarkets.moneyline || {};
+
+    const beforeMLHome = extractOddsValue(beforeML.home);
+    const afterMLHome = extractOddsValue(afterML.home);
+    const beforeMLAway = extractOddsValue(beforeML.away);
+    const afterMLAway = extractOddsValue(afterML.away);
+
+    if (beforeMLHome !== afterMLHome && beforeMLHome && afterMLHome) {
+      changes.push({
+        market: "moneyline",
+        side: "home",
+        before: beforeMLHome,
+        after: afterMLHome,
+        sportsbook,
+      });
+    }
+    if (beforeMLAway !== afterMLAway && beforeMLAway && afterMLAway) {
+      changes.push({
+        market: "moneyline",
+        side: "away",
+        before: beforeMLAway,
+        after: afterMLAway,
+        sportsbook,
+      });
+    }
+
+    // Check totals
     const beforeTotals = beforeMarkets.totals || {};
     const afterTotals = afterMarkets.totals || {};
 
-    // Store ALL changes (we'll filter per-user by their threshold later)
-    // Spread changes
-    if (beforeSpread.home !== afterSpread.home) {
-      changes.push({
-        market: 'spread',
-        side: 'home',
-        before: beforeSpread.home,
-        after: afterSpread.home,
-        sportsbook,
-      });
-    }
-    if (beforeSpread.away !== afterSpread.away) {
-      changes.push({
-        market: 'spread',
-        side: 'away',
-        before: beforeSpread.away,
-        after: afterSpread.away,
-        sportsbook,
-      });
-    }
+    const beforeOver = extractOddsValue(beforeTotals.over);
+    const afterOver = extractOddsValue(afterTotals.over);
+    const beforeUnder = extractOddsValue(beforeTotals.under);
+    const afterUnder = extractOddsValue(afterTotals.under);
 
-    // Moneyline changes
-    if (beforeML.home !== afterML.home) {
+    if (beforeOver !== afterOver && beforeOver && afterOver) {
       changes.push({
-        market: 'moneyline',
-        side: 'home',
-        before: beforeML.home,
-        after: afterML.home,
+        market: "totals",
+        side: "over",
+        before: beforeOver,
+        after: afterOver,
         sportsbook,
       });
     }
-    if (beforeML.away !== afterML.away) {
+    if (beforeUnder !== afterUnder && beforeUnder && afterUnder) {
       changes.push({
-        market: 'moneyline',
-        side: 'away',
-        before: beforeML.away,
-        after: afterML.away,
-        sportsbook,
-      });
-    }
-
-    // Totals changes
-    if (beforeTotals.over !== afterTotals.over) {
-      changes.push({
-        market: 'totals',
-        side: 'over',
-        before: beforeTotals.over,
-        after: afterTotals.over,
-        sportsbook,
-      });
-    }
-    if (beforeTotals.under !== afterTotals.under) {
-      changes.push({
-        market: 'totals',
-        side: 'under',
-        before: beforeTotals.under,
-        after: afterTotals.under,
+        market: "totals",
+        side: "under",
+        before: beforeUnder,
+        after: afterUnder,
         sportsbook,
       });
     }
@@ -141,7 +204,7 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
   );
 
   // Find users watching this event
-  const usersSnapshot = await db.collection('users').get();
+  const usersSnapshot = await db.collection("users").get();
   const watchingUsers = [];
 
   for (const userDoc of usersSnapshot.docs) {
@@ -151,10 +214,9 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
     const isWatching = games.some((game) => game.id === eventId);
 
     if (isWatching && userData.fcmToken && userData.notificationsEnabled) {
-      // ✅ GET USER'S CUSTOM THRESHOLD (default to 10% if not set)
       const userThreshold = userData.watchlistSettings?.alertThreshold || 10;
 
-      // ✅ FILTER CHANGES BY USER'S PERSONAL THRESHOLD
+      // Filter changes by user's personal threshold
       const significantChanges = changes.filter((change) => {
         return hasSignificantOddsChange(
           change.before,
@@ -170,6 +232,10 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
           changes: significantChanges,
           threshold: userThreshold,
         });
+
+        logger.info(
+          `User ${userDoc.id} has ${significantChanges.length} changes above ${userThreshold}% threshold`
+        );
       } else {
         logger.info(
           `User ${userDoc.id} watching but no changes meet their ${userThreshold}% threshold`
@@ -193,7 +259,7 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
   for (const user of watchingUsers) {
     try {
       // Check rate limit (1 notification per hour per event)
-      const userDoc = await db.collection('users').doc(user.userId).get();
+      const userDoc = await db.collection("users").doc(user.userId).get();
       const userData = userDoc.data();
       const lastNotified = userData.lastNotifications?.[eventId];
 
@@ -212,14 +278,14 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
 
       // Format notification message
       const changeDescriptions = user.changes
-        .slice(0, 2) // Show first 2 changes
+        .slice(0, 2)
         .map(
           (c) => `${c.market} ${c.side}: ${formatOddsChange(c.before, c.after)}`
         )
-        .join(', ');
+        .join(", ");
 
       const moreChanges =
-        user.changes.length > 2 ? ` +${user.changes.length - 2} more` : '';
+        user.changes.length > 2 ? ` +${user.changes.length - 2} more` : "";
 
       // Send FCM notification
       await admin.messaging().send({
@@ -230,14 +296,14 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
         },
         data: {
           eventId,
-          type: 'odds_change',
+          type: "odds_change",
           changesCount: user.changes.length.toString(),
         },
       });
 
       // Update last notification time
       await db
-        .collection('users')
+        .collection("users")
         .doc(user.userId)
         .update({
           [`lastNotifications.${eventId}`]: admin.firestore.Timestamp.now(),
@@ -264,4 +330,6 @@ module.exports = {
   hasSignificantOddsChange,
   formatOddsChange,
   notifyWatchingUsers,
+  extractOddsValue,
+  decimalToAmerican,
 };
