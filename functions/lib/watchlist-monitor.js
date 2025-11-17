@@ -213,8 +213,23 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
 
     const isWatching = games.some((game) => game.id === eventId);
 
-    if (isWatching && userData.fcmToken && userData.notificationsEnabled) {
-      const userThreshold = userData.watchlistSettings?.alertThreshold || 10;
+    if (!isWatching) {
+      continue;
+    }
+
+    const watchlistSettings = userData.watchlistSettings || {};
+    const watchlistNotificationsEnabled =
+      watchlistSettings.enableNotifications !== false;
+
+    if (!watchlistNotificationsEnabled) {
+      logger.info(
+        `Skipping user ${userDoc.id} for watchlist notifications: opted out`
+      );
+      continue;
+    }
+
+    if (userData.fcmToken && userData.notificationsEnabled) {
+      const userThreshold = watchlistSettings.alertThreshold || 10;
 
       // Filter changes by user's personal threshold
       const significantChanges = changes.filter((change) => {
