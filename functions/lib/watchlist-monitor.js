@@ -23,7 +23,8 @@ function extractOddsValue(marketData) {
     }
     if (marketData.priceDecimal != null) {
       // Convert decimal to american for consistency in comparison
-      return decimalToAmerican(marketData.priceDecimal);
+      const americanOdds = decimalToAmerican(marketData.priceDecimal);
+      return americanOdds == null ? null : americanOdds;
     }
   }
 
@@ -41,11 +42,17 @@ function extractOddsValue(marketData) {
  * @return {number} American odds (e.g., -110, +150)
  */
 function decimalToAmerican(decimal) {
-  if (decimal >= 2.0) {
-    return Math.round((decimal - 1) * 100);
-  } else {
-    return Math.round(-100 / (decimal - 1));
+  const decimalNumber = Number(decimal);
+
+  if (decimal == null || Number.isNaN(decimalNumber) || decimalNumber <= 1) {
+    return null;
   }
+
+  if (decimalNumber >= 2.0) {
+    return Math.round((decimalNumber - 1) * 100);
+  }
+
+  return Math.round(-100 / (decimalNumber - 1));
 }
 
 /**
