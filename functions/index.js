@@ -1,12 +1,7 @@
 /**
  * functions/index.js
  *
- * UPDATED for Week 1: User Tickets Notification System
- *
- * NEW FUNCTIONS ADDED:
- * - onArbTicketCreate: Notify users when new arb ticket created
- * - onGameTicketSettle: Notify users when their saved game ticket settles
- * - updateFcmToken: Callable function to update user's FCM token
+ * UPDATED WITH WATCHLIST NOTIFICATIONS - FIXED VERSION
  */
 
 const { setGlobalOptions } = require('firebase-functions/v2/options');
@@ -17,12 +12,6 @@ const {
   onDocumentUpdated,
 } = require('firebase-functions/v2/firestore');
 const logger = require('firebase-functions/logger');
-const {
-  createCheckoutSession,
-  createPortalSession,
-  stripeWebhook,
-  cancelSubscription,
-} = require('./lib/stripe');
 
 const admin = require('firebase-admin');
 const { getFirestore, Timestamp } = require('firebase-admin/firestore');
@@ -30,8 +19,10 @@ const { getFirestore, Timestamp } = require('firebase-admin/firestore');
 const {
   sendBatchNotifications,
   getUsersWithSavedTicket,
-  // sendNotificationToUser,
 } = require('./lib/notifications');
+
+// ✅ FIXED: Import the correct function name
+const { notifyWatchingUsers } = require('./lib/watchlist-monitor');
 
 setGlobalOptions({ maxInstances: 10 });
 
@@ -40,7 +31,7 @@ if (!admin.apps.length) {
 }
 
 // ============================================================================
-// EXISTING FUNCTIONS (unchanged)
+// USER ROLES & ADMIN FUNCTIONS
 // ============================================================================
 
 /**
@@ -80,6 +71,10 @@ exports.setUserRoles = onCall({ cors: true }, async (request) => {
   return { ok: true, uid, isAdmin: !!isAdmin, isPremium: !!isPremium };
 });
 
+// ============================================================================
+// TICKET SETTLEMENT
+// ============================================================================
+
 /**
  * Scheduled job: mark tickets as settled when settleDate <= now
  */
@@ -89,9 +84,10 @@ exports.settleTickets = onSchedule(
     const db = getFirestore();
     const now = Timestamp.now();
 
-    const batch = db.batch();
+    const gameRefs = [];
+    const arbRefs = [];
 
-    // ---- Game Tickets ----
+    // Game Tickets
     const gameSnapshot = await db
       .collection('gameTickets')
       .where('settleDate', '<=', now)
@@ -99,10 +95,10 @@ exports.settleTickets = onSchedule(
       .get();
 
     gameSnapshot.forEach((doc) => {
-      batch.update(doc.ref, { serverSettled: true });
+      gameRefs.push(doc.ref);
     });
 
-    // ---- Arbitrage Tickets ----
+    // Arbitrage Tickets
     const arbSnapshot = await db
       .collection('arbTickets')
       .where('settleDate', '<=', now)
@@ -110,11 +106,25 @@ exports.settleTickets = onSchedule(
       .get();
 
     arbSnapshot.forEach((doc) => {
-      batch.update(doc.ref, { serverSettled: true });
+      arbRefs.push(doc.ref);
     });
 
-    if (!gameSnapshot.empty || !arbSnapshot.empty) {
+    const refsToSettle = [...gameRefs, ...arbRefs];
+
+    for (let i = 0; i < refsToSettle.length; i += 500) {
+      const batch = db.batch();
+      const slice = refsToSettle.slice(i, i + 500);
+
+      slice.forEach((ref) => {
+        batch.update(ref, { serverSettled: true });
+      });
+
       await batch.commit();
+      logger.info(
+        `Settled batch ${Math.floor(i / 500) + 1}: ${i + slice.length}/${
+          refsToSettle.length
+        } tickets`
+      );
     }
 
     logger.info(
@@ -125,11 +135,11 @@ exports.settleTickets = onSchedule(
 );
 
 // ============================================================================
-// NEW FUNCTIONS FOR WEEK 1: USER TICKETS NOTIFICATION SYSTEM
+// SAVED TICKET NOTIFICATIONS
 // ============================================================================
 
 /**
- * NEW: Triggered when a new arbitrage ticket is created
+ * Triggered when a new arbitrage ticket is created
  * Notifies all users who have this event saved
  */
 exports.onArbTicketCreate = onDocumentCreated(
@@ -141,7 +151,6 @@ exports.onArbTicketCreate = onDocumentCreated(
     logger.info(`New arb ticket created: ${ticketId}`);
 
     try {
-      // Find all users who saved this ticket
       const userIds = await getUsersWithSavedTicket(ticketId, 'arb');
 
       if (userIds.length === 0) {
@@ -149,41 +158,42 @@ exports.onArbTicketCreate = onDocumentCreated(
         return null;
       }
 
-      // Construct notification
       const marginValue = ticketData.margin;
       const rawMargin = Number(marginValue);
       const marginBody =
         marginValue !== undefined &&
         marginValue !== null &&
-        Number.isFinite(rawMargin)?
-          `${(rawMargin * 100).toFixed(2)}% edge found! Check your saved tickets.`:
+        Number.isFinite(rawMargin) ?
+          `${(rawMargin * 100).toFixed(2)}% edge found! ` +
+            'Check your saved tickets.' :
           'New arbitrage opportunity! Check your saved tickets.';
-      const title = 'New Arbitrage Opportunity';
+
+      const title = 'New Arbitrage! 💰';
       const body = marginBody;
       const data = {
         type: 'arb_ticket_created',
         ticketId,
         ticketType: 'arb',
-        link: `/arbitrage/${ticketId}`,
+        link: `/picks/${ticketId}`,
       };
 
-      // Send notifications
       const result = await sendBatchNotifications(userIds, title, body, data);
       logger.info(
-        `Arb ticket ${ticketId}: Notified ${result.success}/${userIds.length} users`
+        `Arb ticket ${ticketId}: Notified ` +
+          `${result.success}/${userIds.length} users`
       );
 
       return null;
     } catch (error) {
-      logger.error(`Error processing arb ticket ${ticketId}:`, error);
+      logger.error(`Error processing arb ticket creation ${ticketId}:`, error);
       return null;
     }
   }
 );
 
 /**
- * NEW: Triggered when a game ticket is updated (specifically when it settles)
- * Notifies users who saved the ticket
+ * Triggered when a game ticket is marked as settled
+ * Notifies users who saved this ticket
  */
 exports.onGameTicketSettle = onDocumentUpdated(
   { document: 'gameTickets/{ticketId}' },
@@ -192,18 +202,18 @@ exports.onGameTicketSettle = onDocumentUpdated(
     const beforeData = event.data.before.data();
     const afterData = event.data.after.data();
 
-    // Only proceed if ticket just settled
-    const wasUnsettled = beforeData.serverSettled === false;
-    const nowSettled = afterData.serverSettled === true;
-
-    if (!wasUnsettled || !nowSettled) {
-      return null; // Not a settlement event
+    // Only trigger if serverSettled changed from false to true
+    if (beforeData.serverSettled === afterData.serverSettled) {
+      return null;
     }
 
-    logger.info(`Game ticket ${ticketId} settled`);
+    if (afterData.serverSettled !== true) {
+      return null;
+    }
+
+    logger.info(`Game ticket settled: ${ticketId}`);
 
     try {
-      // Find all users who saved this ticket
       const userIds = await getUsersWithSavedTicket(ticketId, 'game');
 
       if (userIds.length === 0) {
@@ -211,9 +221,8 @@ exports.onGameTicketSettle = onDocumentUpdated(
         return null;
       }
 
-      // Construct notification
-      const title = '✅ Pick Settled';
-      const body = `Your saved pick has been settled. Check the result!`;
+      const title = 'Game Settled! 🎯';
+      const body = 'Your saved game pick has settled. Check the result!';
       const data = {
         type: 'game_ticket_settled',
         ticketId,
@@ -221,10 +230,10 @@ exports.onGameTicketSettle = onDocumentUpdated(
         link: `/picks/${ticketId}`,
       };
 
-      // Send notifications
       const result = await sendBatchNotifications(userIds, title, body, data);
       logger.info(
-        `Game ticket ${ticketId}: Notified ${result.success}/${userIds.length} users`
+        `Game ticket ${ticketId}: Notified ` +
+          `${result.success}/${userIds.length} users`
       );
 
       return null;
@@ -238,8 +247,86 @@ exports.onGameTicketSettle = onDocumentUpdated(
   }
 );
 
+// ============================================================================
+// WATCHLIST NOTIFICATIONS
+// ============================================================================
+
 /**
- * NEW: Callable function to update user's FCM token
+ * Triggered when an event is updated
+ * Monitors odds changes for users watching this event
+ * Uses user's custom threshold from watchlistSettings.alertThreshold
+ */
+exports.onEventUpdate = onDocumentUpdated(
+  { document: 'events/{eventId}' },
+  async (event) => {
+    const eventId = event.params.eventId;
+    const beforeData = event.data.before.data();
+    const afterData = event.data.after.data();
+
+    logger.info(`Event updated: ${eventId}`);
+
+    try {
+      // ✅ FIXED: Correctly call notifyWatchingUsers
+      await notifyWatchingUsers(eventId, beforeData, afterData);
+      return null;
+    } catch (error) {
+      logger.error(`Error monitoring event ${eventId}:`, error);
+      return null;
+    }
+  }
+);
+
+/**
+ * Scheduled job to send game start notifications
+ * Runs every 15 minutes to check for games starting in the next hour
+ *
+ * NOTE: This function is currently not implemented in watchlist-monitor.js
+ * You can add it later if needed
+ */
+exports.sendGameStartNotifications = onSchedule(
+  { schedule: 'every 15 minutes', timeZone: 'America/Chicago' },
+  async () => {
+    logger.info('Checking for games starting soon...');
+
+    try {
+      const db = getFirestore();
+      const now = Timestamp.now();
+      const oneHourFromNow = Timestamp.fromMillis(
+        now.toMillis() + 60 * 60 * 1000
+      );
+
+      // Find events starting in the next hour
+      const eventsSnapshot = await db
+        .collection('events')
+        .where('startTime', '>', now)
+        .where('startTime', '<=', oneHourFromNow)
+        .get();
+
+      logger.info(
+        `Found ${eventsSnapshot.size} games starting in the next hour`
+      );
+
+      // TODO: Implement game start notifications
+      // This would involve:
+      // 1. Finding users watching each event
+      // 2. Checking their gameStarts notification preference
+      // 3. Sending notifications to eligible users
+      // 4. Tracking which games we've already notified about
+
+      return null;
+    } catch (error) {
+      logger.error('Error in game start notifications scheduler:', error);
+      return null;
+    }
+  }
+);
+
+// ============================================================================
+// FCM TOKEN MANAGEMENT
+// ============================================================================
+
+/**
+ * Callable function to update user's FCM token
  * Called from client when user grants notification permission
  */
 exports.updateFcmToken = onCall({ cors: true }, async (request) => {
@@ -274,7 +361,7 @@ exports.updateFcmToken = onCall({ cors: true }, async (request) => {
 });
 
 /**
- * NEW: Callable function to disable notifications
+ * Callable function to disable notifications
  */
 exports.disableNotifications = onCall({ cors: true }, async (request) => {
   const caller = request.auth;
@@ -297,11 +384,3 @@ exports.disableNotifications = onCall({ cors: true }, async (request) => {
     throw new Error('Failed to disable notifications');
   }
 });
-
-/**
- * Stripe-related callable and HTTP functions exported from `lib/stripe`.
- */
-exports.createCheckoutSession = createCheckoutSession;
-exports.createPortalSession = createPortalSession;
-exports.stripeWebhook = stripeWebhook;
-exports.cancelSubscription = cancelSubscription;
