@@ -4,8 +4,8 @@
  * FIXED VERSION - Handles both priceAmerican and priceDecimal
  */
 
-const admin = require("firebase-admin");
-const logger = require("firebase-functions/logger");
+const admin = require('firebase-admin');
+const logger = require('firebase-functions/logger');
 
 /**
  * Extract odds value from market data
@@ -17,7 +17,7 @@ function extractOddsValue(marketData) {
   if (!marketData) return null;
 
   // Handle object format: { priceAmerican: -110 } or { priceDecimal: 1.91 }
-  if (typeof marketData === "object") {
+  if (typeof marketData === 'object') {
     if (marketData.priceAmerican != null) {
       return marketData.priceAmerican;
     }
@@ -28,7 +28,7 @@ function extractOddsValue(marketData) {
   }
 
   // Handle direct number format: -110
-  if (typeof marketData === "number") {
+  if (typeof marketData === 'number') {
     return marketData;
   }
 
@@ -75,7 +75,7 @@ function hasSignificantOddsChange(oldOdds, newOdds, thresholdPercent = 10) {
 function formatOddsChange(oldOdds, newOdds) {
   const oldStr = oldOdds > 0 ? `+${oldOdds}` : `${oldOdds}`;
   const newStr = newOdds > 0 ? `+${newOdds}` : `${newOdds}`;
-  const direction = newOdds > oldOdds ? "↑" : "↓";
+  const direction = newOdds > oldOdds ? '↑' : '↓';
 
   return `${oldStr} ${direction} ${newStr}`;
 }
@@ -91,6 +91,7 @@ function formatOddsChange(oldOdds, newOdds) {
 async function notifyWatchingUsers(eventId, beforeData, afterData) {
   const db = admin.firestore();
   const changes = [];
+  const userDataCache = new Map();
 
   logger.info(`Checking odds changes for event: ${eventId}`);
 
@@ -116,8 +117,8 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
       afterSpreadHome
     ) {
       changes.push({
-        market: "spread",
-        side: "home",
+        market: 'spread',
+        side: 'home',
         before: beforeSpreadHome,
         after: afterSpreadHome,
         sportsbook,
@@ -129,8 +130,8 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
       afterSpreadAway
     ) {
       changes.push({
-        market: "spread",
-        side: "away",
+        market: 'spread',
+        side: 'away',
         before: beforeSpreadAway,
         after: afterSpreadAway,
         sportsbook,
@@ -148,8 +149,8 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
 
     if (beforeMLHome !== afterMLHome && beforeMLHome && afterMLHome) {
       changes.push({
-        market: "moneyline",
-        side: "home",
+        market: 'moneyline',
+        side: 'home',
         before: beforeMLHome,
         after: afterMLHome,
         sportsbook,
@@ -157,8 +158,8 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
     }
     if (beforeMLAway !== afterMLAway && beforeMLAway && afterMLAway) {
       changes.push({
-        market: "moneyline",
-        side: "away",
+        market: 'moneyline',
+        side: 'away',
         before: beforeMLAway,
         after: afterMLAway,
         sportsbook,
@@ -176,8 +177,8 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
 
     if (beforeOver !== afterOver && beforeOver && afterOver) {
       changes.push({
-        market: "totals",
-        side: "over",
+        market: 'totals',
+        side: 'over',
         before: beforeOver,
         after: afterOver,
         sportsbook,
@@ -185,8 +186,8 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
     }
     if (beforeUnder !== afterUnder && beforeUnder && afterUnder) {
       changes.push({
-        market: "totals",
-        side: "under",
+        market: 'totals',
+        side: 'under',
         before: beforeUnder,
         after: afterUnder,
         sportsbook,
@@ -203,45 +204,95 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
     `Detected ${changes.length} total odds changes for event: ${eventId}`
   );
 
-  // Find users watching this event
-  const usersSnapshot = await db.collection("users").get();
+  // Find users watching this event via collection group so we only read relevant docs
+  const watchersSnapshot = await db
+    .collectionGroup('watchlistGames')
+    .where('eventId', '==', eventId)
+    .where('notificationsEnabled', '==', true)
+    .get();
+
   const watchingUsers = [];
 
-  for (const userDoc of usersSnapshot.docs) {
-    const userData = userDoc.data();
-    const games = userData.watchlist?.games || [];
+  if (watchersSnapshot.empty) {
+    logger.info(`No watchlist entries found for event: ${eventId}`);
+    return;
+  }
 
-    const isWatching = games.some((game) => game.id === eventId);
-
-    if (isWatching && userData.fcmToken && userData.notificationsEnabled) {
-      const userThreshold = userData.watchlistSettings?.alertThreshold || 10;
-
-      // Filter changes by user's personal threshold
-      const significantChanges = changes.filter((change) => {
-        return hasSignificantOddsChange(
-          change.before,
-          change.after,
-          userThreshold
-        );
-      });
-
-      if (significantChanges.length > 0) {
-        watchingUsers.push({
-          userId: userDoc.id,
-          fcmToken: userData.fcmToken,
-          changes: significantChanges,
-          threshold: userThreshold,
-        });
-
-        logger.info(
-          `User ${userDoc.id} has ${significantChanges.length} changes above ${userThreshold}% threshold`
-        );
-      } else {
-        logger.info(
-          `User ${userDoc.id} watching but no changes meet their ${userThreshold}% threshold`
-        );
-      }
+  const loadUserData = async (userId) => {
+    if (userDataCache.has(userId)) {
+      return userDataCache.get(userId);
     }
+
+    const snap = await db.collection('users').doc(userId).get();
+    const data = snap.exists ? snap.data() : null;
+    userDataCache.set(userId, data);
+    return data;
+  };
+
+  for (const watcherDoc of watchersSnapshot.docs) {
+    const watcherData = watcherDoc.data();
+    const parentDoc = watcherDoc.ref.parent?.parent;
+    const isUserWatchlist = parentDoc?.parent?.id === 'users';
+    const userId = watcherData.userId || (isUserWatchlist ? parentDoc.id : null);
+
+    if (!userId) {
+      logger.warn(
+        `Skipping watchlist entry ${watcherDoc.ref.path} - missing userId`
+      );
+      continue;
+    }
+
+    const needsUserLookup =
+      !watcherData.fcmToken || watcherData.notificationsEnabled == null;
+
+    const userData = needsUserLookup ? await loadUserData(userId) : {};
+
+    if (needsUserLookup && !userData) {
+      logger.warn(`User ${userId} not found while processing watchlist`);
+      continue;
+    }
+
+    const fcmToken = watcherData.fcmToken || userData?.fcmToken;
+    const notificationsEnabled =
+      watcherData.notificationsEnabled ?? userData?.notificationsEnabled;
+    const threshold =
+      watcherData.alertThreshold ??
+      userData?.watchlistSettings?.alertThreshold ??
+      10;
+    const lastNotified =
+      watcherData.lastNotified || userData?.lastNotifications?.[eventId];
+
+    if (!notificationsEnabled || !fcmToken) {
+      logger.info(
+        `Skipping user ${userId} - notifications disabled or missing FCM token`
+      );
+      continue;
+    }
+
+    // Filter changes by user's personal threshold
+    const significantChanges = changes.filter((change) => {
+      return hasSignificantOddsChange(change.before, change.after, threshold);
+    });
+
+    if (significantChanges.length === 0) {
+      logger.info(
+        `User ${userId} watching but no changes meet their ${threshold}% threshold`
+      );
+      continue;
+    }
+
+    watchingUsers.push({
+      userId,
+      fcmToken,
+      changes: significantChanges,
+      threshold,
+      lastNotified,
+      rateLimitRef: watcherDoc.ref,
+    });
+
+    logger.info(
+      `User ${userId} has ${significantChanges.length} changes above ${threshold}% threshold`
+    );
   }
 
   if (watchingUsers.length === 0) {
@@ -259,13 +310,9 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
   for (const user of watchingUsers) {
     try {
       // Check rate limit (1 notification per hour per event)
-      const userDoc = await db.collection("users").doc(user.userId).get();
-      const userData = userDoc.data();
-      const lastNotified = userData.lastNotifications?.[eventId];
-
-      if (lastNotified) {
+      if (user.lastNotified) {
         const minutesSince =
-          (Date.now() - lastNotified.toMillis()) / (1000 * 60);
+          (Date.now() - user.lastNotified.toMillis()) / (1000 * 60);
         if (minutesSince < 60) {
           logger.info(
             `Skipping notification for user ${
@@ -282,10 +329,10 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
         .map(
           (c) => `${c.market} ${c.side}: ${formatOddsChange(c.before, c.after)}`
         )
-        .join(", ");
+        .join(', ');
 
       const moreChanges =
-        user.changes.length > 2 ? ` +${user.changes.length - 2} more` : "";
+        user.changes.length > 2 ? ` +${user.changes.length - 2} more` : '';
 
       // Send FCM notification
       await admin.messaging().send({
@@ -296,18 +343,15 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
         },
         data: {
           eventId,
-          type: "odds_change",
+          type: 'odds_change',
           changesCount: user.changes.length.toString(),
         },
       });
 
       // Update last notification time
-      await db
-        .collection("users")
-        .doc(user.userId)
-        .update({
-          [`lastNotifications.${eventId}`]: admin.firestore.Timestamp.now(),
-        });
+      await user.rateLimitRef.update({
+        lastNotified: admin.firestore.Timestamp.now(),
+      });
 
       sentCount++;
       logger.info(
