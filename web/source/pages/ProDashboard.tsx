@@ -1,8 +1,9 @@
 /**
  * ProDashboard - Restored Original Layout + Odds Comparison
+ * UPDATED: Added alerts counting based on saved tickets and watchlist with notifications
  */
 
-import React from "react";
+import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -17,6 +18,7 @@ import {
 import { Footer } from "../components";
 import { useAuth } from "../hooks/useAuth";
 import { useWatchlist } from "../hooks/useWatchlist";
+import { useUserTickets } from "../hooks/useUserTickets";
 import { WatchlistGameItem } from "../components/watchlist/WatchlistGameItem";
 import { OddsComparisonPreview } from "../components/odds/OddsComparisonPreview";
 
@@ -70,8 +72,51 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
     loading: watchlistLoading,
     totalItems,
   } = useWatchlist(user?.uid);
+  const { tickets, loading: ticketsLoading } = useUserTickets();
 
   const firstGameId = watchlist?.games?.[0]?.id;
+
+  // Calculate total alerts: saved tickets + watchlist games with notifications enabled
+  const totalAlerts = useMemo(() => {
+    if (ticketsLoading || watchlistLoading) return 0;
+
+    // Count saved tickets (each saved ticket can trigger notifications)
+    const savedTicketsCount = tickets.length;
+
+    // Count watchlist games (each game can trigger notifications for odds changes, game starts, etc.)
+    const watchlistGamesCount = watchlist?.games?.length || 0;
+
+    return savedTicketsCount + watchlistGamesCount;
+  }, [
+    tickets.length,
+    watchlist?.games?.length,
+    ticketsLoading,
+    watchlistLoading,
+  ]);
+
+  // Create subtext for alerts card
+  const alertsSubtext = useMemo(() => {
+    if (ticketsLoading || watchlistLoading) return "Loading...";
+
+    const ticketCount = tickets.length;
+    const gameCount = watchlist?.games?.length || 0;
+
+    if (totalAlerts === 0) return "Configure alerts";
+
+    const parts = [];
+    if (ticketCount > 0)
+      parts.push(`${ticketCount} ticket${ticketCount !== 1 ? "s" : ""}`);
+    if (gameCount > 0)
+      parts.push(`${gameCount} game${gameCount !== 1 ? "s" : ""}`);
+
+    return parts.join(", ");
+  }, [
+    tickets.length,
+    watchlist?.games?.length,
+    totalAlerts,
+    ticketsLoading,
+    watchlistLoading,
+  ]);
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
@@ -115,8 +160,8 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
             <StatCard
               icon={<Bell className="w-6 h-6" />}
               label="Alerts Set"
-              value="0"
-              subtext="Configure alerts"
+              value={totalAlerts.toString()}
+              subtext={alertsSubtext}
             />
           </div>
 
@@ -147,47 +192,24 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
                 />
                 <QuickLink
                   to="/watchlist"
-                  label="Full Watchlist"
-                  description="View all tracked games"
+                  label="Watchlist"
+                  description="Manage tracked games"
                 />
                 <QuickLink
-                  to="/odds-comparison"
-                  label="Odds Comparison"
-                  description="Compare all sportsbooks"
-                />
-                <QuickLink
-                  to="/nfl"
-                  label="NFL Games"
-                  description="View current NFL odds"
-                />
-                <QuickLink
-                  to="/nba"
-                  label="NBA Games"
-                  description="View current NBA odds"
-                />
-                <QuickLink
-                  to="/mlb"
-                  label="MLB Games"
-                  description="View current MLB odds"
-                />
-                <QuickLink
-                  to="/nhl"
-                  label="NHL Games"
-                  description="View current NHL odds"
+                  to="/Account"
+                  label="Settings"
+                  description="Configure notifications"
                 />
               </div>
             </div>
           </div>
 
-          {/* Watchlist Preview - Full Width */}
+          {/* Watchlist Preview */}
           <div className="mb-8">
             <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-              {watchlistLoading ? (
-                <div className="animate-pulse space-y-4">
-                  <div className="h-4 bg-white/10 rounded w-1/3"></div>
-                  <div className="h-32 bg-white/10 rounded"></div>
-                </div>
-              ) : firstGameId ? (
+              {!watchlistLoading &&
+              watchlist?.games &&
+              watchlist.games.length > 0 ? (
                 <>
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
@@ -196,10 +218,11 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
                       </div>
                       <div>
                         <h3 className="font-semibold text-lg">
-                          Your Watchlist
+                          Watchlist Preview
                         </h3>
                         <p className="text-sm text-gray-400">
-                          {totalItems} game{totalItems !== 1 ? "s" : ""} tracked
+                          {watchlist.games.length} game
+                          {watchlist.games.length !== 1 ? "s" : ""} tracked
                         </p>
                       </div>
                     </div>
