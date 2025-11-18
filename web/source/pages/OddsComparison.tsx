@@ -70,7 +70,7 @@ const OddsComparison: React.FC = () => {
   const selectedEvent = events?.find((e) => e.id === selectedEventId);
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen bg-gray-900 text-white pt-16">
       {/* Header */}
       <header className="border-b border-white/10 bg-gray-900/95 backdrop-blur-lg sticky top-16 z-40">
         <div className="max-w-7xl mx-auto px-6 py-4">
@@ -105,7 +105,7 @@ const OddsComparison: React.FC = () => {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <main className="max-w-7xl mx-auto px-6 py-8 pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Sidebar - Event List */}
           <div className="lg:col-span-1 space-y-4">
@@ -152,7 +152,7 @@ const OddsComparison: React.FC = () => {
             </div>
 
             {/* Event List */}
-            <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
+            <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden min-h-[550px]">
               <div className="p-4 border-b border-white/10">
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-gray-400" />
@@ -160,7 +160,7 @@ const OddsComparison: React.FC = () => {
                 </div>
               </div>
 
-              <div className="max-h-[600px] overflow-y-auto">
+              <div className="max-h-[420px] overflow-y-auto">
                 {loading ? (
                   <div className="p-4 space-y-3">
                     {[1, 2, 3].map((i) => (

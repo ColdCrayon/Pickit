@@ -5,7 +5,7 @@
  * for a given event and market type.
  */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { TrendingUp, TrendingDown, DollarSign } from "lucide-react";
 import { useEventOdds, useBestOdds } from "../../hooks/useEventOdds";
 import { EventMarketType, OddsEntry } from "../../types/events";
@@ -26,6 +26,12 @@ const BOOK_NAMES: Record<string, string> = {
   barstool: "Barstool",
   wynnbet: "WynnBet",
   unibet: "Unibet",
+  betonlineag: "betonlineag",
+  betrivers: "betrivers",
+  betus: "betus",
+  bovada: "bovada",
+  lowvig: "lowvig",
+  mybookieag: "mybookieag",
 };
 
 const formatOdds = (
@@ -35,9 +41,21 @@ const formatOdds = (
   if (!odds) return "-";
 
   if (format === "american") {
-    const value = odds.priceAmerican;
-    if (value === undefined) return "-";
-    return value > 0 ? `+${value}` : `${value}`;
+    // Try to get american odds, or convert from decimal
+    let americanValue = odds.priceAmerican;
+
+    if (americanValue === undefined && odds.priceDecimal !== undefined) {
+      // Convert decimal to american
+      const decimal = odds.priceDecimal;
+      if (decimal >= 2.0) {
+        americanValue = Math.round((decimal - 1) * 100);
+      } else {
+        americanValue = Math.round(-100 / (decimal - 1));
+      }
+    }
+
+    if (americanValue === undefined) return "-";
+    return americanValue > 0 ? `+${americanValue}` : `${americanValue}`;
   } else {
     const value = odds.priceDecimal;
     if (value === undefined) return "-";
@@ -66,6 +84,14 @@ export const OddsComparisonTable: React.FC<OddsComparisonTableProps> = ({
   const { event, loading, error } = useEventOdds(eventId);
   const { bestOdds } = useBestOdds(eventId, marketType);
 
+  // Debug logging
+  useEffect(() => {
+    if (event?.markets) {
+      console.log("[OddsComparisonTable] Event markets:", event.markets);
+      console.log("[OddsComparisonTable] Market type requested:", marketType);
+    }
+  }, [event, marketType]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -83,7 +109,18 @@ export const OddsComparisonTable: React.FC<OddsComparisonTableProps> = ({
   }
 
   const marketOdds = event.markets?.[marketType];
-  if (!marketOdds || Object.keys(marketOdds).length === 0) {
+
+  // Also check alternate market key names (moneyline vs h2h, spread vs spreads)
+  const alternateMarketType =
+    marketType === "h2h"
+      ? "moneyline"
+      : marketType === "spreads"
+      ? "spread"
+      : marketType;
+
+  const actualMarketOdds = marketOdds || event.markets?.[alternateMarketType];
+
+  if (!actualMarketOdds || Object.keys(actualMarketOdds).length === 0) {
     return (
       <div className="text-center py-12 text-gray-400">
         <p>No odds available for this market</p>
@@ -92,7 +129,7 @@ export const OddsComparisonTable: React.FC<OddsComparisonTableProps> = ({
   }
 
   // Get all outcomes (home, away, over, under, etc.)
-  const firstBook = Object.values(marketOdds)[0];
+  const firstBook = Object.values(actualMarketOdds)[0];
   const outcomes = firstBook ? Object.keys(firstBook.odds) : [];
 
   return (
@@ -138,7 +175,7 @@ export const OddsComparisonTable: React.FC<OddsComparisonTableProps> = ({
             </tr>
           </thead>
           <tbody>
-            {Object.entries(marketOdds).map(([bookId, bookData]) => {
+            {Object.entries(actualMarketOdds).map(([bookId, bookData]) => {
               const bookName = BOOK_NAMES[bookId] || bookId;
 
               return (
