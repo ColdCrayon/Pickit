@@ -24,6 +24,7 @@ const {
 // ✅ FIXED: Import the correct function name
 const { notifyWatchingUsers } = require('./lib/watchlist-monitor');
 
+// Import Stripe functions
 const {
   createCheckoutSession,
   createPortalSession,
@@ -395,6 +396,10 @@ exports.disableNotifications = onCall({ cors: true }, async (request) => {
 // ============================================================================
 // STRIPE FUNCTIONS
 // ============================================================================
+
+// -------------------------
+// Export Stripe Functions
+// -------------------------
 
 exports.createCheckoutSession = createCheckoutSession;
 exports.createPortalSession = createPortalSession;

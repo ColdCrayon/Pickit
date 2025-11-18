@@ -28,7 +28,8 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 export const db = getFirestore(app);
-export const functions = getFunctions(app);
+// Explicitly set region to match deployed functions
+export const functions = getFunctions(app, 'us-central1');
 
 let messagingInstance: Messaging | null = null;
 

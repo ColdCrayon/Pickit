@@ -1,52 +1,37 @@
+/**
+ * Stripe Cloud Functions (Firebase v2)
+ * Fully CORS-enabled and safe for front-end calls.
+ */
+
 const { onCall, onRequest } = require('firebase-functions/v2/https');
 const { defineSecret, defineString } = require('firebase-functions/params');
 const admin = require('firebase-admin');
-const {
-  getFirestore,
-  FieldValue,
-  Timestamp,
-} = require('firebase-admin/firestore');
-const Stripe = require('stripe');
+const { getFirestore, FieldValue, Timestamp } = require('firebase-admin/firestore');
 
 if (!admin.apps.length) {
   admin.initializeApp();
 }
 
 const db = getFirestore();
+const STRIPE_PREMIUM_PRICE_ID = defineString('STRIPE_PREMIUM_PRICE_ID');
 
-const stripeSecretParam = defineSecret('STRIPE_SECRET_KEY');
-const premiumPriceIdParam = defineString('STRIPE_PREMIUM_PRICE_ID');
-const webhookSecretParam = defineSecret('STRIPE_WEBHOOK_SECRET');
+// -------------------------
+// Stripe Setup
+// -------------------------
 
-let stripeClient = null;
-let stripeClientKey = null;
+const STRIPE_SECRET = defineSecret("STRIPE_SECRET_KEY");
+const STRIPE_WEBHOOK_SECRET = defineSecret("STRIPE_WEBHOOK_SECRET");
 
-function requireStripeClient() {
-  const secretKey = stripeSecretParam.value();
-
-  if (!secretKey) {
-    throw new Error(
-      'Stripe secret key not configured. Store it as the STRIPE_SECRET_KEY secret.'
-    );
-  }
-
-  if (!stripeClient || stripeClientKey !== secretKey) {
-    try {
-      stripeClient = new Stripe(secretKey, {
-        apiVersion: '2024-06-20',
-      });
-      stripeClientKey = secretKey;
-    } catch (error) {
-      console.error('Failed to initialize Stripe client:', error);
-      stripeClient = null;
-      stripeClientKey = null;
-      throw error;
-    }
-  }
-
-  return stripeClient;
+// Initialize Stripe client lazily (secrets are only available at runtime)
+function getStripe() {
+  return require('stripe')(STRIPE_SECRET.value());
 }
 
+// -------------------------
+// Helpers (your existing ones)
+// -------------------------
+
+// Helper functions
 async function getOrCreateStripeCustomer(userId, email, displayName) {
   if (!userId) {
     throw new Error('User ID is required to create or fetch a Stripe customer');
@@ -58,7 +43,7 @@ async function getOrCreateStripeCustomer(userId, email, displayName) {
 
   if (userData.stripeCustomerId) {
     try {
-      await requireStripeClient().customers.update(userData.stripeCustomerId, {
+      await getStripe().customers.update(userData.stripeCustomerId, {
         email: email || userData.email || undefined,
         name: displayName || userData.displayName || undefined,
         metadata: {
@@ -66,16 +51,12 @@ async function getOrCreateStripeCustomer(userId, email, displayName) {
         },
       });
     } catch (error) {
-      console.warn(
-        `Failed to update Stripe customer ${userData.stripeCustomerId}:`,
-        error
-      );
+      console.warn(`Failed to update Stripe customer ${userData.stripeCustomerId}:`, error);
     }
-
     return userData.stripeCustomerId;
   }
 
-  const customer = await requireStripeClient().customers.create({
+  const customer = await getStripe().customers.create({
     email,
     name: displayName,
     metadata: {
@@ -94,54 +75,6 @@ async function getOrCreateStripeCustomer(userId, email, displayName) {
   );
 
   return customer.id;
-}
-
-async function getUserIdFromStripeCustomer(customerId) {
-  if (!customerId) {
-    return null;
-  }
-
-  const snapshot = await db
-    .collection('users')
-    .where('stripeCustomerId', '==', customerId)
-    .limit(1)
-    .get();
-
-  if (!snapshot.empty) {
-    return snapshot.docs[0].id;
-  }
-
-  try {
-    const customer = await requireStripeClient().customers.retrieve(
-      customerId
-    );
-    const firebaseUID = customer?.metadata?.firebaseUID || null;
-
-    if (firebaseUID) {
-      await db.collection('users').doc(firebaseUID).set(
-        {
-          stripeCustomerId: customerId,
-          updatedAt: FieldValue.serverTimestamp(),
-        },
-        { merge: true }
-      );
-    }
-
-    return firebaseUID;
-  } catch (error) {
-    if (error?.statusCode === 404) {
-      console.warn(
-        `Stripe customer ${customerId} not found while resolving Firebase UID.`
-      );
-      return null;
-    }
-
-    console.error(
-      `Unexpected error retrieving Stripe customer ${customerId}:`,
-      error
-    );
-    throw error;
-  }
 }
 
 async function updateUserPremiumStatus(userId, isPremium, subscription) {
@@ -179,10 +112,7 @@ async function updateUserPremiumStatus(userId, isPremium, subscription) {
   try {
     userRecord = await admin.auth().getUser(userId);
   } catch (error) {
-    console.warn(
-      `Unable to fetch user ${userId} while updating custom claims:`,
-      error
-    );
+    console.warn(`Unable to fetch user ${userId} while updating custom claims:`, error);
   }
 
   const existingClaims = userRecord?.customClaims || {};
@@ -195,31 +125,69 @@ async function updateUserPremiumStatus(userId, isPremium, subscription) {
     await admin.auth().setCustomUserClaims(userId, nextClaims);
     await admin.auth().revokeRefreshTokens(userId);
   } catch (error) {
-    console.error(
-      `Failed to update custom claims for user ${userId}:`,
-      error
-    );
+    console.error(`Failed to update custom claims for user ${userId}:`, error);
   }
 }
 
-const createCheckoutSession = onCall(
-  { cors: true, secrets: [stripeSecretParam] },
+async function getUserIdFromStripeCustomer(customerId) {
+  if (!customerId) {
+    return null;
+  }
+
+  const snapshot = await db
+    .collection('users')
+    .where('stripeCustomerId', '==', customerId)
+    .limit(1)
+    .get();
+
+  if (!snapshot.empty) {
+    return snapshot.docs[0].id;
+  }
+
+  try {
+    const customer = await getStripe().customers.retrieve(customerId);
+    const firebaseUID = customer?.metadata?.firebaseUID || null;
+
+    if (firebaseUID) {
+      await db.collection('users').doc(firebaseUID).set(
+        {
+          stripeCustomerId: customerId,
+          updatedAt: FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      );
+    }
+
+    return firebaseUID;
+  } catch (error) {
+    if (error?.statusCode === 404) {
+      console.warn(`Stripe customer ${customerId} not found while resolving Firebase UID.`);
+      return null;
+    }
+
+    console.error(`Unexpected error retrieving Stripe customer ${customerId}:`, error);
+    throw error;
+  }
+}
+
+// -------------------------
+// Create Checkout Session
+// -------------------------
+
+exports.createCheckoutSession = onCall(
+  { cors: true, secrets: [STRIPE_SECRET] },
   async (request) => {
     const user = request.auth;
 
     if (!user) {
-      throw new Error(
-        'UNAUTHENTICATED: User must be logged in to create checkout session'
-      );
+      throw new Error('UNAUTHENTICATED: User must be logged in to create checkout session');
     }
 
     const { email, displayName, returnUrl } = request.data || {};
-    const priceId = premiumPriceIdParam.value();
+    const priceId = STRIPE_PREMIUM_PRICE_ID.value();
 
     if (!priceId) {
-      throw new Error(
-        'Stripe price ID not configured. Set the STRIPE_PREMIUM_PRICE_ID parameter.'
-      );
+      throw new Error('Stripe price ID not configured. Set the STRIPE_PREMIUM_PRICE_ID parameter.');
     }
 
     try {
@@ -231,7 +199,7 @@ const createCheckoutSession = onCall(
 
       const baseUrl = returnUrl || 'https://yourapp.com';
 
-      const session = await requireStripeClient().checkout.sessions.create({
+      const session = await getStripe().checkout.sessions.create({
         customer: customerId,
         mode: 'subscription',
         payment_method_types: ['card'],
@@ -261,8 +229,12 @@ const createCheckoutSession = onCall(
   }
 );
 
-const createPortalSession = onCall(
-  { cors: true, secrets: [stripeSecretParam] },
+// -------------------------
+// Create Billing Portal Session
+// -------------------------
+
+exports.createPortalSession = onCall(
+  { cors: true, secrets: [STRIPE_SECRET] },
   async (request) => {
     const user = request.auth;
 
@@ -276,16 +248,13 @@ const createPortalSession = onCall(
       const userData = userDoc.data();
 
       if (!userData?.stripeCustomerId) {
-        throw new Error(
-          'No Stripe customer found. User must have an active subscription.'
-        );
+        throw new Error('No Stripe customer found. User must have an active subscription.');
       }
 
-      const session =
-        await requireStripeClient().billingPortal.sessions.create({
-          customer: userData.stripeCustomerId,
-          return_url: returnUrl || 'https://yourapp.com/account',
-        });
+      const session = await getStripe().billingPortal.sessions.create({
+        customer: userData.stripeCustomerId,
+        return_url: returnUrl || 'https://yourapp.com/account',
+      });
 
       return {
         url: session.url,
@@ -297,139 +266,93 @@ const createPortalSession = onCall(
   }
 );
 
-const stripeWebhook = onRequest(
+// -------------------------
+// Stripe Webhook (RAW body)
+// -------------------------
+
+exports.stripeWebhook = onRequest(
   {
-    cors: false,
-    memory: '256MiB',
-    secrets: [stripeSecretParam, webhookSecretParam],
+    secrets: [STRIPE_SECRET, STRIPE_WEBHOOK_SECRET],
+    cors: false, // Webhooks DO NOT use CORS
+    maxInstances: 1,
   },
   async (req, res) => {
-    if (req.method !== 'POST') {
-      return res.status(405).send('Method Not Allowed');
-    }
-
-    const sig = req.headers['stripe-signature'];
-    const webhookSecret = webhookSecretParam.value();
-
-    if (!webhookSecret) {
-      console.error('Stripe webhook secret not configured');
-      return res.status(500).send('Webhook secret not configured');
-    }
+    const signature = req.headers['stripe-signature'];
 
     let event;
-
     try {
-      event = requireStripeClient().webhooks.constructEvent(
+      event = getStripe().webhooks.constructEvent(
         req.rawBody,
-        sig,
-        webhookSecret
+        signature,
+        STRIPE_WEBHOOK_SECRET.value()
       );
-    } catch (error) {
-      console.error('Webhook signature verification failed:', error.message);
-      return res.status(400).send(`Webhook Error: ${error.message}`);
+    } catch (err) {
+      console.error("❌ Webhook signature failed:", err.message);
+      return res.status(400).send("Webhook Error: " + err.message);
     }
 
-    console.log(`Stripe webhook received: ${event.type} [${event.id}]`);
+    switch (event.type) {
+      case 'checkout.session.completed': {
+        const session = event.data.object;
+        const userId = session.metadata?.firebaseUID;
 
-    try {
-      switch (event.type) {
-        case 'checkout.session.completed': {
-          const session = event.data.object;
-          const userId = session.metadata?.firebaseUID;
-
-          if (!userId) {
-            console.error('No Firebase UID on checkout session metadata');
-            break;
-          }
-
-          if (session.mode === 'subscription' && session.subscription) {
-            const subscription = await requireStripeClient().subscriptions.retrieve(
-              session.subscription
-            );
-            await updateUserPremiumStatus(userId, true, subscription);
-            console.log(
-              `User ${userId} upgraded to premium via checkout session ${session.id}`
-            );
-          }
-
+        if (!userId) {
+          console.error('No Firebase UID in checkout session metadata');
           break;
         }
 
-        case 'customer.subscription.created':
-        case 'customer.subscription.updated': {
-          const subscription = event.data.object;
-          const userId = await getUserIdFromStripeCustomer(
-            subscription.customer
-          );
-
-          if (!userId) {
-            console.error(
-              `Could not resolve Firebase UID for Stripe customer ${subscription.customer}`
-            );
-            break;
-          }
-
-          const isPremium =
-            subscription.status === 'active' ||
-            subscription.status === 'trialing';
-
-          await updateUserPremiumStatus(userId, isPremium, subscription);
-          console.log(
-            `Subscription ${subscription.id} ${event.type} for user ${userId}`
-          );
-          break;
+        if (session.mode === 'subscription' && session.subscription) {
+          const subscription = await getStripe().subscriptions.retrieve(session.subscription);
+          await updateUserPremiumStatus(userId, true, subscription);
+          console.log(`User ${userId} upgraded to premium via checkout`);
         }
-
-        case 'customer.subscription.deleted': {
-          const subscription = event.data.object;
-          const userId = await getUserIdFromStripeCustomer(
-            subscription.customer
-          );
-
-          if (!userId) {
-            console.error(
-              `Could not resolve Firebase UID for Stripe customer ${subscription.customer}`
-            );
-            break;
-          }
-
-          await updateUserPremiumStatus(userId, false);
-          console.log(
-            `Subscription ${subscription.id} cancelled for user ${userId}`
-          );
-          break;
-        }
-
-        case 'invoice.payment_succeeded': {
-          const invoice = event.data.object;
-          console.log(
-            `Payment succeeded for invoice ${invoice.id} (amount ${
-              invoice.amount_paid / 100
-            })`
-          );
-          break;
-        }
-
-        case 'invoice.payment_failed': {
-          const invoice = event.data.object;
-          console.error(`Payment failed for invoice ${invoice.id}`);
-          break;
-        }
-
-        default:
-          console.log(`Unhandled Stripe event type: ${event.type}`);
+        break;
       }
 
-      return res.json({ received: true, event: event.type });
-    } catch (error) {
-      console.error(`Error processing webhook ${event.type}:`, error);
-      return res.status(500).send(`Webhook handler failed: ${error.message}`);
+      case 'customer.subscription.created':
+      case 'customer.subscription.updated': {
+        const subscription = event.data.object;
+        const userId = await getUserIdFromStripeCustomer(subscription.customer);
+
+        if (!userId) {
+          console.error(`No Firebase UID found for customer ${subscription.customer}`);
+          break;
+        }
+
+        const isPremium = subscription.status === 'active' || subscription.status === 'trialing';
+        await updateUserPremiumStatus(userId, isPremium, subscription);
+        console.log(`Subscription ${subscription.id} ${event.type} for user ${userId} - Premium: ${isPremium}`);
+        break;
+      }
+
+      case 'customer.subscription.deleted': {
+        const subscription = event.data.object;
+        const userId = await getUserIdFromStripeCustomer(subscription.customer);
+
+        if (!userId) {
+          console.error(`No Firebase UID found for customer ${subscription.customer}`);
+          break;
+        }
+
+        await updateUserPremiumStatus(userId, false);
+        console.log(`Subscription cancelled for user ${userId}`);
+        break;
+      }
+
+      default:
+        console.log(`Unhandled event: ${event.type}`);
     }
+
+    res.status(200).send("OK");
   }
 );
 
-const cancelSubscription = onCall(
-  { cors: true, secrets: [stripeSecretParam] },
+// -------------------------
+// Cancel Subscription
+// -------------------------
+
+exports.cancelSubscription = onCall(
+  { cors: true, secrets: [STRIPE_SECRET] },
   async (request) => {
     const user = request.auth;
 
@@ -445,32 +368,21 @@ const cancelSubscription = onCall(
         throw new Error('No active subscription found');
       }
 
-      const subscription = await requireStripeClient().subscriptions.update(
-        userData.subscriptionId,
+      const subscription = await getStripe().subscriptions.update(userData.subscriptionId, {
+        cancel_at_period_end: true,
+      });
+
+      await db.collection('users').doc(user.uid).set(
         {
-          cancel_at_period_end: true,
-        }
+          cancelAt: Timestamp.fromMillis(subscription.current_period_end * 1000),
+          updatedAt: FieldValue.serverTimestamp(),
+        },
+        { merge: true }
       );
-
-      const cancelAt =
-        subscription.current_period_end != null
-          ? Timestamp.fromMillis(subscription.current_period_end * 1000)
-          : null;
-
-      await db
-        .collection('users')
-        .doc(user.uid)
-        .set(
-          {
-            cancelAt,
-            updatedAt: FieldValue.serverTimestamp(),
-          },
-          { merge: true }
-        );
 
       return {
         success: true,
-        message: 'Subscription will cancel at the end of the billing period',
+        message: 'Subscription will cancel at end of billing period',
         cancelAt: subscription.current_period_end,
       };
     } catch (error) {
@@ -479,14 +391,3 @@ const cancelSubscription = onCall(
     }
   }
 );
-
-module.exports = {
-  stripe: stripeClient,
-  getOrCreateStripeCustomer,
-  updateUserPremiumStatus,
-  getUserIdFromStripeCustomer,
-  createCheckoutSession,
-  createPortalSession,
-  stripeWebhook,
-  cancelSubscription,
-};

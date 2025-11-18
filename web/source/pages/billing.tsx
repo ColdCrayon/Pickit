@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useUserPlan } from "../hooks";
+import { useAuth } from "../hooks";
+import { redirectToCustomerPortal } from "../lib/stripe";
+import { db } from "../lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
 import {
   CreditCard,
   Calendar,
@@ -21,8 +24,28 @@ import {
  * Route: /billing
  */
 const Billing: React.FC = () => {
-  const { isPremium, loading: userPlanLoading } = useUserPlan();
+  const { user, isPremium, loading: userPlanLoading } = useAuth();
   const [cancelConfirm, setCancelConfirm] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [subscriptionData, setSubscriptionData] = useState<any>(null);
+
+  useEffect(() => {
+    if (user) {
+      loadSubscriptionData();
+    }
+  }, [user]);
+
+  const loadSubscriptionData = async () => {
+    if (!user) return;
+
+    try {
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const userData = userDoc.data();
+      setSubscriptionData(userData);
+    } catch (error) {
+      console.error("Error loading subscription:", error);
+    }
+  };
 
   // Mock data - Replace with real data from Firebase/Stripe later
   const mockTransactions = [
@@ -74,16 +97,23 @@ const Billing: React.FC = () => {
     alert(`Invoice ${invoiceId} download will be implemented soon!`);
   };
 
-  const handleCancelSubscription = () => {
-    // TODO: Implement actual cancellation logic
-    console.log("Canceling subscription...");
-    alert("Subscription cancellation will be implemented with Stripe integration!");
+  const handleManageSubscription = async () => {
+    setLoading(true);
+    try {
+      await redirectToCustomerPortal();
+    } catch (error) {
+      console.error("Error opening portal:", error);
+      alert("Failed to open billing portal");
+      setLoading(false);
+    }
   };
 
   const handleUpdatePaymentMethod = () => {
-    // TODO: Implement payment method update
-    console.log("Updating payment method...");
-    alert("Payment method update will be implemented with Stripe integration!");
+    handleManageSubscription();
+  };
+
+  const handleCancelSubscription = () => {
+    handleManageSubscription();
   };
 
   if (userPlanLoading) {
@@ -220,10 +250,11 @@ const Billing: React.FC = () => {
               </h2>
               <button
                 onClick={handleUpdatePaymentMethod}
-                className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl transition text-sm flex items-center gap-2"
+                disabled={loading}
+                className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl transition text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Settings className="w-4 h-4" />
-                Update
+                {loading ? "Loading..." : "Update"}
               </button>
             </div>
 
@@ -415,13 +446,15 @@ const Billing: React.FC = () => {
                   <div className="flex gap-3">
                     <button
                       onClick={handleCancelSubscription}
-                      className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm transition font-medium"
+                      disabled={loading}
+                      className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Yes, Cancel My Subscription
+                      {loading ? "Loading..." : "Yes, Cancel My Subscription"}
                     </button>
                     <button
                       onClick={() => setCancelConfirm(false)}
-                      className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-sm transition"
+                      disabled={loading}
+                      className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-sm transition disabled:opacity-50"
                     >
                       Keep Subscription
                     </button>

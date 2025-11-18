@@ -6,4 +6,5 @@ export { useFreeArbPaginated, useFreeGamePaginated } from "./useFreePicksPaginat
 export { useSportsArbTickets } from "./useSportsArbTickets";
 export { useSportsTickets } from "./useSportsTickets";
 export { useUserPlan } from "./useUserPlan";
+export { useAuth } from "./useAuth";
 

@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Footer } from "../components";
+import { useAuth } from "../hooks";
+import { redirectToCheckout } from "../lib/stripe";
+import { Loader2 } from "lucide-react";
+
 
 const logo = "/logo.png";
 
@@ -32,6 +36,32 @@ const tiers = [
 
 const Upgrade: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleUpgrade = async () => {
+    if (!user) {
+      setError("You must be logged in to upgrade");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      await redirectToCheckout(
+        user.email || "",
+        user.displayName || undefined
+      );
+    } catch (err: any) {
+      console.error("Upgrade error:", err);
+      setError(err.message || "Failed to start checkout process");
+      setLoading(false);
+    }
+  };
+
+
 
   return (
     <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
@@ -73,8 +103,19 @@ const Upgrade: React.FC = () => {
               {/* Button wrapper sits at the bottom */}
               <div className="mt-auto">
                 {tier.highlighted ? (
-                  <button className="w-full py-3 bg-black text-yellow-500/90 font-semibold rounded-xl hover:bg-gray-800">
-                    Upgrade to Pro
+                  <button
+                    onClick={handleUpgrade}
+                    disabled={loading}
+                    className="w-full py-3 bg-black text-yellow-500/90 font-semibold rounded-xl hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Processing...
+                      </>
+                    ) : (
+                      "Upgrade to Pro"
+                    )}
                   </button>
                 ) : (
                   <button className="w-full py-3 bg-gray-800 text-white font-semibold rounded-xl hover:bg-gray-700">
@@ -85,6 +126,13 @@ const Upgrade: React.FC = () => {
             </div>
           ))}
         </div>
+
+        {/* Error message */}
+        {error && (
+          <div className="mt-6 text-center">
+            <p className="text-red-400 text-sm">{error}</p>
+          </div>
+        )}
 
         {/* Notes */}
         <div className="mt-10 text-sm text-gray-400 leading-relaxed">
