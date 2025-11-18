@@ -151,6 +151,11 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
                   description="View all tracked games"
                 />
                 <QuickLink
+                  to="/odds-comparison"
+                  label="Odds Comparison"
+                  description="Compare all sportsbooks"
+                />
+                <QuickLink
                   to="/nfl"
                   label="NFL Games"
                   description="View current NFL odds"
@@ -169,11 +174,6 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
                   to="/nhl"
                   label="NHL Games"
                   description="View current NHL odds"
-                />
-                <QuickLink
-                  to="/Account"
-                  label="Account Settings"
-                  description="Manage your profile"
                 />
               </div>
             </div>
