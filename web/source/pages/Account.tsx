@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -38,6 +38,7 @@ import {
  * Handles authentication and displays account information for signed-in users
  */
 const Account: React.FC = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -233,14 +234,13 @@ const Account: React.FC = () => {
                       </Link>
                     )}
                     {!userPlanLoading && isPremium && (
-                      <button
-                        type="button"
-                        onClick={() => setShowSubscriptionModal(true)}
+                      <Link
+                        to="/billing"
                         className="px-5 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition flex items-center gap-2"
                       >
                         <Settings className="w-4 h-4" />
                         Manage Subscription
-                      </button>
+                      </Link>
                     )}
                     <button
                       type="button"
@@ -325,13 +325,13 @@ const Account: React.FC = () => {
                           </p>
                         </div>
                       </div>
-                      <button
-                        onClick={() => setShowSubscriptionModal(true)}
+                      <Link
+                        to="/billing"
                         className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl transition text-sm flex items-center gap-2 shrink-0"
                       >
                         <Settings className="w-4 h-4" />
                         Manage
-                      </button>
+                      </Link>
                     </div>
                   </Card>
                 </div>
@@ -660,9 +660,12 @@ const SubscriptionModal: React.FC<{
                 <p className="text-sm text-gray-400">Expires 12/25</p>
               </div>
             </div>
-            <button className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-sm transition">
+            <Link
+              to="/billing"
+              className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-sm transition"
+            >
               Update
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -686,9 +689,12 @@ const SubscriptionModal: React.FC<{
               status="Paid"
             />
           </div>
-          <button className="w-full mt-4 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-xl text-sm transition">
+          <Link
+            to="/billing"
+            className="w-full mt-4 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-xl text-sm transition block text-center"
+          >
             View All Transactions
-          </button>
+          </Link>
         </div>
 
         {/* Cancel Subscription */}
@@ -713,9 +719,12 @@ const SubscriptionModal: React.FC<{
                 Are you sure? This action cannot be undone.
               </p>
               <div className="flex gap-3">
-                <button className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm transition">
+                <Link
+                  to="/billing"
+                  className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm transition inline-block"
+                >
                   Yes, Cancel
-                </button>
+                </Link>
                 <button
                   onClick={() => setCancelConfirm(false)}
                   className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-sm transition"
