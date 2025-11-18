@@ -1,14 +1,8 @@
 /**
- * useWatchlist Hook - FIXED VERSION
+ * useWatchlist Hook - ARRAY STORAGE FIX
  *
- * Manages user's watchlist with real-time updates from Firestore.
- * Handles adding/removing games, teams, and markets.
- *
- * FIXES:
- * - Added normalizeWatchlistData() to convert Firestore object format to array format
- * - Handles games stored as {0: {}, 1: {}} instead of [{}, {}]
- * - Safely handles missing or malformed watchlist data
- * - Proper Timestamp handling with serverTimestamp()
+ * CRITICAL FIX: Use updateDoc with arrayUnion/arrayRemove to maintain proper array format
+ * The previous version using setDoc with spread was converting arrays to objects in Firebase
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -16,9 +10,11 @@ import {
   doc,
   onSnapshot,
   setDoc,
+  updateDoc,
   getDoc,
-  serverTimestamp,
   Timestamp,
+  arrayUnion,
+  arrayRemove,
 } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import {
@@ -44,36 +40,20 @@ interface UseWatchlistReturn {
   watchlistSettings: WatchlistSettings;
   loading: boolean;
   error: string | null;
-  addGame: (game: Omit<WatchlistGame, "addedAt">) => Promise<void>;
+  addGame: (gameId: string) => Promise<void>;
   removeGame: (gameId: string) => Promise<void>;
   addTeam: (team: Omit<WatchlistTeam, "addedAt">) => Promise<void>;
   removeTeam: (teamId: string) => Promise<void>;
   addMarket: (market: Omit<WatchlistMarket, "addedAt">) => Promise<void>;
-  removeMarket: (eventId: string, marketType: string) => Promise<void>;
+  removeMarket: (marketId: string) => Promise<void>;
   updateSettings: (settings: Partial<WatchlistSettings>) => Promise<void>;
   totalItems: number;
   refresh: () => Promise<void>;
 }
 
-const DEFAULT_WATCHLIST: Watchlist = {
-  games: [],
-  teams: [],
-  markets: [],
-};
-
-const DEFAULT_SETTINGS: WatchlistSettings = {
-  enableNotifications: true,
-  alertThreshold: 5,
-  maxWatchlistItems: 50,
-};
-
 /**
- * CRITICAL FIX: Normalize watchlist data from Firestore
- *
- * Firestore sometimes stores arrays as objects with numeric keys like:
- * { 0: {...}, 1: {...}, 2: {...} }
- *
- * This function converts them back to proper arrays: [{...}, {...}, {...}]
+ * Normalize watchlist data from Firestore
+ * Handles both array and object formats
  */
 function normalizeWatchlistData(data: any): Watchlist {
   const normalize = (value: any): any[] => {
@@ -83,15 +63,13 @@ function normalizeWatchlistData(data: any): Watchlist {
     // If it's an object with numeric keys, convert to array
     if (typeof value === "object") {
       const keys = Object.keys(value);
-      // Check if keys are numeric (0, 1, 2, etc.)
-      const isNumericKeys = keys.every((k) => /^\d+$/.test(k));
+      const isNumericKeys = keys.every((k) => !isNaN(Number(k)));
 
       if (isNumericKeys && keys.length > 0) {
-        // Convert to array, sorted by numeric key
         return keys
-          .sort((a, b) => parseInt(a) - parseInt(b))
-          .map((k) => value[k])
-          .filter((v) => v !== null && v !== undefined);
+          .map(Number)
+          .sort((a, b) => a - b)
+          .map((index) => value[index]);
       }
     }
 
@@ -99,61 +77,34 @@ function normalizeWatchlistData(data: any): Watchlist {
   };
 
   return {
-    games: normalize(data?.games),
-    teams: normalize(data?.teams),
-    markets: normalize(data?.markets),
+    games: normalize(data.games),
+    teams: normalize(data.teams),
+    markets: normalize(data.markets),
   };
 }
 
 /**
  * Hook to manage user's watchlist
- *
- * @param userId - User ID to fetch watchlist for
- * @returns Watchlist data and mutation functions
- *
- * @example
- * ```tsx
- * const { watchlist, addGame, removeGame } = useWatchlist(user?.uid);
- * ```
  */
-export function useWatchlist(userId: string | undefined): UseWatchlistReturn {
-  const [watchlist, setWatchlist] = useState<Watchlist>(DEFAULT_WATCHLIST);
-  const [watchlistSettings, setWatchlistSettings] =
-    useState<WatchlistSettings>(DEFAULT_SETTINGS);
+export function useWatchlist(userId?: string): UseWatchlistReturn {
+  const [watchlist, setWatchlist] = useState<Watchlist>({
+    games: [],
+    teams: [],
+    markets: [],
+  });
+  const [watchlistSettings, setWatchlistSettings] = useState<WatchlistSettings>(
+    {
+      enableNotifications: true,
+      alertThreshold: 5.0,
+      maxWatchlistItems: 50,
+    }
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Calculate total items
-  const totalItems =
-    watchlist.games.length + watchlist.teams.length + watchlist.markets.length;
-
-  // Refresh function to manually reload watchlist
-  const refresh = useCallback(async () => {
-    if (!userId) return;
-
-    try {
-      const userRef = doc(db, "users", userId);
-      const snapshot = await getDoc(userRef);
-
-      if (snapshot.exists()) {
-        const data = snapshot.data();
-        setWatchlist(normalizeWatchlistData(data.watchlist || {}));
-        setWatchlistSettings(data.watchlistSettings || DEFAULT_SETTINGS);
-      } else {
-        setWatchlist(DEFAULT_WATCHLIST);
-        setWatchlistSettings(DEFAULT_SETTINGS);
-      }
-    } catch (err: any) {
-      console.error("[useWatchlist] Error refreshing:", err);
-      setError(err.message);
-    }
-  }, [userId]);
-
-  // Subscribe to real-time updates
+  // Subscribe to user document for real-time updates
   useEffect(() => {
     if (!userId) {
-      setWatchlist(DEFAULT_WATCHLIST);
-      setWatchlistSettings(DEFAULT_SETTINGS);
       setLoading(false);
       return;
     }
@@ -167,26 +118,34 @@ export function useWatchlist(userId: string | undefined): UseWatchlistReturn {
       (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.data();
+          console.log("[useWatchlist] Raw data from Firestore:", data);
 
-          console.log("[useWatchlist] Received data:", {
-            games: data.watchlist?.games?.length || 0,
-            teams: data.watchlist?.teams?.length || 0,
-            markets: data.watchlist?.markets?.length || 0,
-          });
+          const normalizedWatchlist = normalizeWatchlistData(
+            data.watchlist || {}
+          );
+          console.log(
+            "[useWatchlist] Normalized watchlist:",
+            normalizedWatchlist
+          );
 
-          const normalized = normalizeWatchlistData(data.watchlist || {});
-          setWatchlist(normalized);
-          setWatchlistSettings(data.watchlistSettings || DEFAULT_SETTINGS);
+          setWatchlist(normalizedWatchlist);
+          setWatchlistSettings(
+            data.watchlistSettings || {
+              enableNotifications: true,
+              alertThreshold: 5.0,
+              maxWatchlistItems: 50,
+            }
+          );
         } else {
-          console.log("[useWatchlist] User document does not exist");
-          setWatchlist(DEFAULT_WATCHLIST);
-          setWatchlistSettings(DEFAULT_SETTINGS);
+          console.log(
+            "[useWatchlist] User document does not exist, will create on first add"
+          );
+          setWatchlist({ games: [], teams: [], markets: [] });
         }
-
         setLoading(false);
         setError(null);
       },
-      (err: any) => {
+      (err) => {
         console.error("[useWatchlist] Error:", err);
         setError(err.message);
         setLoading(false);
@@ -196,60 +155,58 @@ export function useWatchlist(userId: string | undefined): UseWatchlistReturn {
     return () => unsubscribe();
   }, [userId]);
 
-  // Add a game to watchlist
+  // Add a game to watchlist - SIMPLIFIED to just take gameId
   const addGame = useCallback(
-    async (game: Omit<WatchlistGame, "addedAt">) => {
+    async (gameId: string) => {
       if (!userId) throw new Error("User not authenticated");
 
       const userRef = doc(db, "users", userId);
 
-      // First, get current data to check for duplicates
+      console.log("[useWatchlist] Adding game:", gameId);
+
+      // Check if already exists
       const snapshot = await getDoc(userRef);
-      const data = snapshot.data();
-      const currentWatchlist = normalizeWatchlistData(data?.watchlist || {});
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        const currentWatchlist = normalizeWatchlistData(data?.watchlist || {});
 
-      // Check if game already exists
-      const exists = currentWatchlist.games.some((g) => g.id === game.id);
-      if (exists) {
-        console.log("[useWatchlist] Game already in watchlist:", game.id);
-        return;
+        const exists = currentWatchlist.games.some((g) => g.id === gameId);
+        if (exists) {
+          console.log("[useWatchlist] Game already in watchlist:", gameId);
+          return;
+        }
       }
 
-      console.log("[useWatchlist] Adding game:", game);
+      // Create timestamp as regular Timestamp (not serverTimestamp)
+      const now = Timestamp.now();
 
-      // FIXED: Ensure startTime is Timestamp and create complete game object
-      let startTimeTimestamp: Timestamp;
-      if (game.startTime instanceof Timestamp) {
-        startTimeTimestamp = game.startTime;
-      } else if (game.startTime instanceof Date) {
-        startTimeTimestamp = Timestamp.fromDate(game.startTime);
-      } else if (typeof game.startTime === "object" && game.startTime.toDate) {
-        startTimeTimestamp = game.startTime as Timestamp;
-      } else {
-        console.error("[useWatchlist] Invalid startTime:", game.startTime);
-        throw new Error("Invalid game start time");
+      // Use arrayUnion to properly add to array
+      try {
+        await updateDoc(userRef, {
+          "watchlist.games": arrayUnion({
+            id: gameId,
+            addedAt: now,
+          }),
+        });
+      } catch (err: any) {
+        // If document doesn't exist, create it
+        if (err.code === "not-found") {
+          await setDoc(userRef, {
+            watchlist: {
+              games: [{ id: gameId, addedAt: now }],
+              teams: [],
+              markets: [],
+            },
+            watchlistSettings: {
+              enableNotifications: true,
+              alertThreshold: 5.0,
+              maxWatchlistItems: 50,
+            },
+          });
+        } else {
+          throw err;
+        }
       }
-
-      const gameWithTimestamp: WatchlistGame = {
-        ...game,
-        startTime: startTimeTimestamp,
-        addedAt: Timestamp.now(), // Use Timestamp.now() instead of serverTimestamp() for client-side
-      };
-
-      // Important: Use array format, not arrayUnion (which can cause object format)
-      const newGames = [...currentWatchlist.games, gameWithTimestamp];
-
-      await setDoc(
-        userRef,
-        {
-          watchlist: {
-            games: newGames,
-            teams: currentWatchlist.teams,
-            markets: currentWatchlist.markets,
-          },
-        },
-        { merge: true }
-      );
     },
     [userId]
   );
@@ -263,24 +220,21 @@ export function useWatchlist(userId: string | undefined): UseWatchlistReturn {
 
       const userRef = doc(db, "users", userId);
 
-      // Get current watchlist
+      // Get current data to find exact object to remove
       const snapshot = await getDoc(userRef);
+      if (!snapshot.exists()) return;
+
       const data = snapshot.data();
       const currentWatchlist = normalizeWatchlistData(data?.watchlist || {});
 
-      const newGames = currentWatchlist.games.filter((g) => g.id !== gameId);
+      // Find the game object to remove
+      const gameToRemove = currentWatchlist.games.find((g) => g.id === gameId);
+      if (!gameToRemove) return;
 
-      await setDoc(
-        userRef,
-        {
-          watchlist: {
-            games: newGames,
-            teams: currentWatchlist.teams,
-            markets: currentWatchlist.markets,
-          },
-        },
-        { merge: true }
-      );
+      // Use arrayRemove with the exact object
+      await updateDoc(userRef, {
+        "watchlist.games": arrayRemove(gameToRemove),
+      });
     },
     [userId]
   );
@@ -293,32 +247,40 @@ export function useWatchlist(userId: string | undefined): UseWatchlistReturn {
       console.log("[useWatchlist] Adding team:", team);
 
       const userRef = doc(db, "users", userId);
+
+      // Check if already exists
       const snapshot = await getDoc(userRef);
-      const data = snapshot.data();
-      const currentWatchlist = normalizeWatchlistData(data?.watchlist || {});
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        const currentWatchlist = normalizeWatchlistData(data?.watchlist || {});
 
-      // Check for duplicates
-      const exists = currentWatchlist.teams.some((t) => t.id === team.id);
-      if (exists) return;
+        const exists = currentWatchlist.teams.some((t) => t.id === team.id);
+        if (exists) return;
+      }
 
-      const teamWithTimestamp: WatchlistTeam = {
+      const now = Timestamp.now();
+      const teamWithTimestamp = {
         ...team,
-        addedAt: Timestamp.now(),
+        addedAt: now,
       };
 
-      const newTeams = [...currentWatchlist.teams, teamWithTimestamp];
-
-      await setDoc(
-        userRef,
-        {
-          watchlist: {
-            games: currentWatchlist.games,
-            teams: newTeams,
-            markets: currentWatchlist.markets,
-          },
-        },
-        { merge: true }
-      );
+      try {
+        await updateDoc(userRef, {
+          "watchlist.teams": arrayUnion(teamWithTimestamp),
+        });
+      } catch (err: any) {
+        if (err.code === "not-found") {
+          await setDoc(userRef, {
+            watchlist: {
+              games: [],
+              teams: [teamWithTimestamp],
+              markets: [],
+            },
+          });
+        } else {
+          throw err;
+        }
+      }
     },
     [userId]
   );
@@ -331,23 +293,19 @@ export function useWatchlist(userId: string | undefined): UseWatchlistReturn {
       console.log("[useWatchlist] Removing team:", teamId);
 
       const userRef = doc(db, "users", userId);
+
       const snapshot = await getDoc(userRef);
+      if (!snapshot.exists()) return;
+
       const data = snapshot.data();
       const currentWatchlist = normalizeWatchlistData(data?.watchlist || {});
 
-      const newTeams = currentWatchlist.teams.filter((t) => t.id !== teamId);
+      const teamToRemove = currentWatchlist.teams.find((t) => t.id === teamId);
+      if (!teamToRemove) return;
 
-      await setDoc(
-        userRef,
-        {
-          watchlist: {
-            games: currentWatchlist.games,
-            teams: newTeams,
-            markets: currentWatchlist.markets,
-          },
-        },
-        { merge: true }
-      );
+      await updateDoc(userRef, {
+        "watchlist.teams": arrayRemove(teamToRemove),
+      });
     },
     [userId]
   );
@@ -360,66 +318,69 @@ export function useWatchlist(userId: string | undefined): UseWatchlistReturn {
       console.log("[useWatchlist] Adding market:", market);
 
       const userRef = doc(db, "users", userId);
+
       const snapshot = await getDoc(userRef);
-      const data = snapshot.data();
-      const currentWatchlist = normalizeWatchlistData(data?.watchlist || {});
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        const currentWatchlist = normalizeWatchlistData(data?.watchlist || {});
 
-      // Check for duplicates
-      const exists = currentWatchlist.markets.some(
-        (m) =>
-          m.eventId === market.eventId && m.marketType === market.marketType
-      );
-      if (exists) return;
+        const exists = currentWatchlist.markets.some(
+          (m) =>
+            m.eventId === market.eventId && m.marketType === market.marketType
+        );
+        if (exists) return;
+      }
 
-      const marketWithTimestamp: WatchlistMarket = {
+      const now = Timestamp.now();
+      const marketWithTimestamp = {
         ...market,
-        addedAt: Timestamp.now(),
+        addedAt: now,
       };
 
-      const newMarkets = [...currentWatchlist.markets, marketWithTimestamp];
-
-      await setDoc(
-        userRef,
-        {
-          watchlist: {
-            games: currentWatchlist.games,
-            teams: currentWatchlist.teams,
-            markets: newMarkets,
-          },
-        },
-        { merge: true }
-      );
+      try {
+        await updateDoc(userRef, {
+          "watchlist.markets": arrayUnion(marketWithTimestamp),
+        });
+      } catch (err: any) {
+        if (err.code === "not-found") {
+          await setDoc(userRef, {
+            watchlist: {
+              games: [],
+              teams: [],
+              markets: [marketWithTimestamp],
+            },
+          });
+        } else {
+          throw err;
+        }
+      }
     },
     [userId]
   );
 
   // Remove a market from watchlist
   const removeMarket = useCallback(
-    async (eventId: string, marketType: string) => {
+    async (marketId: string) => {
       if (!userId) throw new Error("User not authenticated");
 
-      console.log("[useWatchlist] Removing market:", eventId, marketType);
+      console.log("[useWatchlist] Removing market:", marketId);
 
       const userRef = doc(db, "users", userId);
+
       const snapshot = await getDoc(userRef);
+      if (!snapshot.exists()) return;
+
       const data = snapshot.data();
       const currentWatchlist = normalizeWatchlistData(data?.watchlist || {});
 
-      const newMarkets = currentWatchlist.markets.filter(
-        (m) => !(m.eventId === eventId && m.marketType === marketType)
+      const marketToRemove = currentWatchlist.markets.find(
+        (m) => `${m.eventId}-${m.marketType}` === marketId
       );
+      if (!marketToRemove) return;
 
-      await setDoc(
-        userRef,
-        {
-          watchlist: {
-            games: currentWatchlist.games,
-            teams: currentWatchlist.teams,
-            markets: newMarkets,
-          },
-        },
-        { merge: true }
-      );
+      await updateDoc(userRef, {
+        "watchlist.markets": arrayRemove(marketToRemove),
+      });
     },
     [userId]
   );
@@ -433,19 +394,32 @@ export function useWatchlist(userId: string | undefined): UseWatchlistReturn {
 
       const userRef = doc(db, "users", userId);
 
-      await setDoc(
-        userRef,
-        {
-          watchlistSettings: {
-            ...watchlistSettings,
-            ...settings,
-          },
+      await updateDoc(userRef, {
+        watchlistSettings: {
+          ...watchlistSettings,
+          ...settings,
         },
-        { merge: true }
-      );
+      });
     },
     [userId, watchlistSettings]
   );
+
+  // Refresh watchlist manually
+  const refresh = useCallback(async () => {
+    if (!userId) return;
+
+    const userRef = doc(db, "users", userId);
+    const snapshot = await getDoc(userRef);
+
+    if (snapshot.exists()) {
+      const data = snapshot.data();
+      const normalizedWatchlist = normalizeWatchlistData(data.watchlist || {});
+      setWatchlist(normalizedWatchlist);
+    }
+  }, [userId]);
+
+  const totalItems =
+    watchlist.games.length + watchlist.teams.length + watchlist.markets.length;
 
   return {
     watchlist,

@@ -20,14 +20,19 @@ export function useUserPlan(): PlanState {
 
   useEffect(() => {
     const auth = getAuth();
+    let unsubscribeUserDoc: () => void = () => {};
+
     const off = onAuthStateChanged(auth, (u) => {
+      unsubscribeUserDoc();
+      unsubscribeUserDoc = () => {};
+
       if (!u) {
         setState({ user: null, loading: false, isPremium: false, isAdmin: false });
         return;
       }
       // listen to /users/{uid}
       const ref = doc(db, "users", u.uid);
-      const unsub = onSnapshot(
+      unsubscribeUserDoc = onSnapshot(
         ref,
         (snap) => {
           const d = snap.data() as any || {};
@@ -39,12 +44,21 @@ export function useUserPlan(): PlanState {
           });
         },
         () => {
+          const currentUser = auth.currentUser;
+          if (!currentUser || currentUser.uid !== u.uid) {
+            setState({ user: null, loading: false, isPremium: false, isAdmin: false });
+            return;
+          }
+
           setState({ user: u, loading: false, isPremium: false, isAdmin: false });
         }
       );
-      return () => unsub();
     });
-    return () => off();
+
+    return () => {
+      unsubscribeUserDoc();
+      off();
+    };
   }, []);
 
   return state;

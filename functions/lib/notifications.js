@@ -113,15 +113,15 @@ async function sendBatchNotifications(userIds, title, body, data = {}) {
 async function getUsersWithSavedTicket(ticketId, ticketType) {
   const snapshot = await admin
     .firestore()
-    .collectionGroup('tickets')
+    .collectionGroup('savedTickets')
     .where('ticketId', '==', ticketId)
     .where('ticketType', '==', ticketType)
     .get();
 
   return snapshot.docs.map((doc) => {
-    // Extract userId from document path: users/{userId}/tickets/{ticketId}
+    // Extract userId from document path: users/{userId}/savedTickets/{ticketId}
     const pathParts = doc.ref.path.split('/');
-    return pathParts[1]; // users/{userId}/tickets/{ticketId}
+    return pathParts[1]; // users/{userId}/savedTickets/{ticketId}
   });
 }
 

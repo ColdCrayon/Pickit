@@ -21,6 +21,23 @@ service cloud.firestore {
     function isPremium() {
       return hasMe() && getMe().data.isPremium == true;
     }
+    function isTicketOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    function canManageTicket(userId) {
+      return isTicketOwner(userId) || isAdmin();
+    }
+    function validTicketData(userId, ticketId) {
+      return request.resource.data.keys().hasOnly([
+               'ticketId',
+               'ticketType',
+               'savedAt',
+               'notificationSent',
+               'userId'
+             ]) &&
+             request.resource.data.userId == userId &&
+             request.resource.data.ticketId == ticketId;
+    }
     // Ensure sensitive flags can't be changed by regular users
     function unchanged(field) {
       // If field not present in new data, treat as unchanged
@@ -38,6 +55,12 @@ service cloud.firestore {
         ||
         // Admins can write any user doc (including setting flags)
         isAdmin();
+      
+      // NEW: Saved Tickets Subcollection
+      match /savedTickets/{ticketId} {
+        // Users can read/write their own saved tickets
+        allow read, write: if isSignedIn() && request.auth.uid == userId;
+      }
     }
 
     // ----- Game Tickets -----
@@ -56,7 +79,7 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // ----- NEW: Events Collection (from odds-ingestor) -----
+    // ----- Events Collection (from odds-ingestor) -----
     match /events/{eventId} {
       // Allow any signed-in user to read events
       allow read: if isSignedIn();
@@ -79,6 +102,12 @@ service cloud.firestore {
           }
         }
       }
+    }
+
+    // ----- Watchlists (User watchlist data) -----
+    match /watchlists/{userId} {
+      // Users can only read/write their own watchlist
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
     }
 
     // ----- Articles Collection -----

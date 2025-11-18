@@ -1,39 +1,46 @@
 /**
- * useEventOdds Hook
+ * useEventOdds Hook - FIXED ODDS FORMAT
  *
- * Subscribes to real-time odds updates for a specific event.
- * Listens to /events/{eventId}/markets/{marketId}/books/{bookId} subcollections.
+ * Hooks for fetching and managing event odds data from Firestore
+ *
+ * FIX: Returns OddsEntry objects with both priceDecimal and priceAmerican
+ * Converts between formats so display components work correctly
  */
 
 import { useState, useEffect } from "react";
-import { collection, doc, onSnapshot, Timestamp } from "firebase/firestore";
+import { doc, collection, query, onSnapshot } from "firebase/firestore";
 import { db } from "../lib/firebase";
-import { EventWithOdds, BookOdds, Odds, MarketType } from "../types/events";
+import { Event, OddsEntry } from "../types/events";
 
-interface UseEventOddsReturn {
-  event: EventWithOdds | null;
-  loading: boolean;
-  error: string | null;
+export type MarketType = "h2h" | "spreads" | "totals";
+
+/**
+ * Convert decimal odds to American odds
+ */
+function decimalToAmerican(decimal: number): number {
+  if (decimal >= 2.0) {
+    return Math.round((decimal - 1) * 100);
+  } else {
+    return Math.round(-100 / (decimal - 1));
+  }
 }
 
 /**
- * Hook to subscribe to real-time odds for a specific event
- *
- * @param eventId - The event ID to fetch odds for
- * @returns Event with odds, loading state, and error
- *
- * @example
- * ```tsx
- * const { event, loading, error } = useEventOdds('some-event-id');
- *
- * if (event) {
- *   console.log(event.markets.h2h); // Moneyline odds from all books
- *   console.log(event.markets.spreads); // Spread odds from all books
- * }
- * ```
+ * Convert American odds to decimal odds
  */
-export function useEventOdds(eventId: string | undefined): UseEventOddsReturn {
-  const [event, setEvent] = useState<EventWithOdds | null>(null);
+function americanToDecimal(american: number): number {
+  if (american > 0) {
+    return 1 + american / 100;
+  } else {
+    return 1 + 100 / Math.abs(american);
+  }
+}
+
+/**
+ * Hook to get a single event with real-time odds updates
+ */
+export function useEventOdds(eventId: string | undefined) {
+  const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -48,36 +55,77 @@ export function useEventOdds(eventId: string | undefined): UseEventOddsReturn {
     setError(null);
 
     const eventRef = doc(db, "events", eventId);
+    let unsubscribeMarkets: (() => void) | undefined;
 
-    // Subscribe to event document
     const unsubscribeEvent = onSnapshot(
       eventRef,
-      (eventDoc) => {
-        if (!eventDoc.exists()) {
+      (snapshot) => {
+        if (!snapshot.exists()) {
           setError("Event not found");
           setLoading(false);
           return;
         }
 
-        const eventData = eventDoc.data();
-        const baseEvent: EventWithOdds = {
-          id: eventDoc.id,
-          sport: eventData.sport,
-          teams: eventData.teams,
-          startTime: eventData.startTime,
-          lastOddsUpdate: eventData.lastOddsUpdate,
-          expiresAt: eventData.expiresAt,
-          markets: {
-            h2h: {},
-            spreads: {},
-            totals: {},
-          },
+        const baseEvent: Event = {
+          id: snapshot.id,
+          ...snapshot.data(),
+        } as Event;
+
+        const subscribeToMarkets = (
+          eventId: string,
+          currentEvent: Event
+        ): (() => void) => {
+          const marketsToFetch = ["h2h", "spreads", "totals"];
+          const markets: Event["markets"] = {};
+          let loadedMarkets = 0;
+
+          const unsubscribers: (() => void)[] = [];
+
+          marketsToFetch.forEach((marketId) => {
+            const booksQuery = query(
+              collection(db, "events", eventId, "markets", marketId, "books")
+            );
+
+            const unsubscribe = onSnapshot(booksQuery, (booksSnap) => {
+              const bookData: any = {};
+
+              booksSnap.forEach((bookDoc) => {
+                const data = bookDoc.data();
+                if (data?.latest?.odds) {
+                  bookData[bookDoc.id] = {
+                    odds: data.latest.odds,
+                    lastUpdate: data.latest.updatedAt,
+                  };
+                }
+              });
+
+              markets[marketId] = bookData;
+              loadedMarkets++;
+
+              // Update event with current markets
+              setEvent({
+                ...currentEvent,
+                markets: { ...markets },
+              });
+
+              // Only set loading false after all markets are loaded
+              if (loadedMarkets >= marketsToFetch.length) {
+                setLoading(false);
+              }
+            });
+
+            unsubscribers.push(unsubscribe);
+          });
+
+          // Return cleanup function that unsubscribes all market listeners
+          return () => {
+            unsubscribers.forEach((unsub) => unsub());
+          };
         };
 
         setEvent(baseEvent);
-
-        // Now subscribe to markets
-        subscribeToMarkets(eventId, baseEvent);
+        setLoading(false);
+        unsubscribeMarkets = subscribeToMarkets(eventId, baseEvent);
       },
       (err) => {
         console.error("Error fetching event:", err);
@@ -86,69 +134,9 @@ export function useEventOdds(eventId: string | undefined): UseEventOddsReturn {
       }
     );
 
-    // Function to subscribe to all markets
-    const subscribeToMarkets = (evId: string, baseEv: EventWithOdds) => {
-      const markets: MarketType[] = ["h2h", "spreads", "totals"];
-      const unsubscribers: (() => void)[] = [];
-
-      markets.forEach((marketId) => {
-        const booksRef = collection(
-          db,
-          "events",
-          evId,
-          "markets",
-          marketId,
-          "books"
-        );
-
-        const unsubBooks = onSnapshot(
-          booksRef,
-          (booksSnapshot) => {
-            const bookOddsMap: Record<string, BookOdds> = {};
-
-            booksSnapshot.forEach((bookDoc) => {
-              const bookData = bookDoc.data();
-
-              if (bookData.latest) {
-                bookOddsMap[bookDoc.id] = {
-                  bookId: bookDoc.id,
-                  updatedAt: bookData.latest.updatedAt,
-                  odds: bookData.latest.odds as Odds,
-                };
-              }
-            });
-
-            // Update event with new odds for this market
-            setEvent((prev) => {
-              if (!prev) return prev;
-
-              return {
-                ...prev,
-                markets: {
-                  ...prev.markets,
-                  [marketId]: bookOddsMap,
-                },
-              };
-            });
-
-            setLoading(false);
-          },
-          (err) => {
-            console.error(`Error fetching ${marketId} odds:`, err);
-            // Don't set error state here - partial data is okay
-          }
-        );
-
-        unsubscribers.push(unsubBooks);
-      });
-
-      // Return cleanup function for market subscriptions
-      return () => unsubscribers.forEach((unsub) => unsub());
-    };
-
-    // Cleanup
     return () => {
       unsubscribeEvent();
+      unsubscribeMarkets?.();
     };
   }, [eventId]);
 
@@ -157,24 +145,16 @@ export function useEventOdds(eventId: string | undefined): UseEventOddsReturn {
 
 /**
  * Hook to get best odds for a specific market across all books
- *
- * @param eventId - The event ID
- * @param marketType - The market type (h2h, spreads, totals)
- * @returns Best odds for each outcome
- *
- * @example
- * ```tsx
- * const { bestOdds, loading } = useBestOdds('event-id', 'h2h');
- * console.log(bestOdds.home); // Best home odds
- * console.log(bestOdds.away); // Best away odds
- * ```
+ * FIXED: Returns proper OddsEntry objects with both formats
  */
 export function useBestOdds(
   eventId: string | undefined,
-  marketType: MarketType
+  marketType: EventMarketType
 ) {
   const { event, loading, error } = useEventOdds(eventId);
-  const [bestOdds, setBestOdds] = useState<Record<string, number> | null>(null);
+  const [bestOdds, setBestOdds] = useState<Record<string, OddsEntry> | null>(
+    null
+  );
 
   useEffect(() => {
     if (!event || !event.markets) {
@@ -182,14 +162,20 @@ export function useBestOdds(
       return;
     }
 
+    console.log("[useBestOdds] Event markets:", event.markets);
+    console.log("[useBestOdds] Market type:", marketType);
+
     const marketOdds = event.markets[marketType];
     if (!marketOdds || Object.keys(marketOdds).length === 0) {
+      console.log("[useBestOdds] No market odds found for", marketType);
       setBestOdds(null);
       return;
     }
 
+    console.log("[useBestOdds] Market odds:", marketOdds);
+
     // Calculate best odds for each outcome
-    const best: Record<string, number> = {};
+    const best: Record<string, { value: number; entry: OddsEntry }> = {};
 
     Object.values(marketOdds).forEach((bookOdds) => {
       const odds = bookOdds.odds;
@@ -197,19 +183,75 @@ export function useBestOdds(
       Object.entries(odds).forEach(([outcome, entry]) => {
         if (!entry) return;
 
-        // Get the price (prefer decimal, fallback to american)
-        const price = entry.priceDecimal || entry.priceAmerican;
-        if (price === undefined) return;
+        // Determine which format we have in Firebase
+        const hasDecimal = entry.priceDecimal !== undefined;
+        const hasAmerican = entry.priceAmerican !== undefined;
 
-        // For decimal odds, higher is better
-        // For american odds, more positive is better for plus odds, less negative is better for minus odds
-        if (!best[outcome] || price > best[outcome]) {
-          best[outcome] = price;
+        let priceDecimal: number | undefined;
+        let priceAmerican: number | undefined;
+
+        if (hasDecimal) {
+          priceDecimal = entry.priceDecimal;
+          priceAmerican = decimalToAmerican(priceDecimal);
+        } else if (hasAmerican) {
+          priceAmerican = entry.priceAmerican;
+          priceDecimal = americanToDecimal(priceAmerican);
+        } else {
+          return; // No valid price
+        }
+
+        // For comparison, always use decimal (higher is better)
+        const compareValue = priceDecimal!;
+
+        // Create full OddsEntry with both formats
+        const oddsEntry: OddsEntry = {
+          priceDecimal,
+          priceAmerican,
+          ...(entry.point !== undefined && { point: entry.point }),
+        };
+
+        // Store outcome-specific point (for spreads)
+        const outcomeLower = outcome.toLowerCase();
+        if (marketType === "spreads" && entry.point !== undefined) {
+          // Store points separately for home/away
+          if (outcomeLower === "home") {
+            if (
+              !best.homePoint ||
+              Math.abs(entry.point) < Math.abs(best.homePoint.value)
+            ) {
+              best.homePoint = {
+                value: entry.point,
+                entry: { priceDecimal, priceAmerican, point: entry.point },
+              };
+            }
+          } else if (outcomeLower === "away") {
+            if (
+              !best.awayPoint ||
+              Math.abs(entry.point) < Math.abs(best.awayPoint.value)
+            ) {
+              best.awayPoint = {
+                value: entry.point,
+                entry: { priceDecimal, priceAmerican, point: entry.point },
+              };
+            }
+          }
+        }
+
+        // Keep best odds (highest value for decimal)
+        if (!best[outcome] || compareValue > best[outcome].value) {
+          best[outcome] = { value: compareValue, entry: oddsEntry };
         }
       });
     });
 
-    setBestOdds(best);
+    // Convert to final format
+    const finalOdds: Record<string, OddsEntry> = {};
+    Object.entries(best).forEach(([key, data]) => {
+      finalOdds[key] = data.entry;
+    });
+
+    console.log("[useBestOdds] Final best odds:", finalOdds);
+    setBestOdds(finalOdds);
   }, [event, marketType]);
 
   return { bestOdds, loading, error };
@@ -217,34 +259,18 @@ export function useBestOdds(
 
 /**
  * Hook to compare odds from a specific book vs best available
- *
- * @param eventId - The event ID
- * @param marketType - The market type
- * @param bookId - The sportsbook to compare
- * @returns Comparison data showing if this book has the best odds
- *
- * @example
- * ```tsx
- * const { comparison } = useOddsComparison('event-id', 'h2h', 'fanduel');
- * if (comparison.home.isBest) {
- *   console.log('FanDuel has the best home odds!');
- * }
- * ```
  */
 export function useOddsComparison(
   eventId: string | undefined,
-  marketType: MarketType,
+  marketType: EventMarketType,
   bookId: string
 ) {
   const { event, loading, error } = useEventOdds(eventId);
   const { bestOdds } = useBestOdds(eventId, marketType);
-  const [comparison, setComparison] = useState<Record<
-    string,
-    { value: number; best: number; isBest: boolean; difference: number }
-  > | null>(null);
+  const [comparison, setComparison] = useState<any>(null);
 
   useEffect(() => {
-    if (!event || !bestOdds || !event.markets) {
+    if (!event || !event.markets || !bestOdds) {
       setComparison(null);
       return;
     }
@@ -256,30 +282,28 @@ export function useOddsComparison(
     }
 
     const bookOdds = marketOdds[bookId].odds;
-    const comp: Record<
-      string,
-      { value: number; best: number; isBest: boolean; difference: number }
-    > = {};
+    const comp: any = {};
 
     Object.entries(bookOdds).forEach(([outcome, entry]) => {
-      if (!entry) return;
+      const normalized = normalizeOutcomeOdds(entry as OutcomeOdds);
+      if (!normalized) return;
 
-      const value = entry.priceDecimal || entry.priceAmerican;
-      if (value === undefined) return;
+      const bestEntry = bestOdds[outcome];
+      if (!bestEntry) return;
 
-      const best = bestOdds[outcome];
-      if (best === undefined) return;
+      const bookValue = entry.priceDecimal || entry.priceAmerican;
+      const bestValue = bestEntry.priceDecimal || bestEntry.priceAmerican;
 
       comp[outcome] = {
-        value,
-        best,
-        isBest: value === best,
-        difference: value - best,
+        bookOdds: entry,
+        bestOdds: bestEntry,
+        isBest: bookValue === bestValue,
+        difference: bestValue - bookValue,
       };
     });
 
     setComparison(comp);
-  }, [event, bestOdds, marketType, bookId]);
+  }, [event, marketType, bookId, bestOdds]);
 
   return { comparison, loading, error };
 }

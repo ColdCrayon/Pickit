@@ -1,0 +1,413 @@
+# Implementation Status
+
+**Project:** PickIt! - Premium Sports Betting Platform  
+**Last Updated:** November 16, 2025
+
+---
+
+## [COMPLETED] Phase 0: Core Infrastructure
+
+### Firebase & Authentication
+
+- [x] Firebase project configuration
+- [x] Google OAuth authentication
+- [x] User role system (standard/premium/admin)
+- [x] Firestore security rules with role-based access
+- [x] TTL (Time-To-Live) for events and articles
+
+### Database Collections
+
+- [x] `users` - User profiles with role flags
+- [x] `events` - Sports events with subcollections
+  - [x] `events/{id}/markets/{marketId}` - Betting markets
+  - [x] `events/{id}/markets/{marketId}/books/{bookId}` - Sportsbook odds
+  - [x] Snapshots subcollection for line movement tracking
+- [x] `arbTickets` - Arbitrage opportunities
+- [x] `gameTickets` - Game picks and predictions
+- [x] `articles` - Sports news content
+- [x] `watchlists/{userId}` - User watchlist data
+- [x] `users/{uid}/savedTickets` - Saved tickets subcollection
+
+### Core Backend Services
+
+- [x] **odds-ingestor** - The Odds API integration
+  - Fetches odds from multiple sportsbooks
+  - Normalizes data to Firestore schema
+  - Supports both American & Decimal odds formats
+  - Embedded markets structure for performance
+- [x] **arbitrage-engine** - Arb detection service
+  - Scans events for arbitrage opportunities
+  - Moneyline, spread, and totals markets
+  - Cloud Tasks integration for async processing
+  - Configurable edge thresholds
+
+### Firebase Functions
+
+- [x] `watchlist-monitor` - Odds change detection & notifications
+- [x] FCM token management
+- [x] Notification rate limiting
+- [x] User document initialization
+
+---
+
+## [COMPLETED] Phase 1: Core User Features
+
+### Public Pages
+
+- [x] Landing page with feature showcase
+- [x] Sport-specific pages (NFL, NBA, MLB, NHL)
+- [x] News/articles page with dynamic routing
+- [x] About, Privacy, Terms of Service pages
+
+### Authentication & Account
+
+- [x] Sign in/sign up with Google OAuth
+- [x] Account page with user profile
+- [x] Subscription status display
+- [x] Premium feature badges
+
+### Free Picks System
+
+- [x] Free picks page with league filtering
+- [x] Pagination for picks
+- [x] Server-settled vs live picks logic
+- [x] Premium-gated advanced picks
+
+### Tickets & Browsing
+
+- [x] Arbitrage tickets display
+- [x] Game tickets display
+- [x] Ticket detail views
+- [x] Save/unsave tickets functionality
+- [x] My Tickets page with filtering
+
+---
+
+## [COMPLETED] Phase 2: Premium Features - Core
+
+### Watchlist System
+
+- [x] Add games to watchlist
+- [x] Add teams to watchlist (structure ready)
+- [x] Add specific markets to watchlist (structure ready)
+- [x] Real-time watchlist updates
+- [x] Remove watchlist items
+- [x] Watchlist settings (notification preferences)
+
+### Events Browse
+
+- [x] Browse upcoming events
+- [x] League filtering
+- [x] Date range filtering
+- [x] Event detail view with odds
+
+### Notifications (FCM)
+
+- [x] Push notification infrastructure
+- [x] FCM token storage and management
+- [x] Notification settings UI
+- [x] Enable/disable notifications toggle
+- [x] Service worker for background notifications
+
+### Pro Dashboard (MVP)
+
+- [x] Dashboard layout with sidebar
+- [x] Quick stats cards
+- [x] Watchlist preview (first game)
+- [x] Quick access links
+- [x] Pro route guards
+
+---
+
+## [IN PROGRESS] Phase 3: Premium Features - Enhanced
+
+### Dashboard Enhancements
+
+- [ ] **Odds Comparison Table**
+  - Side-by-side odds from multiple books
+  - Best odds highlighting
+  - Live updates
+- [ ] **Line Movement Charts**
+  - Sparkline graphs for 24h movement
+  - Historical odds data visualization
+  - Trend indicators
+- [ ] **Watchlist Expansion**
+  - Full watchlist page with all items
+  - Bulk actions (remove multiple)
+  - Advanced filtering
+  - Sort options
+
+### Alerts System
+
+- [ ] **Custom Alert Rules**
+  - Price threshold alerts
+  - Line movement alerts
+  - Arb opportunity alerts for watchlist items
+- [ ] **Alert Management UI**
+  - Create/edit/delete alert rules
+  - Alert history
+  - Snooze/mute options
+- [ ] **Enhanced Notifications**
+  - Game start reminders (1 hour before)
+  - Ticket result notifications
+  - Market suspension alerts
+
+### Billing & Subscriptions
+
+- [ ] **Stripe Integration**
+  - Payment method management
+  - Subscription creation/cancellation
+  - Billing portal
+- [ ] **Billing Page**
+  - Current plan details
+  - Payment history
+  - Invoice downloads
+  - Upgrade/downgrade flows
+
+---
+
+## [PLANNED] Phase 4: Advanced Analytics
+
+### Picks Performance Tracking
+
+- [ ] **User Pick History**
+  - Log user picks manually or via import
+  - Track win/loss record
+  - ROI calculations
+- [ ] **Performance Dashboard**
+  - Win rate by sport/league
+  - Profit/loss charts
+  - Streak tracking
+  - Comparative analytics
+
+### Value Indicators
+
+- [ ] **No-Vig / Fair Lines**
+  - Calculate true probability
+  - Highlight +EV bets
+  - Show market efficiency
+- [ ] **Consensus Lines**
+  - Aggregate odds across books
+  - Outlier detection
+  - Pinnacle comparison
+
+### Market Analysis
+
+- [ ] **Hold/Overround Display**
+  - Per-market vig calculation
+  - Best books by hold %
+  - Educational tooltips
+- [ ] **Sharp vs Public**
+  - Line movement direction
+  - Money flow indicators
+  - Steam moves detection
+
+---
+
+## [PLANNED] Phase 5: Mobile & UX Polish
+
+### Mobile Optimization
+
+- [ ] Responsive dashboard layouts
+- [ ] Touch-optimized interactions
+- [ ] Mobile navigation improvements
+- [ ] PWA enhancements
+
+### User Experience
+
+- [ ] Onboarding flow for new users
+- [ ] Interactive tutorials
+- [ ] Keyboard shortcuts
+- [ ] Dark mode refinements
+
+### Performance
+
+- [ ] Query optimization
+- [ ] Lazy loading
+- [ ] Image optimization
+- [ ] Bundle size reduction
+
+---
+
+## [FUTURE] Phase 6: Community & AI
+
+### Community Features
+
+- [ ] **Public Trends**
+  - % of users watching/picking teams
+  - Popular bets aggregation
+  - Anonymized insights
+- [ ] **User Notes**
+  - Private annotations on games
+  - Tag system
+  - Search notes
+
+### AI Insights
+
+- [ ] **Personalized Feed**
+  - AI-generated game previews
+  - Relevant news from articles collection
+  - Watchlist-based recommendations
+- [ ] **Advanced Models**
+  - ML-based pick suggestions
+  - Injury impact analysis
+  - Weather factor analysis
+
+### Social
+
+- [ ] Shareable picks/tickets
+- [ ] Leaderboards (optional)
+- [ ] Follow system
+
+---
+
+## Known Issues & Technical Debt
+
+### High Priority
+
+- [ ] Events fetching optimization (reduce read costs)
+- [ ] Odds staleness handling (expired events cleanup)
+- [ ] Error boundaries for better error handling
+- [ ] Retry logic for failed API calls
+
+### Medium Priority
+
+- [ ] TypeScript strict mode cleanup
+- [ ] Unused dependencies removal
+- [ ] Component prop validation
+- [ ] Accessibility improvements (ARIA labels, keyboard nav)
+
+### Low Priority
+
+- [ ] Code splitting optimization
+- [ ] Legacy converter cleanup
+- [ ] Consistent naming conventions
+- [ ] Documentation updates
+
+---
+
+## Metrics & Monitoring
+
+### Currently Tracked
+
+- [x] Odds API usage (requests remaining)
+- [x] Firebase function executions
+- [x] Firestore read/write counts
+
+### Needed
+
+- [ ] User engagement metrics
+- [ ] Conversion funnel tracking
+- [ ] Error rate monitoring
+- [ ] Performance metrics (Core Web Vitals)
+- [ ] Notification delivery rates
+- [ ] Arb detection success rate
+
+---
+
+## Environment Variables Required
+
+### Web App (.env)
+
+```
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_STORAGE_BUCKET=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_APP_ID=
+VITE_FIREBASE_MEASUREMENT_ID=
+VITE_FIREBASE_VAPID_KEY=
+```
+
+### Odds Ingestor
+
+```
+ODDS_API_KEY=
+ODDS_SPORTS=icehockey_nhl,americanfootball_nfl,basketball_nba,baseball_mlb
+ODDS_REGIONS=us
+ODDS_MARKETS=h2h,spreads,totals
+ODDS_FORMAT=american
+ARB_ENGINE_URL=
+```
+
+### Arbitrage Engine
+
+```
+PROJECT_ID=
+QUEUE_ID=arb-scan-queue
+QUEUE_LOCATION=us-central1
+SERVICE_URL=
+KICKER_SA_EMAIL=
+KICKER_BASE_URL=
+KICKER_PATH=/scan
+KICKER_AUDIENCE=
+ARB_MIN_EDGE=0.005
+ARB_BANK=100
+EVENT_LIMIT=150
+FUTURE_WINDOW_MS=172800000
+```
+
+### Firebase Functions
+
+```
+(Automatically inherits from Firebase project)
+```
+
+---
+
+## Timeline Estimates
+
+### Phase 3 (Enhanced Premium) - **4-6 weeks**
+
+- Week 1-2: Odds comparison table + line charts
+- Week 3-4: Alert system + notification enhancements
+- Week 5-6: Billing integration + polish
+
+### Phase 4 (Analytics) - **4-5 weeks**
+
+- Week 1-2: Pick tracking infrastructure
+- Week 3: Performance dashboard
+- Week 4-5: Value indicators + market analysis
+
+### Phase 5 (Mobile/UX) - **3-4 weeks**
+
+- Week 1-2: Mobile responsive improvements
+- Week 3: UX polish + onboarding
+- Week 4: Performance optimization
+
+### Phase 6 (Community/AI) - **6-8 weeks**
+
+- Week 1-3: Community features
+- Week 4-6: AI feed + insights
+- Week 7-8: Social features + testing
+
+---
+
+## Success Criteria
+
+### MVP (Phases 0-2)
+
+- [x] Users can sign up and subscribe
+- [x] Users can view free picks
+- [x] Premium users can access arb tickets
+- [x] Premium users can save tickets
+- [x] Premium users can create watchlists
+- [x] Basic notifications work
+
+### Full Product (Phases 3-4)
+
+- [ ] Premium users see live odds comparisons
+- [ ] Users receive timely alerts
+- [ ] Billing fully automated via Stripe
+- [ ] Users can track pick performance
+- [ ] Value betting tools available
+- [ ] 95%+ uptime
+
+### Mature Product (Phases 5-6)
+
+- [ ] Mobile experience on par with desktop
+- [ ] AI-powered personalization active
+- [ ] Community features driving engagement
+- [ ] <2s page load times
+- [ ] > 90% positive user feedback
