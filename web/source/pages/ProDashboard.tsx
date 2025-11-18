@@ -192,13 +192,33 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
                 />
                 <QuickLink
                   to="/watchlist"
-                  label="Watchlist"
-                  description="Manage tracked games"
+                  label="Full Watchlist"
+                  description="View all tracked games"
                 />
                 <QuickLink
-                  to="/Account"
-                  label="Settings"
-                  description="Configure notifications"
+                  to="/odds-comparison"
+                  label="Odds Comparison"
+                  description="Compare all sportsbooks"
+                />
+                <QuickLink
+                  to="/nfl"
+                  label="NFL Games"
+                  description="View current NFL odds"
+                />
+                <QuickLink
+                  to="/nba"
+                  label="NBA Games"
+                  description="View current NBA odds"
+                />
+                <QuickLink
+                  to="/mlb"
+                  label="MLB Games"
+                  description="View current MLB odds"
+                />
+                <QuickLink
+                  to="/nhl"
+                  label="NHL Games"
+                  description="View current NHL odds"
                 />
               </div>
             </div>
