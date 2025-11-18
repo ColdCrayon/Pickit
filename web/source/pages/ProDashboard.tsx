@@ -33,7 +33,9 @@ const StatCard: React.FC<{
 }> = ({ icon, label, value, subtext }) => (
   <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
     <div className="flex items-center gap-3 mb-3">
-      <div className="p-2 bg-yellow-500/20 rounded-lg">{icon}</div>
+      <div className="p-2 bg-yellow-500/20 rounded-lg text-yellow-400">
+        {icon}
+      </div>
       <div className="flex-1">
         <p className="text-sm text-gray-400">{label}</p>
         <p className="text-2xl font-bold text-white">{value}</p>
@@ -41,6 +43,23 @@ const StatCard: React.FC<{
     </div>
     <p className="text-xs text-gray-500">{subtext}</p>
   </div>
+);
+
+// Quick Access Link Component
+const QuickLink: React.FC<{
+  to: string;
+  label: string;
+  description: string;
+}> = ({ to, label, description }) => (
+  <Link
+    to={to}
+    className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 hover:border-yellow-500/30 transition group"
+  >
+    <h4 className="font-medium text-white mb-1 group-hover:text-yellow-400 transition">
+      {label}
+    </h4>
+    <p className="text-xs text-gray-400">{description}</p>
+  </Link>
 );
 
 const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
@@ -99,6 +118,65 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
               value="0"
               subtext="Configure alerts"
             />
+          </div>
+
+          {/* Quick Access - Full Width */}
+          <div className="mb-8">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-blue-500/20 rounded-lg">
+                  <Zap className="w-5 h-5 text-blue-400" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">Quick Access</h3>
+                  <p className="text-sm text-gray-400">
+                    Navigate to key features
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                <QuickLink
+                  to="/my-tickets"
+                  label="My Tickets"
+                  description="View your saved tickets"
+                />
+                <QuickLink
+                  to="/browse-events"
+                  label="Browse Events"
+                  description="Add games to watchlist"
+                />
+                <QuickLink
+                  to="/watchlist"
+                  label="Full Watchlist"
+                  description="View all tracked games"
+                />
+                <QuickLink
+                  to="/nfl"
+                  label="NFL Games"
+                  description="View current NFL odds"
+                />
+                <QuickLink
+                  to="/nba"
+                  label="NBA Games"
+                  description="View current NBA odds"
+                />
+                <QuickLink
+                  to="/mlb"
+                  label="MLB Games"
+                  description="View current MLB odds"
+                />
+                <QuickLink
+                  to="/nhl"
+                  label="NHL Games"
+                  description="View current NHL odds"
+                />
+                <QuickLink
+                  to="/Account"
+                  label="Account Settings"
+                  description="Manage your profile"
+                />
+              </div>
+            </div>
           </div>
 
           {/* Watchlist Preview - Full Width */}
