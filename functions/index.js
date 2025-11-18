@@ -24,6 +24,13 @@ const {
 // ✅ FIXED: Import the correct function name
 const { notifyWatchingUsers } = require('./lib/watchlist-monitor');
 
+const {
+  createCheckoutSession,
+  createPortalSession,
+  stripeWebhook,
+  cancelSubscription,
+} = require('./lib/stripe');
+
 setGlobalOptions({ maxInstances: 10 });
 
 if (!admin.apps.length) {
@@ -383,4 +390,13 @@ exports.disableNotifications = onCall({ cors: true }, async (request) => {
     logger.error(`Failed to disable notifications for ${userId}:`, error);
     throw new Error('Failed to disable notifications');
   }
+
+// ============================================================================
+// STRIPE FUNCTIONS
+// ============================================================================
+
+exports.createCheckoutSession = createCheckoutSession;
+exports.createPortalSession = createPortalSession;
+exports.stripeWebhook = stripeWebhook; // This is a webhook endpoint, not a function
+exports.cancelSubscription = cancelSubscription;
 });

@@ -22,10 +22,16 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['**/*.spec.*'],
-      env: {
-        mocha: true,
+      files: ['lib/stripe.js'],
+      rules: {
+        'valid-jsdoc': 'off', // don’t require full JSDoc in this file
+        'quotes': ['warn', 'single', { allowTemplateLiterals: true }],
+        'operator-linebreak': 'off', // allow ternary formatting as written
       },
+    },
+    {
+      files: ['**/*.spec.*'],
+      env: { mocha: true },
       rules: {},
     },
   ],
