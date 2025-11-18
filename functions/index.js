@@ -24,6 +24,13 @@ const {
 // ✅ FIXED: Import the correct function name
 const { notifyWatchingUsers } = require('./lib/watchlist-monitor');
 
+const {
+  createCheckoutSession,
+  createPortalSession,
+  stripeWebhook,
+  cancelSubscription,
+} = require('./lib/stripe');
+
 setGlobalOptions({ maxInstances: 10 });
 
 if (!admin.apps.length) {
