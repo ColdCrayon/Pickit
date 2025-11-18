@@ -390,6 +390,7 @@ exports.disableNotifications = onCall({ cors: true }, async (request) => {
     logger.error(`Failed to disable notifications for ${userId}:`, error);
     throw new Error('Failed to disable notifications');
   }
+});
 
 // ============================================================================
 // STRIPE FUNCTIONS
@@ -397,6 +398,5 @@ exports.disableNotifications = onCall({ cors: true }, async (request) => {
 
 exports.createCheckoutSession = createCheckoutSession;
 exports.createPortalSession = createPortalSession;
-exports.stripeWebhook = stripeWebhook; // This is a webhook endpoint, not a function
+exports.stripeWebhook = stripeWebhook;
 exports.cancelSubscription = cancelSubscription;
-});
