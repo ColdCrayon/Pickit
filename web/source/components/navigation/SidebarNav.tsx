@@ -1,17 +1,24 @@
+/**
+ * SidebarNav Component - UPDATED
+ *
+ * Added Odds Comparison link for pro users
+ */
+
 import React from "react";
 import { Link } from "react-router-dom";
 import {
   Home as HomeIcon,
-  LayoutDashboard,
   Info,
   TrendingUp,
   Book,
   Shield,
   FileText,
-  Ticket,
   Eye,
+  Ticket,
+  LayoutDashboard,
+  BarChart3, // NEW
 } from "lucide-react";
-import { useUserPlan } from "../../hooks/useUserPlan";
+import { useUserPlan } from "../../hooks";
 
 interface SidebarNavProps {
   isSidebarOpen: boolean;
@@ -57,13 +64,27 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
               <Ticket className="w-5 h-5" /> <span>My Tickets</span>
             </Link>
 
-            <Link
-              to="/watchlist"
-              className="flex items-center space-x-3 py-3 px-4 rounded-xl hover:bg-white/10 transition"
-              onClick={() => setIsSidebarOpen(false)}
-            >
-              <Eye className="w-5 h-5" /> <span>Watchlist</span>
-            </Link>
+            {/* Pro users only - Watchlist */}
+            {isPremium && (
+              <Link
+                to="/watchlist"
+                className="flex items-center space-x-3 py-3 px-4 rounded-xl hover:bg-white/10 transition"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <Eye className="w-5 h-5" /> <span>Watchlist</span>
+              </Link>
+            )}
+
+            {/* NEW: Pro users only - Odds Comparison */}
+            {isPremium && (
+              <Link
+                to="/odds-comparison"
+                className="flex items-center space-x-3 py-3 px-4 rounded-xl hover:bg-white/10 transition"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <BarChart3 className="w-5 h-5" /> <span>Odds Comparison</span>
+              </Link>
+            )}
 
             <Link
               to="/about"

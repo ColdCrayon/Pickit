@@ -21,6 +21,7 @@ import News from "./News";
 import AdminDashboard from "./AdminDashboard";
 import EventBrowser from "./EventBrowser";
 import Watchlist from "./Watchlist";
+import OddsComparison from "./OddsComparison"; // NEW
 
 // Styles
 import "../styles/admin.css";
@@ -101,12 +102,22 @@ function App() {
             }
           />
 
+          {/* NEW: Odds Comparison - Protected route */}
+          <Route
+            path="/odds-comparison"
+            element={
+              <ProGuard>
+                <OddsComparison />
+              </ProGuard>
+            }
+          />
+
           <Route path="/my-tickets" element={<MyTickets />} />
 
           {/* Public Pages */}
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/Account" element={<Account />} />
-          <Route path="/billing" element={<Billing />} /> 
+          <Route path="/billing" element={<Billing />} />
           <Route path="/termsofservice" element={<TermsOfService />} />
           <Route path="/support" element={<Support />} />
           <Route path="/about" element={<About />} />

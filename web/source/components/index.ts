@@ -39,3 +39,7 @@ export { default as UsersRoleTable } from "./admin/UsersRoleTable";
 
 // Guards
 export { ProGuard } from "./guards/ProGuard";
+
+// Odds - NEW
+export { OddsComparisonTable } from "./odds/OddsComparisonTable";
+export { OddsComparisonPreview } from "./odds/OddsComparisonPreview";

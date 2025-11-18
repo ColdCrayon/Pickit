@@ -8,11 +8,13 @@
 
 PickIt! is a premium sports betting intelligence platform that provides:
 
-- **Arbitrage Detection** across multiple sportsbooks
-- **AI-Powered Game Picks** with historical data analysis
-- **Real-Time Odds Tracking** with line movement visualization
-- **Personalized Watchlists** with custom alerts
-- **Premium Analytics** for data-driven betting decisions
+- **Arbitrage Detection** across multiple sportsbooks ✅
+- **AI-Powered Game Picks** with historical data analysis ✅
+- **Real-Time Odds Tracking** with multi-sportsbook comparison ✅
+- **Odds Comparison Table** with best odds highlighting ✅
+- **Personalized Watchlists** with custom alerts ✅
+- **Push Notifications** for odds changes and game updates ✅
+- **Premium Analytics** for data-driven betting decisions (In Progress)
 
 **Target Users:** Sports bettors seeking an edge through data and automation  
 **Business Model:** Freemium SaaS with premium subscription ($19.99/month)

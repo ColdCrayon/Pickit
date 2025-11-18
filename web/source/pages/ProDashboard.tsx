@@ -1,7 +1,7 @@
 /**
- * ProDashboard - UPDATED FOR ID-ONLY WATCHLIST
+ * ProDashboard - UPDATED with Odds Comparison Preview
  *
- * Updated to work with new watchlist storage that only keeps game IDs
+ * Added OddsComparisonPreview widget to dashboard
  */
 
 import React from "react";
@@ -20,6 +20,7 @@ import { Footer } from "../components";
 import { useAuth } from "../hooks/useAuth";
 import { useWatchlist } from "../hooks/useWatchlist";
 import { WatchlistGameItem } from "../components/watchlist/WatchlistGameItem";
+import { OddsComparisonPreview } from "../components/odds/OddsComparisonPreview"; // NEW
 
 interface ProDashboardProps {
   isSidebarOpen: boolean;
@@ -41,165 +42,151 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
     <div className="min-h-screen bg-gray-900 text-white">
       <main
         className={`relative z-10 transition-all duration-300 ${
-          isSidebarOpen ? "ml-64" : ""
-        }`}
+          isSidebarOpen ? "ml-64 lg:ml-64" : ""
+        } pt-16`}
       >
-        <div className="max-w-7xl mx-auto px-6 pt-24 pb-8">
-          {/* Header */}
+        <div className="max-w-7xl mx-auto px-6 py-8">
+          {/* Welcome Header */}
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-2">
               <LayoutDashboard className="w-8 h-8 text-yellow-400" />
-              <h1 className="text-4xl font-bold">Dashboard</h1>
+              <h1 className="text-3xl font-bold">Pro Dashboard</h1>
             </div>
             <p className="text-gray-400">
-              Your command center for smart betting decisions
+              Welcome back! Here's your personalized betting insights.
             </p>
           </div>
 
-          {/* Quick Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <StatCard
-              icon={<Star className="w-6 h-6" />}
-              label="Watchlist Items"
-              value={totalItems.toString()}
-              subtext={`${watchlist?.games.length || 0} games tracked`}
-            />
-            <StatCard
-              icon={<Zap className="w-6 h-6" />}
-              label="Active Arbs"
-              value="-"
-              subtext="Coming soon"
-            />
-            <StatCard
-              icon={<TrendingUp className="w-6 h-6" />}
-              label="Today's Picks"
-              value="-"
-              subtext="Coming soon"
-            />
-            <StatCard
-              icon={<Bell className="w-6 h-6" />}
-              label="Alerts Set"
-              value="0"
-              subtext="Configure alerts"
-            />
+          {/* Dashboard Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            {/* Quick Stats */}
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-blue-500/20 rounded-lg">
+                  <Zap className="w-5 h-5 text-blue-400" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">Quick Stats</h3>
+                  <p className="text-sm text-gray-400">Your betting overview</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-white/5 rounded-xl p-4">
+                  <p className="text-sm text-gray-400 mb-1">Watchlist Items</p>
+                  <p className="text-2xl font-bold text-yellow-400">
+                    {totalItems || 0}
+                  </p>
+                </div>
+                <div className="bg-white/5 rounded-xl p-4">
+                  <p className="text-sm text-gray-400 mb-1">Active Alerts</p>
+                  <p className="text-2xl font-bold text-green-400">0</p>
+                </div>
+              </div>
+
+              <Link
+                to="/watchlist"
+                className="block mt-4 w-full py-3 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400 font-medium rounded-xl text-center transition"
+              >
+                Manage Watchlist
+              </Link>
+            </div>
+
+            {/* NEW: Odds Comparison Preview */}
+            <OddsComparisonPreview />
           </div>
 
-          {/* Next Upcoming Game */}
-          <div className="mb-8">
-            <DashboardCard
-              title="Next Game"
-              icon={<Star className="w-5 h-5 text-yellow-400" />}
-              action={
-                <Link
-                  to="/browse-events"
-                  className="flex items-center gap-2 px-4 py-2 bg-yellow-500/20 text-yellow-400 rounded-xl hover:bg-yellow-500/30 transition text-sm"
-                >
-                  <Plus className="w-4 h-4" />
-                  Add Games
-                </Link>
-              }
-            >
-              {watchlistLoading ? (
-                <div className="flex items-center justify-center py-12">
-                  <div className="text-center">
-                    <div className="inline-block w-8 h-8 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mb-4"></div>
-                    <p className="text-gray-400">Loading watchlist...</p>
+          {/* Watchlist Preview */}
+          {watchlistLoading ? (
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+              <div className="animate-pulse space-y-4">
+                <div className="h-4 bg-white/10 rounded w-1/3"></div>
+                <div className="h-32 bg-white/10 rounded"></div>
+              </div>
+            </div>
+          ) : firstGameId ? (
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-yellow-500/20 rounded-lg">
+                    <Star className="w-5 h-5 text-yellow-400" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-lg">Your Watchlist</h3>
+                    <p className="text-sm text-gray-400">
+                      {totalItems} game{totalItems !== 1 ? "s" : ""} tracked
+                    </p>
                   </div>
                 </div>
-              ) : !watchlist?.games || watchlist.games.length === 0 ? (
-                <WatchlistEmptyState />
-              ) : (
-                <div className="space-y-4">
-                  <WatchlistGameItem
-                    key={firstGameId}
-                    gameId={firstGameId}
-                    onRemove={removeGame}
-                    showOdds={true}
-                  />
-
-                  {watchlist.games.length > 1 && (
-                    <Link
-                      to="/watchlist"
-                      className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 hover:border-yellow-400/50 transition group"
-                    >
-                      <span className="text-yellow-400 font-semibold group-hover:text-yellow-300 transition">
-                        View All {watchlist.games.length} Game
-                        {watchlist.games.length !== 1 ? "s" : ""}
-                      </span>
-                      <ArrowRight className="w-5 h-5 text-yellow-400 group-hover:text-yellow-300 group-hover:translate-x-1 transition-all" />
-                    </Link>
-                  )}
-                </div>
-              )}
-            </DashboardCard>
-          </div>
-
-          {/* Quick Access - Full Width Row */}
-          <div className="mb-8">
-            <DashboardCard
-              title="Quick Access"
-              icon={<Zap className="w-5 h-5 text-yellow-400" />}
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                <QuickLink
-                  to="/my-tickets"
-                  label="My Tickets"
-                  description="View your saved tickets"
-                />
-                <QuickLink
-                  to="/browse-events"
-                  label="Browse Events"
-                  description="Add games to watchlist"
-                />
-                <QuickLink
+                <Link
                   to="/watchlist"
-                  label="Full Watchlist"
-                  description="View all tracked games"
-                />
-                <QuickLink
-                  to="/nfl"
-                  label="NFL Games"
-                  description="View current NFL odds"
-                />
-                <QuickLink
-                  to="/nba"
-                  label="NBA Games"
-                  description="View current NBA odds"
-                />
-                <QuickLink
-                  to="/mlb"
-                  label="MLB Games"
-                  description="View current MLB odds"
-                />
-                <QuickLink
-                  to="/nhl"
-                  label="NHL Games"
-                  description="View current NHL odds"
-                />
-                <QuickLink
-                  to="/FreePicks"
-                  label="Free Picks"
-                  description="Daily predictions"
-                />
+                  className="flex items-center gap-1 text-sm text-yellow-400 hover:text-yellow-300 transition"
+                >
+                  View All
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
               </div>
-            </DashboardCard>
-          </div>
 
-          {/* Placeholder Sections */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <DashboardCard
-              title="Odds Comparison"
-              icon={<BarChart3 className="w-5 h-5 text-blue-400" />}
-            >
-              <OddsComparisonPlaceholder />
-            </DashboardCard>
+              <WatchlistGameItem
+                gameId={firstGameId}
+                onRemove={(id) => removeGame(id)}
+              />
+            </div>
+          ) : (
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+              <div className="text-center py-8">
+                <Star className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">
+                  No Games in Watchlist
+                </h3>
+                <p className="text-gray-400 mb-6">
+                  Start tracking games to get real-time odds updates and alerts
+                </p>
+                <Link
+                  to="/browse-events"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400 font-medium rounded-xl transition"
+                >
+                  <Plus className="w-5 h-5" />
+                  Browse Games
+                </Link>
+              </div>
+            </div>
+          )}
 
-            <DashboardCard
-              title="Line Movement"
-              icon={<TrendingUp className="w-5 h-5 text-green-400" />}
+          {/* Feature Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+            <Link
+              to="/browse-events"
+              className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/30 rounded-2xl p-6 hover:scale-105 transition-transform"
             >
-              <LineMovementPlaceholder />
-            </DashboardCard>
+              <TrendingUp className="w-8 h-8 text-blue-400 mb-3" />
+              <h3 className="font-semibold text-lg mb-2">Live Events</h3>
+              <p className="text-sm text-gray-400">
+                Browse and track upcoming games across all leagues
+              </p>
+            </Link>
+
+            <Link
+              to="/odds-comparison"
+              className="bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 border border-yellow-500/30 rounded-2xl p-6 hover:scale-105 transition-transform"
+            >
+              <BarChart3 className="w-8 h-8 text-yellow-400 mb-3" />
+              <h3 className="font-semibold text-lg mb-2">Odds Comparison</h3>
+              <p className="text-sm text-gray-400">
+                Compare odds across all major sportsbooks in real-time
+              </p>
+            </Link>
+
+            <Link
+              to="/Account"
+              className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-purple-500/30 rounded-2xl p-6 hover:scale-105 transition-transform"
+            >
+              <Bell className="w-8 h-8 text-purple-400 mb-3" />
+              <h3 className="font-semibold text-lg mb-2">Notifications</h3>
+              <p className="text-sm text-gray-400">
+                Set up alerts for odds changes and game updates
+              </p>
+            </Link>
           </div>
         </div>
       </main>
@@ -208,123 +195,5 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
     </div>
   );
 };
-
-// Stats Card Component
-interface StatCardProps {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  subtext: string;
-}
-
-const StatCard: React.FC<StatCardProps> = ({ icon, label, value, subtext }) => (
-  <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-    <div className="flex items-center gap-3 mb-3">
-      <div className="p-2 bg-yellow-400/20 rounded-lg text-yellow-400">
-        {icon}
-      </div>
-      <span className="text-sm text-gray-400">{label}</span>
-    </div>
-    <div className="text-3xl font-bold mb-1">{value}</div>
-    <p className="text-sm text-gray-500">{subtext}</p>
-  </div>
-);
-
-// Dashboard Card Component
-interface DashboardCardProps {
-  title: string;
-  icon: React.ReactNode;
-  action?: React.ReactNode;
-  children: React.ReactNode;
-}
-
-const DashboardCard: React.FC<DashboardCardProps> = ({
-  title,
-  icon,
-  action,
-  children,
-}) => (
-  <div className="bg-white/5 border border-white/10 rounded-2xl p-6 w-full">
-    <div className="flex items-center justify-between mb-6">
-      <div className="flex items-center gap-2">
-        {icon}
-        <h2 className="text-xl font-semibold">{title}</h2>
-      </div>
-      {action}
-    </div>
-    <div>{children}</div>
-  </div>
-);
-
-// Quick Link Component
-interface QuickLinkProps {
-  to: string;
-  label: string;
-  description: string;
-}
-
-const QuickLink: React.FC<QuickLinkProps> = ({ to, label, description }) => (
-  <Link
-    to={to}
-    className="block p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition group"
-  >
-    <div className="flex items-center justify-between">
-      <div>
-        <h3 className="font-semibold group-hover:text-yellow-400 transition">
-          {label}
-        </h3>
-        <p className="text-sm text-gray-400">{description}</p>
-      </div>
-      <TrendingUp className="w-5 h-5 text-gray-600 group-hover:text-yellow-400 transition" />
-    </div>
-  </Link>
-);
-
-// Watchlist Empty State
-const WatchlistEmptyState: React.FC = () => (
-  <div className="flex items-center justify-center text-center py-12">
-    <div>
-      <Star className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-      <h3 className="text-lg font-semibold mb-2">No items in watchlist</h3>
-      <p className="text-gray-400 mb-6">
-        Start tracking games to see live odds and get notifications
-      </p>
-      <Link
-        to="/browse-events"
-        className="inline-flex items-center gap-2 px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold rounded-lg transition"
-      >
-        <Plus className="w-5 h-5" />
-        Browse Events
-      </Link>
-    </div>
-  </div>
-);
-
-// Placeholder Components
-const OddsComparisonPlaceholder: React.FC = () => (
-  <div className="text-center py-8">
-    <BarChart3 className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-    <h3 className="font-semibold mb-2">Odds Comparison</h3>
-    <p className="text-gray-400 text-sm mb-4">
-      Compare odds across multiple sportsbooks side-by-side
-    </p>
-    <p className="text-xs text-gray-500">
-      <strong>Phase 2:</strong> Real-time odds from multiple books
-    </p>
-  </div>
-);
-
-const LineMovementPlaceholder: React.FC = () => (
-  <div className="text-center py-8">
-    <TrendingUp className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-    <h3 className="font-semibold mb-2">Line Movement Charts</h3>
-    <p className="text-gray-400 text-sm mb-4">
-      Track how betting lines move over time
-    </p>
-    <p className="text-xs text-gray-500">
-      <strong>Phase 2:</strong> Sparkline graphs showing 24h line movement
-    </p>
-  </div>
-);
 
 export default ProDashboard;
