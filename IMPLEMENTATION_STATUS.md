@@ -1,7 +1,7 @@
 # Implementation Status
 
 **Project:** PickIt! - Premium Sports Betting Platform  
-**Last Updated:** November 16, 2025
+**Last Updated:** November 17, 2025
 
 ---
 
@@ -93,6 +93,8 @@
 - [x] Real-time watchlist updates
 - [x] Remove watchlist items
 - [x] Watchlist settings (notification preferences)
+- [x] Dedicated watchlist page
+- [x] Display odds for watchlisted games
 
 ### Events Browse
 
@@ -100,6 +102,7 @@
 - [x] League filtering
 - [x] Date range filtering
 - [x] Event detail view with odds
+- [x] Event browser page with search
 
 ### Notifications (FCM)
 
@@ -108,14 +111,20 @@
 - [x] Notification settings UI
 - [x] Enable/disable notifications toggle
 - [x] Service worker for background notifications
+- [x] Watchlist odds change notifications
+- [x] Custom alert thresholds per user
+- [x] Rate limiting (1 per hour per event)
 
-### Pro Dashboard (MVP)
+### Pro Dashboard
 
 - [x] Dashboard layout with sidebar
 - [x] Quick stats cards
-- [x] Watchlist preview (first game)
-- [x] Quick access links
+- [x] Watchlist preview (first game with full odds)
+- [x] Odds comparison preview widget
+- [x] Quick access links to all features
 - [x] Pro route guards
+- [x] Feature cards with navigation
+- [x] Conditional rendering based on user role
 
 ---
 
@@ -123,19 +132,28 @@
 
 ### Dashboard Enhancements
 
-- [ ] **Odds Comparison Table**
-  - Side-by-side odds from multiple books
-  - Best odds highlighting
-  - Live updates
+- [x] **Odds Comparison Table**
+  - [x] Side-by-side odds from multiple books
+  - [x] Best odds highlighting in yellow
+  - [x] Live updates via Firebase
+  - [x] American/Decimal format toggle
+  - [x] Dashboard preview widget
+  - [x] Full dedicated page with filters
+  - [x] Sport and market type filtering
+  - [x] Value difference indicators
+  - [x] Pro user guard protection
 - [ ] **Line Movement Charts**
   - Sparkline graphs for 24h movement
   - Historical odds data visualization
   - Trend indicators
-- [ ] **Watchlist Expansion**
-  - Full watchlist page with all items
-  - Bulk actions (remove multiple)
-  - Advanced filtering
-  - Sort options
+- [x] **Watchlist Expansion**
+  - [x] Full watchlist page with all items
+  - [x] Add/remove games functionality
+  - [x] Real-time odds display per game
+  - [x] Settings for notifications
+  - [ ] Bulk actions (remove multiple)
+  - [ ] Advanced filtering
+  - [ ] Sort options
 
 ### Alerts System
 
@@ -358,11 +376,12 @@ FUTURE_WINDOW_MS=172800000
 
 ## Timeline Estimates
 
-### Phase 3 (Enhanced Premium) - **4-6 weeks**
+### Phase 3 (Enhanced Premium) - **2-4 weeks remaining**
 
-- Week 1-2: Odds comparison table + line charts
-- Week 3-4: Alert system + notification enhancements
-- Week 5-6: Billing integration + polish
+- ~~Week 1-2: Odds comparison table + dashboard integration~~ ✅ COMPLETED
+- Week 1-2: Line movement charts
+- Week 2-3: Alert system enhancements
+- Week 3-4: Billing integration + polish
 
 ### Phase 4 (Analytics) - **4-5 weeks**
 
@@ -397,8 +416,9 @@ FUTURE_WINDOW_MS=172800000
 
 ### Full Product (Phases 3-4)
 
-- [ ] Premium users see live odds comparisons
-- [ ] Users receive timely alerts
+- [x] Premium users see live odds comparisons
+- [x] Users receive timely watchlist alerts
+- [x] Custom alert thresholds per user
 - [ ] Billing fully automated via Stripe
 - [ ] Users can track pick performance
 - [ ] Value betting tools available
