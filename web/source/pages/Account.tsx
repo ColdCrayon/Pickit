@@ -33,11 +33,15 @@ import {
   X,
 } from "lucide-react";
 
+import AlertRuleManager from "../components/alerts/AlertRuleManager";
+import AlertHistoryList from "../components/alerts/AlertHistoryList";
+
 /**
  * Account Page Component
  * Handles authentication and displays account information for signed-in users
  */
 const Account: React.FC = () => {
+  const [alertTab, setAlertTab] = useState<'settings' | 'rules' | 'history'>('settings');
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [email, setEmail] = useState("");
@@ -185,10 +189,10 @@ const Account: React.FC = () => {
               {user
                 ? "Your Account"
                 : view === "signup"
-                ? "Create your account"
-                : view === "forgot"
-                ? "Reset your password"
-                : "Sign in to PickIt"}
+                  ? "Create your account"
+                  : view === "forgot"
+                    ? "Reset your password"
+                    : "Sign in to PickIt"}
             </h1>
             <p className="text-gray-400 mt-2">
               {user
@@ -269,7 +273,7 @@ const Account: React.FC = () => {
                       icon={<BarChart3 className="w-6 h-6" />}
                       title="Pro Dashboard"
                       description="Upgrade to unlock"
-                      onUpgradeClick={() => {}}
+                      onUpgradeClick={() => { }}
                     />
                   )}
                   <QuickAccessCard
@@ -287,19 +291,46 @@ const Account: React.FC = () => {
                 </div>
               </div>
 
-              {/* NOTIFICATION SETTINGS - REPLACE EXISTING CARD */}
-              <div className="mt-10">
-                <div className="mb-6">
-                  <h2 className="text-2xl font-bold mb-2">
-                    Notification Settings
-                  </h2>
-                  <p className="text-gray-400">
-                    Manage your push notification preferences for odds changes,
-                    saved tickets, and game alerts
-                  </p>
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold">Alerts & Notifications</h2>
+
+                {/* Tab Navigation */}
+                <div className="flex gap-4 border-b border-white/10">
+                  <button
+                    onClick={() => setAlertTab('settings')}
+                    className={`px-4 py-2 font-medium transition ${alertTab === 'settings'
+                      ? 'text-blue-400 border-b-2 border-blue-400'
+                      : 'text-gray-400 hover:text-white'
+                      }`}
+                  >
+                    Settings
+                  </button>
+                  <button
+                    onClick={() => setAlertTab('rules')}
+                    className={`px-4 py-2 font-medium transition ${alertTab === 'rules'
+                      ? 'text-blue-400 border-b-2 border-blue-400'
+                      : 'text-gray-400 hover:text-white'
+                      }`}
+                  >
+                    Custom Rules
+                  </button>
+                  <button
+                    onClick={() => setAlertTab('history')}
+                    className={`px-4 py-2 font-medium transition ${alertTab === 'history'
+                      ? 'text-blue-400 border-b-2 border-blue-400'
+                      : 'text-gray-400 hover:text-white'
+                      }`}
+                  >
+                    History
+                  </button>
                 </div>
 
-                <NotificationSettings />
+                {/* Tab Content */}
+                <div className="mt-6">
+                  {alertTab === 'settings' && <NotificationSettings />}
+                  {alertTab === 'rules' && <AlertRuleManager />}
+                  {alertTab === 'history' && <AlertHistoryList />}
+                </div>
               </div>
 
               {/* Subscription Info Card (for Premium users) */}
@@ -770,11 +801,10 @@ const Tabs: React.FC<{
         setMessage(null);
         setError(null);
       }}
-      className={`flex-1 px-6 py-3 rounded-xl font-semibold transition ${
-        view === "signin"
-          ? "bg-white text-gray-900"
-          : "bg-transparent text-gray-400 hover:text-white"
-      }`}
+      className={`flex-1 px-6 py-3 rounded-xl font-semibold transition ${view === "signin"
+        ? "bg-white text-gray-900"
+        : "bg-transparent text-gray-400 hover:text-white"
+        }`}
     >
       Sign In
     </button>
@@ -784,11 +814,10 @@ const Tabs: React.FC<{
         setMessage(null);
         setError(null);
       }}
-      className={`flex-1 px-6 py-3 rounded-xl font-semibold transition ${
-        view === "signup"
-          ? "bg-white text-gray-900"
-          : "bg-transparent text-gray-400 hover:text-white"
-      }`}
+      className={`flex-1 px-6 py-3 rounded-xl font-semibold transition ${view === "signup"
+        ? "bg-white text-gray-900"
+        : "bg-transparent text-gray-400 hover:text-white"
+        }`}
     >
       Sign Up
     </button>
