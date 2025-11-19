@@ -4,8 +4,8 @@
  * FIXED VERSION - Handles both priceAmerican and priceDecimal
  */
 
-const admin = require("firebase-admin");
-const logger = require("firebase-functions/logger");
+const admin = require('firebase-admin');
+const logger = require('firebase-functions/logger');
 
 /**
  * Extract odds value from market data
@@ -17,7 +17,7 @@ function extractOddsValue(marketData) {
   if (!marketData) return null;
 
   // Handle object format: { priceAmerican: -110 } or { priceDecimal: 1.91 }
-  if (typeof marketData === "object") {
+  if (typeof marketData === 'object') {
     if (marketData.priceAmerican != null) {
       return marketData.priceAmerican;
     }
@@ -29,7 +29,7 @@ function extractOddsValue(marketData) {
   }
 
   // Handle direct number format: -110
-  if (typeof marketData === "number") {
+  if (typeof marketData === 'number') {
     return marketData;
   }
 
@@ -82,7 +82,7 @@ function hasSignificantOddsChange(oldOdds, newOdds, thresholdPercent = 10) {
 function formatOddsChange(oldOdds, newOdds) {
   const oldStr = oldOdds > 0 ? `+${oldOdds}` : `${oldOdds}`;
   const newStr = newOdds > 0 ? `+${newOdds}` : `${newOdds}`;
-  const direction = newOdds > oldOdds ? "↑" : "↓";
+  const direction = newOdds > oldOdds ? '↑' : '↓';
 
   return `${oldStr} ${direction} ${newStr}`;
 }
@@ -123,8 +123,8 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
       afterSpreadHome
     ) {
       changes.push({
-        market: "spread",
-        side: "home",
+        market: 'spread',
+        side: 'home',
         before: beforeSpreadHome,
         after: afterSpreadHome,
         sportsbook,
@@ -136,8 +136,8 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
       afterSpreadAway
     ) {
       changes.push({
-        market: "spread",
-        side: "away",
+        market: 'spread',
+        side: 'away',
         before: beforeSpreadAway,
         after: afterSpreadAway,
         sportsbook,
@@ -155,8 +155,8 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
 
     if (beforeMLHome !== afterMLHome && beforeMLHome && afterMLHome) {
       changes.push({
-        market: "moneyline",
-        side: "home",
+        market: 'moneyline',
+        side: 'home',
         before: beforeMLHome,
         after: afterMLHome,
         sportsbook,
@@ -164,8 +164,8 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
     }
     if (beforeMLAway !== afterMLAway && beforeMLAway && afterMLAway) {
       changes.push({
-        market: "moneyline",
-        side: "away",
+        market: 'moneyline',
+        side: 'away',
         before: beforeMLAway,
         after: afterMLAway,
         sportsbook,
@@ -183,8 +183,8 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
 
     if (beforeOver !== afterOver && beforeOver && afterOver) {
       changes.push({
-        market: "totals",
-        side: "over",
+        market: 'totals',
+        side: 'over',
         before: beforeOver,
         after: afterOver,
         sportsbook,
@@ -192,8 +192,8 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
     }
     if (beforeUnder !== afterUnder && beforeUnder && afterUnder) {
       changes.push({
-        market: "totals",
-        side: "under",
+        market: 'totals',
+        side: 'under',
         before: beforeUnder,
         after: afterUnder,
         sportsbook,
@@ -211,7 +211,7 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
   );
 
   // Find users watching this event
-  const usersSnapshot = await db.collection("users").get();
+  const usersSnapshot = await db.collection('users').get();
   const watchingUsers = [];
 
   for (const userDoc of usersSnapshot.docs) {
@@ -256,7 +256,8 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
         });
 
         logger.info(
-          `User ${userDoc.id} has ${significantChanges.length} changes above ${userThreshold}% threshold`
+          `User ${userDoc.id} has ${significantChanges.length} changes ` +
+          `above ${userThreshold}% threshold`
         );
       } else {
         logger.info(
@@ -281,7 +282,7 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
   for (const user of watchingUsers) {
     try {
       // Check rate limit (1 notification per hour per event)
-      const userDoc = await db.collection("users").doc(user.userId).get();
+      const userDoc = await db.collection('users').doc(user.userId).get();
       const userData = userDoc.data();
       const lastNotified = userData.lastNotifications?.[eventId];
 
@@ -304,10 +305,10 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
         .map(
           (c) => `${c.market} ${c.side}: ${formatOddsChange(c.before, c.after)}`
         )
-        .join(", ");
+        .join(', ');
 
       const moreChanges =
-        user.changes.length > 2 ? ` +${user.changes.length - 2} more` : "";
+        user.changes.length > 2 ? ` +${user.changes.length - 2} more` : '';
 
       // Send FCM notification
       await admin.messaging().send({
@@ -318,14 +319,14 @@ async function notifyWatchingUsers(eventId, beforeData, afterData) {
         },
         data: {
           eventId,
-          type: "odds_change",
+          type: 'odds_change',
           changesCount: user.changes.length.toString(),
         },
       });
 
       // Update last notification time
       await db
-        .collection("users")
+        .collection('users')
         .doc(user.userId)
         .update({
           [`lastNotifications.${eventId}`]: admin.firestore.Timestamp.now(),
