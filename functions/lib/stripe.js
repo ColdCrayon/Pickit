@@ -206,7 +206,7 @@ exports.createCheckoutSession = onCall(
     const priceId = STRIPE_PREMIUM_PRICE_ID.value();
 
     if (!priceId) {
-      throw new HttpsError('failed-precondition', 'Stripe price ID not configured. Set the STRIPE_PREMIUM_PRICE_ID parameter.');
+      throw new HttpsError('failed-precondition', 'Stripe price ID not configured.');
     }
 
     try {

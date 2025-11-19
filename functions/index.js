@@ -21,7 +21,7 @@ const {
   getUsersWithSavedTicket,
 } = require('./lib/notifications');
 
-// ✅ FIXED: Import the correct function name
+// FIXED: Import the correct function name
 const { notifyWatchingUsers } = require('./lib/watchlist-monitor');
 
 // Import Stripe functions
@@ -31,6 +31,9 @@ const {
   stripeWebhook,
   cancelSubscription,
 } = require('./lib/stripe');
+
+const { evaluateAlertRules } = require('./lib/alert-rules');
+const { sendGameStartReminders } = require('./lib/game-reminders');
 
 setGlobalOptions({ maxInstances: 10 });
 
@@ -274,8 +277,10 @@ exports.onEventUpdate = onDocumentUpdated(
     logger.info(`Event updated: ${eventId}`);
 
     try {
-      // ✅ FIXED: Correctly call notifyWatchingUsers
+      // FIXED: Correctly call notifyWatchingUsers
       await notifyWatchingUsers(eventId, beforeData, afterData);
+      // NEW: Custom alert rules evaluation
+      await evaluateAlertRules(eventId, beforeData, afterData);
       return null;
     } catch (error) {
       logger.error(`Error monitoring event ${eventId}:`, error);
@@ -392,6 +397,122 @@ exports.disableNotifications = onCall({ cors: true }, async (request) => {
     throw new Error('Failed to disable notifications');
   }
 });
+
+// ============================================================================
+// ALERT SYSTEM SCHEDULERS
+// ============================================================================
+
+/**
+ * Scheduled function: Send game start reminders
+ * Runs every 15 minutes to check for games starting in 45-60 minutes
+ */
+exports.gameStartReminders = onSchedule(
+  { schedule: 'every 15 minutes', timeZone: 'America/Chicago' },
+  async () => {
+    logger.info('Running game start reminders scheduler');
+    await sendGameStartReminders();
+    return null;
+  }
+);
+
+// ============================================================================
+// ALERT SYSTEM TRIGGERS
+// ============================================================================
+
+/**
+ * Triggered when an event document is updated
+ * Evaluates custom alert rules against the changes
+ */
+exports.onEventUpdate = onDocumentUpdated(
+  { document: 'events/{eventId}' },
+  async (event) => {
+    const eventId = event.params.eventId;
+    const beforeData = event.data.before.data();
+    const afterData = event.data.after.data();
+
+    logger.info(`Event updated: ${eventId}, evaluating alert rules`);
+
+    try {
+      await evaluateAlertRules(eventId, beforeData, afterData);
+      return null;
+    } catch (error) {
+      logger.error(`Error evaluating alert rules for event ${eventId}:`, error);
+      return null;
+    }
+  }
+);
+
+/**
+ * OPTIONAL: Triggered when an arbitrage ticket is created
+ * Can trigger arb opportunity alerts for custom rules
+ */
+exports.onArbTicketCreateAlerts = onDocumentCreated(
+  { document: 'arbTickets/{ticketId}' },
+  async (event) => {
+    const ticketId = event.params.ticketId;
+    const ticketData = event.data.data();
+    const db = getFirestore();
+
+    logger.info(`New arb ticket created: ${ticketId}, checking custom alerts`);
+
+    try {
+      // Find users with arb_opportunity alert rules
+      const rulesSnapshot = await db.collectionGroup('alertRules')
+        .where('condition', '==', 'arb_opportunity')
+        .where('enabled', '==', true)
+        .where('muted', '==', false)
+        .get();
+
+      for (const ruleDoc of rulesSnapshot.docs) {
+        const rule = ruleDoc.data();
+        const userId = ruleDoc.ref.parent.parent.id;
+        const minMargin = rule.arbMinMargin || 5;
+        const arbMargin = (ticketData.margin || 0) * 100;
+
+        // Check if arb meets user's threshold
+        if (arbMargin >= minMargin) {
+          // Send notification
+          const userDoc = await db.collection('users').doc(userId).get();
+          const userData = userDoc.data();
+
+          if (userData?.fcmToken && userData?.notificationsEnabled) {
+            await admin.messaging().send({
+              token: userData.fcmToken,
+              notification: {
+                title: `High Value Arbitrage! 💰`,
+                body: `${arbMargin.toFixed(2)}% arbitrage opportunity found`,
+              },
+              data: {
+                type: 'custom_alert_arb',
+                ruleId: rule.id || '',
+                ticketId,
+              },
+            });
+
+            // Log to alert history
+            const { createHistoryEntry } = require('./lib/alert-history');
+            await createHistoryEntry(
+              userId,
+              rule.id,
+              rule.name,
+              'arb_opportunity',
+              {
+                eventId: ticketData.eventId,
+                message: `${arbMargin.toFixed(2)}% arbitrage opportunity`,
+                arbMargin,
+              }
+            );
+          }
+        }
+      }
+
+      return null;
+    } catch (error) {
+      logger.error(`Error checking arb alerts for ticket ${ticketId}:`, error);
+      return null;
+    }
+  }
+);
 
 // ============================================================================
 // STRIPE FUNCTIONS
