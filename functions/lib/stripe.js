@@ -3,11 +3,10 @@
  * CORS FIXED - Allows localhost for development
  */
 
-const { onCall, onRequest } = require('firebase-functions/v2/https');
+const { onCall, onRequest, HttpsError } = require('firebase-functions/v2/https');
 const { defineSecret, defineString } = require('firebase-functions/params');
 const admin = require('firebase-admin');
 const { getFirestore, FieldValue, Timestamp } = require('firebase-admin/firestore');
-const cors = require('cors');
 
 if (!admin.apps.length) {
   admin.initializeApp();
@@ -20,21 +19,15 @@ const STRIPE_PREMIUM_PRICE_ID = defineString('STRIPE_PREMIUM_PRICE_ID');
 // CORS Configuration
 // -------------------------
 
-// Configure CORS to allow both production and development origins
 // eslint-disable-next-line no-unused-vars
-const corsHandler = cors({
-  origin: [
-    'https://pickit-b12e5.web.app',
-    'https://pickit-b12e5.firebaseapp.com',
-    'http://localhost:5173',
-    'http://localhost:5174',
-    'http://localhost:3000',
-    'http://127.0.0.1:5173',
-  ],
-  credentials: true,
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-});
+const allowedOrigins = [
+  'https://pickit-b12e5.web.app',
+  'https://pickit-b12e5.firebaseapp.com',
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:3000',
+  'http://127.0.0.1:5173',
+];
 
 // -------------------------
 // Stripe Setup
@@ -203,14 +196,17 @@ exports.createCheckoutSession = onCall(
     const user = request.auth;
 
     if (!user) {
-      throw new Error('UNAUTHENTICATED: User must be logged in to create checkout session');
+      throw new HttpsError(
+        'unauthenticated',
+        'User must be logged in to create checkout session'
+      );
     }
 
     const { email, displayName, returnUrl } = request.data || {};
     const priceId = STRIPE_PREMIUM_PRICE_ID.value();
 
     if (!priceId) {
-      throw new Error('Stripe price ID not configured. Set the STRIPE_PREMIUM_PRICE_ID parameter.');
+      throw new HttpsError('failed-precondition', 'Stripe price ID not configured. Set the STRIPE_PREMIUM_PRICE_ID parameter.');
     }
 
     try {
@@ -247,7 +243,7 @@ exports.createCheckoutSession = onCall(
       };
     } catch (error) {
       console.error('Error creating checkout session:', error);
-      throw new Error(`Failed to create checkout session: ${error.message}`);
+      throw new HttpsError('internal', `Failed to create checkout session: ${error.message}`);
     }
   }
 );
