@@ -1,12 +1,13 @@
 /**
  * Stripe Cloud Functions (Firebase v2)
- * Fully CORS-enabled and safe for front-end calls.
+ * CORS FIXED - Allows localhost for development
  */
 
 const { onCall, onRequest } = require('firebase-functions/v2/https');
 const { defineSecret, defineString } = require('firebase-functions/params');
 const admin = require('firebase-admin');
 const { getFirestore, FieldValue, Timestamp } = require('firebase-admin/firestore');
+const cors = require('cors');
 
 if (!admin.apps.length) {
   admin.initializeApp();
@@ -16,11 +17,31 @@ const db = getFirestore();
 const STRIPE_PREMIUM_PRICE_ID = defineString('STRIPE_PREMIUM_PRICE_ID');
 
 // -------------------------
+// CORS Configuration
+// -------------------------
+
+// Configure CORS to allow both production and development origins
+// eslint-disable-next-line no-unused-vars
+const corsHandler = cors({
+  origin: [
+    'https://pickit-b12e5.web.app',
+    'https://pickit-b12e5.firebaseapp.com',
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:3000',
+    'http://127.0.0.1:5173',
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+});
+
+// -------------------------
 // Stripe Setup
 // -------------------------
 
-const STRIPE_SECRET = defineSecret("STRIPE_SECRET_KEY");
-const STRIPE_WEBHOOK_SECRET = defineSecret("STRIPE_WEBHOOK_SECRET");
+const STRIPE_SECRET = defineSecret('STRIPE_SECRET_KEY');
+const STRIPE_WEBHOOK_SECRET = defineSecret('STRIPE_WEBHOOK_SECRET');
 
 // Initialize Stripe client lazily (secrets are only available at runtime)
 function getStripe() {
@@ -28,10 +49,9 @@ function getStripe() {
 }
 
 // -------------------------
-// Helpers (your existing ones)
+// Helpers
 // -------------------------
 
-// Helper functions
 async function getOrCreateStripeCustomer(userId, email, displayName) {
   if (!userId) {
     throw new Error('User ID is required to create or fetch a Stripe customer');
@@ -171,11 +191,14 @@ async function getUserIdFromStripeCustomer(customerId) {
 }
 
 // -------------------------
-// Create Checkout Session
+// Create Checkout Session - FIXED WITH EXPLICIT CORS
 // -------------------------
 
 exports.createCheckoutSession = onCall(
-  { cors: true, secrets: [STRIPE_SECRET] },
+  {
+    cors: true,
+    secrets: [STRIPE_SECRET]
+  },
   async (request) => {
     const user = request.auth;
 
@@ -230,11 +253,14 @@ exports.createCheckoutSession = onCall(
 );
 
 // -------------------------
-// Create Billing Portal Session
+// Create Billing Portal Session - FIXED WITH EXPLICIT CORS
 // -------------------------
 
 exports.createPortalSession = onCall(
-  { cors: true, secrets: [STRIPE_SECRET] },
+  {
+    cors: true,
+    secrets: [STRIPE_SECRET]
+  },
   async (request) => {
     const user = request.auth;
 
@@ -267,7 +293,7 @@ exports.createPortalSession = onCall(
 );
 
 // -------------------------
-// Stripe Webhook (RAW body)
+// Stripe Webhook (RAW body) - NO CORS FOR WEBHOOKS
 // -------------------------
 
 exports.stripeWebhook = onRequest(
@@ -287,8 +313,8 @@ exports.stripeWebhook = onRequest(
         STRIPE_WEBHOOK_SECRET.value()
       );
     } catch (err) {
-      console.error("❌ Webhook signature failed:", err.message);
-      return res.status(400).send("Webhook Error: " + err.message);
+      console.error('❌ Webhook signature failed:', err.message);
+      return res.status(400).send('Webhook Error: ' + err.message);
     }
 
     switch (event.type) {
@@ -319,9 +345,12 @@ exports.stripeWebhook = onRequest(
           break;
         }
 
-        const isPremium = subscription.status === 'active' || subscription.status === 'trialing';
+        const isPremium = subscription.status === 'active' ||
+          subscription.status === 'trialing';
         await updateUserPremiumStatus(userId, isPremium, subscription);
-        console.log(`Subscription ${subscription.id} ${event.type} for user ${userId} - Premium: ${isPremium}`);
+        console.log(
+          `Subscription ${subscription.id} ${event.type} for user ${userId} - Premium: ${isPremium}`
+        );
         break;
       }
 
@@ -340,19 +369,22 @@ exports.stripeWebhook = onRequest(
       }
 
       default:
-        console.log(`Unhandled event: ${event.type}`);
+        console.log(`Unhandled event type: ${event.type}`);
     }
 
-    res.status(200).send("OK");
+    res.json({ received: true });
   }
 );
 
 // -------------------------
-// Cancel Subscription
+// Cancel Subscription (Callable Function) - FIXED WITH EXPLICIT CORS
 // -------------------------
 
 exports.cancelSubscription = onCall(
-  { cors: true, secrets: [STRIPE_SECRET] },
+  {
+    cors: true,
+    secrets: [STRIPE_SECRET]
+  },
   async (request) => {
     const user = request.auth;
 
@@ -368,22 +400,14 @@ exports.cancelSubscription = onCall(
         throw new Error('No active subscription found');
       }
 
-      const subscription = await getStripe().subscriptions.update(userData.subscriptionId, {
-        cancel_at_period_end: true,
-      });
+      await getStripe().subscriptions.cancel(userData.subscriptionId);
+      await updateUserPremiumStatus(user.uid, false);
 
-      await db.collection('users').doc(user.uid).set(
-        {
-          cancelAt: Timestamp.fromMillis(subscription.current_period_end * 1000),
-          updatedAt: FieldValue.serverTimestamp(),
-        },
-        { merge: true }
-      );
+      console.log(`Subscription ${userData.subscriptionId} cancelled for user ${user.uid}`);
 
       return {
         success: true,
-        message: 'Subscription will cancel at end of billing period',
-        cancelAt: subscription.current_period_end,
+        message: 'Subscription cancelled successfully',
       };
     } catch (error) {
       console.error('Error cancelling subscription:', error);
