@@ -35,7 +35,7 @@ const StatCard: React.FC<{
 }> = ({ icon, label, value, subtext }) => (
   <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-6 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] hover:bg-white/10 transition-all duration-300 group">
     <div className="flex items-center gap-3 mb-3">
-      <div className="p-2 bg-white/5 rounded-xl text-yellow-400 border border-white/10 group-hover:border-yellow-500/30 group-hover:shadow-[0_0_15px_rgba(234,179,8,0.2)] transition-all">
+      <div className="p-2 bg-white/5 rounded-xl text-blue-400 border border-white/10 group-hover:border-blue-500/30 group-hover:shadow-[0_0_15px_rgba(59,130,246,0.2)] transition-all">
         {icon}
       </div>
       <div className="flex-1">
@@ -129,7 +129,7 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-2">
               <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md shadow-lg">
-                <LayoutDashboard className="w-6 h-6 text-yellow-400" />
+                <LayoutDashboard className="w-6 h-6 text-blue-400" />
               </div>
               <h1 className="text-3xl font-bold text-white text-glow">Pro Dashboard</h1>
             </div>
@@ -298,7 +298,7 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
             >
               <div className="absolute top-0 right-0 p-32 bg-blue-500/10 blur-3xl rounded-full -mr-16 -mt-16 pointer-events-none" />
               <div className="relative z-10">
-                <div className="w-12 h-12 rounded-2xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
                   <TrendingUp className="w-6 h-6 text-blue-400" />
                 </div>
                 <h3 className="font-bold text-xl text-white mb-2">Live Events</h3>
@@ -314,8 +314,8 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
             >
               <div className="absolute top-0 right-0 p-32 bg-yellow-500/10 blur-3xl rounded-full -mr-16 -mt-16 pointer-events-none" />
               <div className="relative z-10">
-                <div className="w-12 h-12 rounded-2xl bg-yellow-500/20 border border-yellow-500/30 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <BarChart3 className="w-6 h-6 text-yellow-400" />
+                <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+                  <BarChart3 className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="font-bold text-xl text-white mb-2">Odds Comparison</h3>
                 <p className="text-sm text-gray-400 font-medium leading-relaxed">
@@ -330,8 +330,8 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
             >
               <div className="absolute top-0 right-0 p-32 bg-purple-500/10 blur-3xl rounded-full -mr-16 -mt-16 pointer-events-none" />
               <div className="relative z-10">
-                <div className="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <Bell className="w-6 h-6 text-purple-400" />
+                <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+                  <Bell className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="font-bold text-xl text-white mb-2">Notifications</h3>
                 <p className="text-sm text-gray-400 font-medium leading-relaxed">

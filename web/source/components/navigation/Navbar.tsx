@@ -100,7 +100,7 @@ const Navbar: React.FC<NavbarProps> = ({
             <div className="flex items-center gap-3 pl-3 border-l border-white/10">
               <div className="hidden md:block text-right">
                 <p className="text-sm font-medium text-white">
-                  {user?.displayName || "User"}
+                  {user?.displayName || user?.email?.split("@")[0] || "User"}
                 </p>
                 <p className="text-xs text-gray-400">
                   {userRole.isPremium ? "Premium Member" : "Free Plan"}
