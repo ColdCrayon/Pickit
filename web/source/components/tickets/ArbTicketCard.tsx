@@ -44,7 +44,7 @@ const ArbTicketCard: React.FC<{ t: ArbTicket }> = ({ t }) => {
   // Determine the title
   const ticketTitle = loading
     ? "Loading Event..."
-    : event
+    : event && event.teams?.away && event.teams?.home
       ? `${event.teams.away} @ ${event.teams.home}`
       : t.eventId || t.marketId || "Arbitrage Opportunity";
 

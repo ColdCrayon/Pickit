@@ -14,21 +14,29 @@ export function useAlertRules(userId?: string) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Reset state whenever userId changes
+    setRules([]);
+    setError(null);
+
     if (!userId) {
       setLoading(false);
       return;
     }
 
+    setLoading(true);
+
     const rulesRef = collection(db, "users", userId, "alertRules");
     const q = query(rulesRef, where("userId", "==", userId));
 
-    const unsubscribe = onSnapshot(q, 
+    const unsubscribe = onSnapshot(
+      q,
       (snapshot) => {
         const loadedRules = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         } as AlertRule));
         setRules(loadedRules);
+        setError(null);
         setLoading(false);
       },
       (err) => {

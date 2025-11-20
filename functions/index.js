@@ -415,32 +415,7 @@ exports.gameStartReminders = onSchedule(
   }
 );
 
-// ============================================================================
-// ALERT SYSTEM TRIGGERS
-// ============================================================================
-
-/**
- * Triggered when an event document is updated
- * Evaluates custom alert rules against the changes
- */
-exports.onEventUpdate = onDocumentUpdated(
-  { document: 'events/{eventId}' },
-  async (event) => {
-    const eventId = event.params.eventId;
-    const beforeData = event.data.before.data();
-    const afterData = event.data.after.data();
-
-    logger.info(`Event updated: ${eventId}, evaluating alert rules`);
-
-    try {
-      await evaluateAlertRules(eventId, beforeData, afterData);
-      return null;
-    } catch (error) {
-      logger.error(`Error evaluating alert rules for event ${eventId}:`, error);
-      return null;
-    }
-  }
-);
+// (Removed duplicate onEventUpdate export - already defined at line 270 with both watchlist and alert functionality)
 
 /**
  * OPTIONAL: Triggered when an arbitrage ticket is created
@@ -466,6 +441,7 @@ exports.onArbTicketCreateAlerts = onDocumentCreated(
 
       for (const ruleDoc of rulesSnapshot.docs) {
         const rule = ruleDoc.data();
+        const ruleId = ruleDoc.id;  // Use document ID, not rule.id field
         const userId = ruleDoc.ref.parent.parent.id;
         const minMargin = rule.arbMinMargin || 5;
         const arbMargin = (ticketData.margin || 0) * 100;
@@ -488,7 +464,7 @@ exports.onArbTicketCreateAlerts = onDocumentCreated(
               },
               data: {
                 type: 'custom_alert_arb',
-                ruleId: rule.id || '',
+                ruleId,  // Use ruleDoc.id
                 ticketId,
               },
             });
@@ -518,7 +494,7 @@ exports.onArbTicketCreateAlerts = onDocumentCreated(
           const { createHistoryEntry } = require('./lib/alert-history');
           await createHistoryEntry(
             userId,
-            rule.id,
+            ruleId,  // Use ruleDoc.id
             rule.name,
             'arb_opportunity',
             {

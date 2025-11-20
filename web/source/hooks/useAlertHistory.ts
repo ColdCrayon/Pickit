@@ -14,26 +14,33 @@ export function useAlertHistory(userId?: string, limitCount: number = 50) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Reset state whenever the user context changes
+    setHistory([]);
+    setError(null);
+
     if (!userId) {
       setLoading(false);
       return;
     }
 
+    setLoading(true);
+
     const historyRef = collection(db, "users", userId, "alertHistory");
     const q = query(
       historyRef,
-      where("userId", "==", userId),
       orderBy("createdAt", "desc"),
       limit(limitCount)
     );
 
-    const unsubscribe = onSnapshot(q,
+    const unsubscribe = onSnapshot(
+      q,
       (snapshot) => {
         const entries = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         } as AlertHistoryEntry));
         setHistory(entries);
+        setError(null);  // Clear any previous error
         setLoading(false);
       },
       (err) => {

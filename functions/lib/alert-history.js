@@ -18,7 +18,12 @@ const logger = require('firebase-functions/logger');
  * @return {Promise<void>}
  */
 async function createHistoryEntry(userId, ruleId, ruleName, alertType, details) {
+  if (!userId || typeof userId !== 'string') {
+    throw new Error('Invalid userId provided to createHistoryEntry');
+  }
+
   const db = admin.firestore();
+  const detailsObj = details || {};
 
   try {
     const historyRef = db
@@ -26,23 +31,23 @@ async function createHistoryEntry(userId, ruleId, ruleName, alertType, details) 
       .doc(userId)
       .collection('alertHistory');
 
-    await historyRef.add({
+    const docRef = await historyRef.add({
       userId,
       ruleId: ruleId || null,
       ruleName,
       alertType,
-      eventId: details.eventId || null,
-      league: details.league || null,
-      teams: details.teams || null,
-      message: details.message || 'Alert triggered',
+      eventId: detailsObj.eventId || null,
+      league: detailsObj.league || null,
+      teams: detailsObj.teams || null,
+      message: detailsObj.message || 'Alert triggered',
       details: {
-        oldValue: details.oldValue,
-        newValue: details.newValue,
-        threshold: details.threshold,
-        arbMargin: details.arbMargin,
-        market: details.market,
-        side: details.side,
-        changePercent: details.changePercent,
+        oldValue: detailsObj.oldValue,
+        newValue: detailsObj.newValue,
+        threshold: detailsObj.threshold,
+        arbMargin: detailsObj.arbMargin,
+        market: detailsObj.market,
+        side: detailsObj.side,
+        changePercent: detailsObj.changePercent,
       },
       read: false,
       notificationSent: true,
@@ -50,8 +55,10 @@ async function createHistoryEntry(userId, ruleId, ruleName, alertType, details) 
     });
 
     logger.info(`Alert history entry created for user ${userId}`);
+    return docRef.id;
   } catch (error) {
     logger.error(`Failed to create alert history entry for user ${userId}:`, error);
+    throw error;
   }
 }
 
@@ -62,6 +69,13 @@ async function createHistoryEntry(userId, ruleId, ruleName, alertType, details) 
  * @return {Promise<void>}
  */
 async function markHistoryAsRead(userId, historyId) {
+  if (!userId || typeof userId !== 'string') {
+    throw new Error('Invalid userId provided to markHistoryAsRead');
+  }
+  if (!historyId || typeof historyId !== 'string') {
+    throw new Error('Invalid historyId provided to markHistoryAsRead');
+  }
+
   const db = admin.firestore();
 
   try {
@@ -71,11 +85,18 @@ async function markHistoryAsRead(userId, historyId) {
       .collection('alertHistory')
       .doc(historyId);
 
+    const doc = await historyRef.get();
+    if (!doc.exists) {
+      throw new Error(`History entry ${historyId} not found`);
+    }
+
     await historyRef.update({
       read: true,
     });
+    logger.info(`Marked history ${historyId} as read for user ${userId}`);
   } catch (error) {
     logger.error(`Failed to mark history as read for user ${userId}:`, error);
+    throw error;
   }
 }
 
@@ -87,6 +108,10 @@ async function markHistoryAsRead(userId, historyId) {
  * Keeps last 90 days of history
  */
 async function cleanupOldHistory(userId, daysToKeep = 90) {
+  if (!userId || typeof userId !== 'string') {
+    throw new Error('Invalid userId provided to cleanupOldHistory');
+  }
+
   const db = admin.firestore();
 
   try {
@@ -98,6 +123,7 @@ async function cleanupOldHistory(userId, daysToKeep = 90) {
       .doc(userId)
       .collection('alertHistory')
       .where('createdAt', '<', admin.firestore.Timestamp.fromDate(cutoffDate))
+      .limit(500) // Firestore batch limit
       .get();
 
     if (oldEntriesSnapshot.empty) {
@@ -111,8 +137,14 @@ async function cleanupOldHistory(userId, daysToKeep = 90) {
 
     await batch.commit();
     logger.info(`Cleaned up ${oldEntriesSnapshot.size} old alert history entries for ${userId}`);
+
+    // Recursively clean up if we hit the limit
+    if (oldEntriesSnapshot.size === 500) {
+      await cleanupOldHistory(userId, daysToKeep);
+    }
   } catch (error) {
     logger.error(`Failed to cleanup old history for ${userId}:`, error);
+    throw error;
   }
 }
 
@@ -122,6 +154,10 @@ async function cleanupOldHistory(userId, daysToKeep = 90) {
  * @return {Promise<number>} The number of unread alerts
  */
 async function getUnreadCount(userId) {
+  if (!userId || typeof userId !== 'string') {
+    throw new Error('Invalid userId provided to getUnreadCount');
+  }
+
   const db = admin.firestore();
 
   try {
@@ -135,7 +171,7 @@ async function getUnreadCount(userId) {
     return unreadSnapshot.size;
   } catch (error) {
     logger.error(`Failed to get unread count for ${userId}:`, error);
-    return 0;
+    throw error;
   }
 }
 
