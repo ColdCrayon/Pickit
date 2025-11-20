@@ -26,10 +26,6 @@ const FreePicks: React.FC = () => {
     <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
       <div
         className="absolute inset-0 bg-cover bg-center pointer-events-none"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)), url('/Background.jpeg')",
-        }}
       />
 
       <main className="relative z-10 max-w-6xl mx-auto py-28 px-6">

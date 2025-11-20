@@ -41,14 +41,7 @@ function App() {
   const { isPremium, isAdmin } = useUserPlan();
 
   return (
-    <div className="main-scroll min-h-screen bg-gray-900 text-white relative overflow-hidden overscroll-none">
-      {/* Background Image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{
-          backgroundImage: `linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.85)), url('Background.jpeg')`,
-        }}
-      />
+    <div className="main-scroll min-h-screen bg-transparent text-white relative overflow-hidden overscroll-none">
 
       {/* Navbar */}
       <Navbar
@@ -65,9 +58,8 @@ function App() {
 
       {/* Main Content Area */}
       <main
-        className={`relative z-10 transition-all duration-300 ${
-          isSidebarOpen ? "ml-64" : ""
-        }`}
+        className={`relative z-10 transition-all duration-300 ${isSidebarOpen ? "ml-64" : ""
+          }`}
       >
         <Routes>
           {/* Home Route - Conditional based on user type */}

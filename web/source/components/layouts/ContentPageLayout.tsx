@@ -28,15 +28,9 @@ const ContentPageLayout: React.FC<ContentPageLayoutProps> = ({
   const logo = "/logo.png";
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
-      {/* Background */}
-      <div
-        className="absolute inset-0 bg-cover bg-center pointer-events-none"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)), url('Background.jpeg')",
-        }}
-      />
+    <div className="min-h-screen bg-transparent text-white relative overflow-hidden">
+      {/* Background - Removed to use global Liquid Metal theme */}
+      {/* <div className="absolute inset-0 bg-cover bg-center pointer-events-none" /> */}
 
       {/* Main Content */}
       <main className={`relative z-10 ${maxWidthClasses[maxWidth]} mx-auto py-28 px-6`}>

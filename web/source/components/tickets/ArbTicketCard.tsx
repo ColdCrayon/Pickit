@@ -1,8 +1,11 @@
 import React from "react";
-import { Percent, Calendar, TrendingUp } from "lucide-react";
+import { Percent, Calendar, TrendingUp, Loader2 } from "lucide-react";
 import { ArbTicket } from "../../types/picks";
 import { Timestamp } from "firebase/firestore";
 import { SaveTicketButton } from "./SaveTicketButton";
+import { useEventOdds } from "../../hooks/useEventOdds";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
+import { Badge } from "../ui/Badge";
 
 const fmtDate = (v: any) => {
   if (!v) return "";
@@ -35,52 +38,59 @@ const fmtDate = (v: any) => {
 };
 
 const ArbTicketCard: React.FC<{ t: ArbTicket }> = ({ t }) => {
-  // Determine the title - prefer eventId, fall back to marketId or a default
-  const ticketTitle = t.eventId || t.marketId || "Arbitrage Opportunity";
+  // Fetch event details to get team names
+  const { event, loading } = useEventOdds(t.eventId);
 
-  // Format the margin percentage
-  const marginDisplay =
-    typeof t.margin === "number" ? `${(t.margin * 100).toFixed(2)}%` : "N/A";
-
-  const isPositiveMargin = typeof t.margin === "number" && t.margin >= 0;
+  // Determine the title
+  const ticketTitle = loading
+    ? "Loading Event..."
+    : event
+      ? `${event.teams.away} @ ${event.teams.home}`
+      : t.eventId || t.marketId || "Arbitrage Opportunity";
 
   return (
-    <div className="relative rounded-2xl bg-white/5 border border-white/10 overflow-hidden hover:border-white/20 transition-all">
+    <Card className="glass-card overflow-hidden group">
       {/* Header Section */}
-      <div className="flex items-center justify-between mb-2">
-        <div className="font-semibold">
-          {t.eventId ?? t.marketId ?? "Event"}
+      <div className="p-5 flex items-center justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <h3 className="font-bold text-lg text-white group-hover:text-glow transition-all leading-tight">
+            {ticketTitle}
+          </h3>
+          <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
+            {t.marketId || "Moneyline"}
+          </span>
         </div>
 
         {/* Right side: Margin + Save Button */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3 shrink-0">
           {typeof t.margin === "number" && (
-            <div
-              className={`text-xs ${
-                t.margin >= 0 ? "text-green-300" : "text-red-300"
-              } flex items-center gap-1`}
+            <Badge
+              variant={t.margin >= 0 ? "success" : "destructive"}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm font-bold shadow-[0_0_10px_rgba(74,222,128,0.2)]"
             >
-              <Percent className="w-3 h-3" />
+              <Percent className="w-3.5 h-3.5" />
               {(t.margin * 100).toFixed(2)}%
-            </div>
+            </Badge>
           )}
 
-          {/* NEW: Save Button */}
           <SaveTicketButton ticketId={t.id} ticketType="arb" />
         </div>
       </div>
 
       {/* Legs Section */}
-      <div className="p-4">
+      <CardContent className="p-4 pt-2">
         <div className="grid sm:grid-cols-2 gap-3 mb-4">
           {t.legs?.map((leg, i) => (
             <div
               key={i}
-              className="rounded-xl border border-white/10 bg-gradient-to-br from-black/40 to-black/20 p-3 hover:border-white/20 transition-colors"
+              className="relative rounded-xl border border-white/5 bg-black/40 p-3 hover:border-white/20 transition-all group/leg overflow-hidden"
             >
+              {/* Liquid hover effect background */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover/leg:opacity-100 transition-opacity duration-500" />
+
               {/* Sportsbook Name */}
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-bold text-yellow-400">
+              <div className="relative flex items-center justify-between mb-2">
+                <span className="text-sm font-bold text-yellow-400 group-hover/leg:text-yellow-300 transition-colors">
                   {leg.bookId}
                 </span>
                 {typeof leg.stakePct === "number" && (
@@ -91,13 +101,13 @@ const ArbTicketCard: React.FC<{ t: ArbTicket }> = ({ t }) => {
               </div>
 
               {/* Outcome and Odds */}
-              <div className="space-y-1">
+              <div className="relative space-y-1">
                 <div className="text-sm text-gray-200 font-medium capitalize">
                   {leg.outcome}
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-gray-500">Odds:</span>
-                  <span className="text-base font-bold text-white">
+                  <span className="text-base font-bold text-white font-mono">
                     {leg.priceDecimal}
                   </span>
                 </div>
@@ -122,15 +132,15 @@ const ArbTicketCard: React.FC<{ t: ArbTicket }> = ({ t }) => {
 
           {t.serverSettled && (
             <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-green-500/10 border border-green-400/30">
-              <div className="w-1.5 h-1.5 rounded-full bg-green-400"></div>
+              <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></div>
               <span className="text-xs font-semibold text-green-300">
                 Settled
               </span>
             </div>
           )}
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

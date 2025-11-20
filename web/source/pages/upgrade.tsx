@@ -67,10 +67,6 @@ const Upgrade: React.FC = () => {
     <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
       <div
         className="absolute inset-0 bg-cover bg-center pointer-events-none"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)), url('Background.jpeg')",
-        }}
       />
 
       <main className="relative z-10 max-w-5xl mx-auto py-40 px-6">
@@ -82,11 +78,10 @@ const Upgrade: React.FC = () => {
           {tiers.map((tier, index) => (
             <div
               key={index}
-              className={`p-8 rounded-3xl border transition flex flex-col h-full ${
-                tier.highlighted
+              className={`p-8 rounded-3xl border transition flex flex-col h-full ${tier.highlighted
                   ? "bg-yellow-500/90 text-black border-yellow-400/80 shadow-lg shadow-yellow-500/40"
                   : "bg-white/5 border-white/10"
-              }`}
+                }`}
             >
               <h2 className="text-2xl font-semibold mb-2">{tier.name}</h2>
               <p className="text-lg mb-6">{tier.price}</p>

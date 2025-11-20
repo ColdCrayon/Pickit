@@ -18,14 +18,14 @@ const News: React.FC = () => {
       const d = v?.toDate
         ? v.toDate()
         : typeof v === "string"
-        ? new Date(v)
-        : v;
+          ? new Date(v)
+          : v;
       return d instanceof Date && !isNaN(d.getTime())
         ? d.toLocaleString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-          })
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })
         : "";
     } catch {
       return "";
@@ -40,8 +40,8 @@ const News: React.FC = () => {
       <div
         className="absolute inset-0 bg-cover bg-center pointer-events-none"
         style={{
-          backgroundImage:
-            "linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)), url('Background.jpeg')",
+          minHeight: "100vh",
+          color: "white",
         }}
       />
 
@@ -60,11 +60,10 @@ const News: React.FC = () => {
             <button
               key={s}
               onClick={() => setSelectedSport(s === "All" ? undefined : s)}
-              className={`px-5 py-2 rounded-full border transition ${
-                selectedSport === s || (s === "All" && !selectedSport)
+              className={`px-5 py-2 rounded-full border transition ${selectedSport === s || (s === "All" && !selectedSport)
                   ? "bg-yellow-500 text-black font-semibold border-yellow-500"
                   : "border-white/20 text-gray-300 hover:border-white/40"
-              }`}
+                }`}
             >
               {s}
             </button>

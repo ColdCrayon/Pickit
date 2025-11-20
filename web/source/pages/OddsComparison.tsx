@@ -13,11 +13,14 @@ import {
   ArrowLeft,
   Calendar,
   RefreshCw,
+  TrendingUp,
 } from "lucide-react";
 import { Footer } from "../components";
 import { useAvailableEvents } from "../hooks/useAvailableEvents";
 import { OddsComparisonTable } from "../components/odds/OddsComparisonTable";
+import LineMovementChart from "../components/charts/LineMovementChart";
 import { EventMarketType, SportKey } from "../types/events";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card";
 
 // Simple time formatting function
 const formatTimeUntil = (date: Date): string => {
@@ -34,6 +37,24 @@ const formatTimeUntil = (date: Date): string => {
   return "Starting soon";
 };
 
+// Mock data generator for the chart
+const generateMockChartData = (marketType: string) => {
+  const data = [];
+  const now = new Date();
+  for (let i = 24; i >= 0; i--) {
+    const time = new Date(now.getTime() - i * 60 * 60 * 1000);
+    const baseValue = marketType === 'h2h' ? -110 : marketType === 'spreads' ? -110 : 220;
+    const randomFluctuation = Math.floor(Math.random() * 20) - 10;
+
+    data.push({
+      timestamp: time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      value: baseValue + randomFluctuation,
+      bookmaker: 'DraftKings'
+    });
+  }
+  return data;
+};
+
 const OddsComparison: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedSport, setSelectedSport] = useState<SportKey | "all">("all");
@@ -41,6 +62,7 @@ const OddsComparison: React.FC = () => {
   const [selectedEventId, setSelectedEventId] = useState<string | null>(
     searchParams.get("event")
   );
+  const [chartData, setChartData] = useState<any[]>([]);
 
   const { events, loading, refresh } = useAvailableEvents({
     sport: selectedSport === "all" ? undefined : selectedSport,
@@ -62,6 +84,13 @@ const OddsComparison: React.FC = () => {
     }
   }, [events, selectedEventId]);
 
+  // Update chart data when event or market changes
+  useEffect(() => {
+    if (selectedEventId) {
+      setChartData(generateMockChartData(selectedMarket));
+    }
+  }, [selectedEventId, selectedMarket]);
+
   const handleEventSelect = (eventId: string) => {
     setSelectedEventId(eventId);
     setSearchParams({ event: eventId });
@@ -70,9 +99,11 @@ const OddsComparison: React.FC = () => {
   const selectedEvent = events?.find((e) => e.id === selectedEventId);
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white pt-16">
+    <div className="min-h-screen bg-background text-foreground pt-16 relative overflow-hidden">
+      <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]" />
+
       {/* Header */}
-      <header className="border-b border-white/10 bg-gray-900/95 backdrop-blur-lg sticky top-16 z-40">
+      <header className="border-b border-white/10 bg-background/95 backdrop-blur-lg sticky top-16 z-40">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -83,12 +114,12 @@ const OddsComparison: React.FC = () => {
                 <ArrowLeft className="w-5 h-5" />
               </Link>
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-yellow-500/20 rounded-lg">
-                  <BarChart3 className="w-6 h-6 text-yellow-400" />
+                <div className="p-2 bg-primary/20 rounded-lg">
+                  <BarChart3 className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold">Odds Comparison</h1>
-                  <p className="text-sm text-gray-400">
+                  <h1 className="text-2xl font-bold tracking-tight">Odds Comparison</h1>
+                  <p className="text-sm text-muted-foreground">
                     Compare odds across all major sportsbooks
                   </p>
                 </div>
@@ -96,7 +127,7 @@ const OddsComparison: React.FC = () => {
             </div>
             <button
               onClick={() => refresh()}
-              className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition"
+              className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition"
             >
               <RefreshCw className="w-4 h-4" />
               <span className="hidden sm:inline">Refresh</span>
@@ -105,67 +136,69 @@ const OddsComparison: React.FC = () => {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-8 pb-24">
+      <main className="relative z-10 max-w-7xl mx-auto px-6 py-8 pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Sidebar - Event List */}
           <div className="lg:col-span-1 space-y-4">
             {/* Filters */}
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
-              <div className="flex items-center gap-2 mb-4">
-                <Filter className="w-4 h-4 text-gray-400" />
-                <h3 className="font-semibold">Filters</h3>
-              </div>
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <Filter className="w-4 h-4 text-muted-foreground" />
+                  <h3 className="font-semibold">Filters</h3>
+                </div>
 
-              {/* Sport Filter */}
-              <div className="space-y-2">
-                <label className="text-sm text-gray-400">Sport</label>
-                <select
-                  value={selectedSport}
-                  onChange={(e) =>
-                    setSelectedSport(e.target.value as SportKey | "all")
-                  }
-                  className="w-full px-3 py-2 bg-white/10 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                >
-                  <option value="all">All Sports</option>
-                  <option value="americanfootball_nfl">NFL</option>
-                  <option value="basketball_nba">NBA</option>
-                  <option value="icehockey_nhl">NHL</option>
-                  <option value="baseball_mlb">MLB</option>
-                </select>
-              </div>
+                {/* Sport Filter */}
+                <div className="space-y-2">
+                  <label className="text-sm text-muted-foreground">Sport</label>
+                  <select
+                    value={selectedSport}
+                    onChange={(e) =>
+                      setSelectedSport(e.target.value as SportKey | "all")
+                    }
+                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  >
+                    <option value="all">All Sports</option>
+                    <option value="americanfootball_nfl">NFL</option>
+                    <option value="basketball_nba">NBA</option>
+                    <option value="icehockey_nhl">NHL</option>
+                    <option value="baseball_mlb">MLB</option>
+                  </select>
+                </div>
 
-              {/* Market Type Filter */}
-              <div className="space-y-2 mt-4">
-                <label className="text-sm text-gray-400">Market Type</label>
-                <select
-                  value={selectedMarket}
-                  onChange={(e) =>
-                    setSelectedMarket(e.target.value as EventMarketType)
-                  }
-                  className="w-full px-3 py-2 bg-white/10 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                >
-                  <option value="h2h">Moneyline</option>
-                  <option value="spreads">Spread</option>
-                  <option value="totals">Totals (O/U)</option>
-                </select>
-              </div>
-            </div>
+                {/* Market Type Filter */}
+                <div className="space-y-2 mt-4">
+                  <label className="text-sm text-muted-foreground">Market Type</label>
+                  <select
+                    value={selectedMarket}
+                    onChange={(e) =>
+                      setSelectedMarket(e.target.value as EventMarketType)
+                    }
+                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  >
+                    <option value="h2h">Moneyline</option>
+                    <option value="spreads">Spread</option>
+                    <option value="totals">Totals (O/U)</option>
+                  </select>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Event List */}
-            <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden min-h-[550px]">
+            <Card className="min-h-[550px] flex flex-col">
               <div className="p-4 border-b border-white/10">
                 <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-gray-400" />
+                  <Calendar className="w-4 h-4 text-muted-foreground" />
                   <h3 className="font-semibold">Upcoming Games</h3>
                 </div>
               </div>
 
-              <div className="max-h-[420px] overflow-y-auto">
+              <div className="flex-1 overflow-y-auto max-h-[500px]">
                 {loading ? (
                   <div className="p-4 space-y-3">
                     {[1, 2, 3].map((i) => (
                       <div key={i} className="animate-pulse">
-                        <div className="h-16 bg-white/10 rounded-lg"></div>
+                        <div className="h-16 bg-white/5 rounded-lg"></div>
                       </div>
                     ))}
                   </div>
@@ -182,16 +215,15 @@ const OddsComparison: React.FC = () => {
                         <button
                           key={event.id}
                           onClick={() => handleEventSelect(event.id)}
-                          className={`w-full p-4 text-left transition ${
-                            isSelected
-                              ? "bg-yellow-500/20 border-l-4 border-yellow-400"
-                              : "hover:bg-white/5"
-                          }`}
+                          className={`w-full p-4 text-left transition-all ${isSelected
+                              ? "bg-primary/10 border-l-4 border-primary"
+                              : "hover:bg-white/5 border-l-4 border-transparent"
+                            }`}
                         >
                           <p className="font-medium text-sm">
                             {event.teams.away} @ {event.teams.home}
                           </p>
-                          <p className="text-xs text-gray-400 mt-1">
+                          <p className="text-xs text-muted-foreground mt-1">
                             {timeUntil}
                           </p>
                         </button>
@@ -199,29 +231,40 @@ const OddsComparison: React.FC = () => {
                     })}
                   </div>
                 ) : (
-                  <div className="p-8 text-center text-gray-400">
+                  <div className="p-8 text-center text-muted-foreground">
                     <p>No games available</p>
                   </div>
                 )}
               </div>
-            </div>
+            </Card>
           </div>
 
-          {/* Main Content - Odds Table */}
-          <div className="lg:col-span-2">
+          {/* Main Content - Odds Table & Chart */}
+          <div className="lg:col-span-2 space-y-6">
             {selectedEventId && selectedEvent ? (
-              <OddsComparisonTable
-                eventId={selectedEventId}
-                marketType={selectedMarket}
-              />
+              <>
+                <OddsComparisonTable
+                  eventId={selectedEventId}
+                  marketType={selectedMarket}
+                />
+
+                <LineMovementChart
+                  data={chartData}
+                  title={`${selectedMarket === 'h2h' ? 'Moneyline' : selectedMarket === 'spreads' ? 'Spread' : 'Total'} Movement History`}
+                />
+              </>
             ) : (
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-12 text-center">
-                <BarChart3 className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+              <Card className="p-12 text-center">
+                <div className="flex justify-center mb-4">
+                  <div className="p-4 rounded-full bg-secondary/20">
+                    <BarChart3 className="w-12 h-12 text-muted-foreground" />
+                  </div>
+                </div>
                 <h3 className="text-xl font-semibold mb-2">Select a Game</h3>
-                <p className="text-gray-400">
+                <p className="text-muted-foreground">
                   Choose a game from the list to compare odds across sportsbooks
                 </p>
-              </div>
+              </Card>
             )}
           </div>
         </div>

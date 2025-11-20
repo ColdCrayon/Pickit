@@ -157,30 +157,32 @@
 
 ### Alerts System
 
-- [ ] **Custom Alert Rules**
-  - Price threshold alerts
-  - Line movement alerts
-  - Arb opportunity alerts for watchlist items
-- [ ] **Alert Management UI**
-  - Create/edit/delete alert rules
-  - Alert history
-  - Snooze/mute options
-- [ ] **Enhanced Notifications**
-  - Game start reminders (1 hour before)
-  - Ticket result notifications
-  - Market suspension alerts
+- [x] **Custom Alert Rules**
+  - [x] Price threshold alerts
+  - [x] Line movement alerts
+  - [x] Arb opportunity alerts for watchlist items
+- [x] **Alert Management UI**
+  - [x] Create/edit/delete alert rules
+  - [x] Alert history
+  - [x] Snooze/mute options
+- [x] **Enhanced Notifications**
+  - [x] Game start reminders (1 hour before)
+  - [x] Ticket result notifications
+  - [x] **Resend Email Integration** (New)
+    - [x] Email notifications for alerts
+    - [x] HTML email templates
 
 ### Billing & Subscriptions
 
-- [ ] **Stripe Integration**
-  - Payment method management
-  - Subscription creation/cancellation
-  - Billing portal
-- [ ] **Billing Page**
-  - Current plan details
-  - Payment history
-  - Invoice downloads
-  - Upgrade/downgrade flows
+- [x] **Stripe Integration**
+  - [x] Payment method management
+  - [x] Subscription creation/cancellation
+  - [x] Billing portal
+- [x] **Billing Page**
+  - [x] Current plan details
+  - [x] Payment history
+  - [x] Invoice downloads
+  - [x] Upgrade/downgrade flows
 
 ---
 

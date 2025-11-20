@@ -63,12 +63,11 @@ export const SaveTicketButton: React.FC<SaveTicketButtonProps> = ({
       onClick={handleClick}
       disabled={loading || !user}
       className={`
-        flex items-center gap-2 px-3 py-1.5 rounded-lg
-        transition-all duration-200
-        ${
-          saved
-            ? "bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30"
-            : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-yellow-400"
+        flex items-center justify-center gap-2 px-4 py-2 rounded-lg
+        transition-all duration-300 font-medium
+        ${saved
+          ? "bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 shadow-[0_0_10px_rgba(234,179,8,0.1)]"
+          : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-white/5 hover:border-white/10"
         }
         ${loading ? "opacity-50 cursor-not-allowed" : ""}
         ${!user ? "opacity-50 cursor-not-allowed" : ""}
@@ -77,7 +76,7 @@ export const SaveTicketButton: React.FC<SaveTicketButtonProps> = ({
       title={saved ? "Unsave ticket" : "Save ticket"}
     >
       <Star className={`w-4 h-4 ${saved ? "fill-yellow-400" : ""}`} />
-      <span className="text-sm font-medium">
+      <span className="text-sm">
         {loading ? "..." : saved ? "Saved" : "Save"}
       </span>
     </button>

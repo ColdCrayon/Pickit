@@ -11,8 +11,8 @@ const TermsOfService: React.FC = () => {
       <div
         className="absolute inset-0 bg-cover bg-center pointer-events-none"
         style={{
-          backgroundImage:
-            "linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)), url('Background.jpeg')",
+          minHeight: "100vh",
+          color: "white",
         }}
       />
 

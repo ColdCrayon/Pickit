@@ -33,15 +33,9 @@ const SportsPageLayout: React.FC<SportsPageLayoutProps> = ({
 
   return (
     <>
-      <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
-        {/* Background */}
-        <div
-          className="absolute inset-0 bg-cover bg-center pointer-events-none"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9)), url('Background.jpeg')",
-          }}
-        />
+      <div className="min-h-screen bg-transparent text-white relative overflow-hidden">
+        {/* Background - Removed to use global Liquid Metal theme */}
+        {/* <div className="absolute inset-0 bg-cover bg-center pointer-events-none" /> */}
 
         <main className="relative z-10 max-w-6xl mx-auto py-28 px-6 space-y-8">
           {/* Page header */}
@@ -70,9 +64,8 @@ const SportsPageLayout: React.FC<SportsPageLayoutProps> = ({
           <div className="md:hidden flex gap-2">
             <button
               onClick={() => setActiveTab("arb")}
-              className={`flex-1 px-4 py-2 rounded-xl border ${
-                activeTab === "arb" ? "bg-white/10 border-white/20" : "bg-black/20 border-white/10"
-              }`}
+              className={`flex-1 px-4 py-2 rounded-xl border ${activeTab === "arb" ? "bg-white/10 border-white/20" : "bg-black/20 border-white/10"
+                }`}
             >
               <div className="flex items-center gap-2 justify-center">
                 <Zap className="w-4 h-4 text-yellow-400" />
@@ -81,9 +74,8 @@ const SportsPageLayout: React.FC<SportsPageLayoutProps> = ({
             </button>
             <button
               onClick={() => setActiveTab("game")}
-              className={`flex-1 px-4 py-2 rounded-xl border ${
-                activeTab === "game" ? "bg-white/10 border-white/20" : "bg-black/20 border-white/10"
-              }`}
+              className={`flex-1 px-4 py-2 rounded-xl border ${activeTab === "game" ? "bg-white/10 border-white/20" : "bg-black/20 border-white/10"
+                }`}
             >
               <div className="flex items-center gap-2 justify-center">
                 <TrendingUp className="w-4 h-4 text-yellow-400" />
@@ -116,8 +108,8 @@ const SportsPageLayout: React.FC<SportsPageLayoutProps> = ({
                 <div className="text-center py-8">
                   <p className="text-gray-400 text-sm mb-3">No arbitrage opportunities available.</p>
                   {!isPremium && (
-                    <Link 
-                      to="/upgrade" 
+                    <Link
+                      to="/upgrade"
                       className="text-yellow-400 hover:text-yellow-300 text-sm underline"
                     >
                       Upgrade to see live opportunities
@@ -177,8 +169,8 @@ const SportsPageLayout: React.FC<SportsPageLayoutProps> = ({
                   <div className="text-center py-8">
                     <p className="text-gray-400 text-sm mb-3">No arbitrage opportunities available.</p>
                     {!isPremium && (
-                      <Link 
-                        to="/upgrade" 
+                      <Link
+                        to="/upgrade"
                         className="text-yellow-400 hover:text-yellow-300 text-sm underline"
                       >
                         Upgrade to see live opportunities

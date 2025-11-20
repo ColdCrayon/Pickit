@@ -33,17 +33,17 @@ const StatCard: React.FC<{
   value: string;
   subtext: string;
 }> = ({ icon, label, value, subtext }) => (
-  <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+  <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-6 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] hover:bg-white/10 transition-all duration-300 group">
     <div className="flex items-center gap-3 mb-3">
-      <div className="p-2 bg-yellow-500/20 rounded-lg text-yellow-400">
+      <div className="p-2 bg-white/5 rounded-xl text-yellow-400 border border-white/10 group-hover:border-yellow-500/30 group-hover:shadow-[0_0_15px_rgba(234,179,8,0.2)] transition-all">
         {icon}
       </div>
       <div className="flex-1">
-        <p className="text-sm text-gray-400">{label}</p>
-        <p className="text-2xl font-bold text-white">{value}</p>
+        <p className="text-sm text-gray-400 font-medium">{label}</p>
+        <p className="text-2xl font-bold text-white tracking-tight">{value}</p>
       </div>
     </div>
-    <p className="text-xs text-gray-500">{subtext}</p>
+    <p className="text-xs text-gray-500 font-medium">{subtext}</p>
   </div>
 );
 
@@ -55,12 +55,12 @@ const QuickLink: React.FC<{
 }> = ({ to, label, description }) => (
   <Link
     to={to}
-    className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 hover:border-yellow-500/30 transition group"
+    className="backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 hover:border-white/20 hover:shadow-[inset_0_0_20px_rgba(255,255,255,0.05)] transition-all duration-300 group"
   >
-    <h4 className="font-medium text-white mb-1 group-hover:text-yellow-400 transition">
+    <h4 className="font-medium text-white mb-1 group-hover:text-glow transition-all">
       {label}
     </h4>
-    <p className="text-xs text-gray-400">{description}</p>
+    <p className="text-xs text-gray-400 group-hover:text-gray-300 transition-colors">{description}</p>
   </Link>
 );
 
@@ -119,20 +119,21 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
   ]);
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen bg-transparent text-white">
       <main
-        className={`relative z-10 transition-all duration-300 ${
-          isSidebarOpen ? "ml-64 lg:ml-64" : ""
-        } pt-16`}
+        className={`relative z-10 transition-all duration-300 ${isSidebarOpen ? "ml-64 lg:ml-64" : ""
+          } pt-16`}
       >
         <div className="max-w-7xl mx-auto px-6 py-8">
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-2">
-              <LayoutDashboard className="w-8 h-8 text-yellow-400" />
-              <h1 className="text-3xl font-bold">Pro Dashboard</h1>
+              <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md shadow-lg">
+                <LayoutDashboard className="w-6 h-6 text-yellow-400" />
+              </div>
+              <h1 className="text-3xl font-bold text-white text-glow">Pro Dashboard</h1>
             </div>
-            <p className="text-gray-400">
+            <p className="text-gray-400 font-medium ml-1">
               Your command center for smart betting decisions
             </p>
           </div>
@@ -140,25 +141,25 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
           {/* Quick Stats - 4 Cards Across */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <StatCard
-              icon={<Star className="w-6 h-6" />}
+              icon={<Star className="w-5 h-5" />}
               label="Watchlist Items"
               value={totalItems.toString()}
               subtext={`${watchlist?.games.length || 0} games tracked`}
             />
             <StatCard
-              icon={<Zap className="w-6 h-6" />}
+              icon={<Zap className="w-5 h-5" />}
               label="Active Arbs"
               value="-"
               subtext="Coming soon"
             />
             <StatCard
-              icon={<TrendingUp className="w-6 h-6" />}
+              icon={<TrendingUp className="w-5 h-5" />}
               label="Today's Picks"
               value="-"
               subtext="Coming soon"
             />
             <StatCard
-              icon={<Bell className="w-6 h-6" />}
+              icon={<Bell className="w-5 h-5" />}
               label="Alerts Set"
               value={totalAlerts.toString()}
               subtext={alertsSubtext}
@@ -167,19 +168,19 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
 
           {/* Quick Access - Full Width */}
           <div className="mb-8">
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-blue-500/20 rounded-lg">
-                  <Zap className="w-5 h-5 text-blue-400" />
+            <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-8 shadow-2xl">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="p-3 bg-blue-500/10 rounded-2xl border border-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
+                  <Zap className="w-6 h-6 text-blue-400" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg">Quick Access</h3>
-                  <p className="text-sm text-gray-400">
+                  <h3 className="font-bold text-xl text-white">Quick Access</h3>
+                  <p className="text-sm text-gray-400 font-medium">
                     Navigate to key features
                   </p>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <QuickLink
                   to="/my-tickets"
                   label="My Tickets"
@@ -226,21 +227,21 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
 
           {/* Watchlist Preview */}
           <div className="mb-8">
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+            <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-8 shadow-2xl">
               {!watchlistLoading &&
-              watchlist?.games &&
-              watchlist.games.length > 0 ? (
+                watchlist?.games &&
+                watchlist.games.length > 0 ? (
                 <>
                   <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-yellow-500/20 rounded-lg">
-                        <Star className="w-5 h-5 text-yellow-400" />
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 bg-yellow-500/10 rounded-2xl border border-yellow-500/20 shadow-[0_0_15px_rgba(234,179,8,0.1)]">
+                        <Star className="w-6 h-6 text-yellow-400" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-lg">
+                        <h3 className="font-bold text-xl text-white">
                           Watchlist Preview
                         </h3>
-                        <p className="text-sm text-gray-400">
+                        <p className="text-sm text-gray-400 font-medium">
                           {watchlist.games.length} game
                           {watchlist.games.length !== 1 ? "s" : ""} tracked
                         </p>
@@ -248,29 +249,33 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
                     </div>
                     <Link
                       to="/watchlist"
-                      className="flex items-center gap-1 text-sm text-yellow-400 hover:text-yellow-300 transition"
+                      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all text-sm font-medium text-yellow-400"
                     >
                       View All
                       <ArrowRight className="w-4 h-4" />
                     </Link>
                   </div>
-                  <WatchlistGameItem
-                    gameId={firstGameId}
-                    onRemove={(id) => removeGame(id)}
-                  />
+                  <div className="bg-black/20 rounded-2xl border border-white/5 overflow-hidden">
+                    <WatchlistGameItem
+                      gameId={firstGameId}
+                      onRemove={(id) => removeGame(id)}
+                    />
+                  </div>
                 </>
               ) : (
                 <div className="text-center py-12">
-                  <Star className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+                    <Star className="w-8 h-8 text-gray-500" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-2">
                     No Games in Watchlist
                   </h3>
-                  <p className="text-gray-400 mb-6">
-                    Start tracking games to get real-time odds updates
+                  <p className="text-gray-400 mb-6 max-w-md mx-auto">
+                    Start tracking games to get real-time odds updates and arbitrage alerts directly on your dashboard.
                   </p>
                   <Link
                     to="/browse-events"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400 font-medium rounded-xl transition"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-xl transition-all shadow-[0_0_20px_rgba(234,179,8,0.3)] hover:shadow-[0_0_30px_rgba(234,179,8,0.5)]"
                   >
                     <Plus className="w-5 h-5" />
                     Browse Games
@@ -289,35 +294,50 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Link
               to="/browse-events"
-              className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/30 rounded-2xl p-6 hover:scale-105 transition-transform"
+              className="relative overflow-hidden backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-8 hover:bg-white/10 hover:border-white/20 hover:shadow-[0_0_30px_rgba(59,130,246,0.15)] transition-all duration-300 group"
             >
-              <TrendingUp className="w-8 h-8 text-blue-400 mb-3" />
-              <h3 className="font-semibold text-lg mb-2">Live Events</h3>
-              <p className="text-sm text-gray-400">
-                Browse and track upcoming games across all leagues
-              </p>
+              <div className="absolute top-0 right-0 p-32 bg-blue-500/10 blur-3xl rounded-full -mr-16 -mt-16 pointer-events-none" />
+              <div className="relative z-10">
+                <div className="w-12 h-12 rounded-2xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <TrendingUp className="w-6 h-6 text-blue-400" />
+                </div>
+                <h3 className="font-bold text-xl text-white mb-2">Live Events</h3>
+                <p className="text-sm text-gray-400 font-medium leading-relaxed">
+                  Browse and track upcoming games across all leagues with real-time updates.
+                </p>
+              </div>
             </Link>
 
             <Link
               to="/odds-comparison"
-              className="bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 border border-yellow-500/30 rounded-2xl p-6 hover:scale-105 transition-transform"
+              className="relative overflow-hidden backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-8 hover:bg-white/10 hover:border-white/20 hover:shadow-[0_0_30px_rgba(234,179,8,0.15)] transition-all duration-300 group"
             >
-              <BarChart3 className="w-8 h-8 text-yellow-400 mb-3" />
-              <h3 className="font-semibold text-lg mb-2">Odds Comparison</h3>
-              <p className="text-sm text-gray-400">
-                Compare odds across all major sportsbooks in real-time
-              </p>
+              <div className="absolute top-0 right-0 p-32 bg-yellow-500/10 blur-3xl rounded-full -mr-16 -mt-16 pointer-events-none" />
+              <div className="relative z-10">
+                <div className="w-12 h-12 rounded-2xl bg-yellow-500/20 border border-yellow-500/30 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <BarChart3 className="w-6 h-6 text-yellow-400" />
+                </div>
+                <h3 className="font-bold text-xl text-white mb-2">Odds Comparison</h3>
+                <p className="text-sm text-gray-400 font-medium leading-relaxed">
+                  Compare odds across all major sportsbooks to find the best value for your bets.
+                </p>
+              </div>
             </Link>
 
             <Link
               to="/Account"
-              className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-purple-500/30 rounded-2xl p-6 hover:scale-105 transition-transform"
+              className="relative overflow-hidden backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-8 hover:bg-white/10 hover:border-white/20 hover:shadow-[0_0_30px_rgba(168,85,247,0.15)] transition-all duration-300 group"
             >
-              <Bell className="w-8 h-8 text-purple-400 mb-3" />
-              <h3 className="font-semibold text-lg mb-2">Notifications</h3>
-              <p className="text-sm text-gray-400">
-                Set up alerts for odds changes and game updates
-              </p>
+              <div className="absolute top-0 right-0 p-32 bg-purple-500/10 blur-3xl rounded-full -mr-16 -mt-16 pointer-events-none" />
+              <div className="relative z-10">
+                <div className="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <Bell className="w-6 h-6 text-purple-400" />
+                </div>
+                <h3 className="font-bold text-xl text-white mb-2">Notifications</h3>
+                <p className="text-sm text-gray-400 font-medium leading-relaxed">
+                  Set up custom alerts for odds changes, game updates, and arbitrage opportunities.
+                </p>
+              </div>
             </Link>
           </div>
         </div>

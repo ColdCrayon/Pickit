@@ -452,6 +452,7 @@ exports.onArbTicketCreateAlerts = onDocumentCreated(
     const ticketId = event.params.ticketId;
     const ticketData = event.data.data();
     const db = getFirestore();
+    const { sendEmail } = require('./lib/resend'); // Import here to avoid top-level init issues if config missing
 
     logger.info(`New arb ticket created: ${ticketId}, checking custom alerts`);
 
@@ -475,12 +476,15 @@ exports.onArbTicketCreateAlerts = onDocumentCreated(
           const userDoc = await db.collection('users').doc(userId).get();
           const userData = userDoc.data();
 
+          const message = `${arbMargin.toFixed(2)}% arbitrage opportunity found!`;
+
+          // 1. FCM
           if (userData?.fcmToken && userData?.notificationsEnabled) {
             await admin.messaging().send({
               token: userData.fcmToken,
               notification: {
                 title: `High Value Arbitrage! 💰`,
-                body: `${arbMargin.toFixed(2)}% arbitrage opportunity found`,
+                body: message,
               },
               data: {
                 type: 'custom_alert_arb',
@@ -488,21 +492,41 @@ exports.onArbTicketCreateAlerts = onDocumentCreated(
                 ticketId,
               },
             });
-
-            // Log to alert history
-            const { createHistoryEntry } = require('./lib/alert-history');
-            await createHistoryEntry(
-              userId,
-              rule.id,
-              rule.name,
-              'arb_opportunity',
-              {
-                eventId: ticketData.eventId,
-                message: `${arbMargin.toFixed(2)}% arbitrage opportunity`,
-                arbMargin,
-              }
-            );
           }
+
+          // 2. Email (Resend)
+          if (userData?.email && userData?.emailNotificationsEnabled) {
+             const emailHtml = `
+              <div style="font-family: sans-serif; color: #333;">
+                <h2>High Value Arbitrage Found! 💰</h2>
+                <p>${message}</p>
+                <p><strong>Margin:</strong> ${arbMargin.toFixed(2)}%</p>
+                <p><strong>Event:</strong> ${ticketData.eventId || 'Unknown Event'}</p>
+                <a href="https://pickit.app/picks/${ticketId}" style="display: inline-block; padding: 10px 20px; background: #000; color: #fff; text-decoration: none; border-radius: 5px;">View Opportunity</a>
+              </div>
+            `;
+            
+            await sendEmail({
+              to: userData.email,
+              subject: `Arbitrage Alert: ${arbMargin.toFixed(2)}% Opportunity`,
+              html: emailHtml,
+              text: `${message}\n\nView here: https://pickit.app/picks/${ticketId}`
+            });
+          }
+
+          // Log to alert history
+          const { createHistoryEntry } = require('./lib/alert-history');
+          await createHistoryEntry(
+            userId,
+            rule.id,
+            rule.name,
+            'arb_opportunity',
+            {
+              eventId: ticketData.eventId,
+              message: `${arbMargin.toFixed(2)}% arbitrage opportunity`,
+              arbMargin,
+            }
+          );
         }
       }
 
