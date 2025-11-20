@@ -49,10 +49,10 @@ const Navbar: React.FC<NavbarProps> = ({
         : "bg-transparent border-transparent"
         }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Left side: Sidebar Toggle + Logo */}
-          <div className="flex items-center gap-4">
+          {/* Left side: Sidebar Toggle + Logo + Search (Desktop) */}
+          <div className="flex items-center gap-4 flex-1">
             <Button
               variant="ghost"
               size="icon"
@@ -70,19 +70,31 @@ const Navbar: React.FC<NavbarProps> = ({
                 PickIt
               </span>
             </Link>
-          </div>
 
-          {/* Right side: User Actions */}
-          <div className="flex items-center gap-3">
-            {/* Search (Hidden on mobile) */}
-            <form onSubmit={handleSearch} className="hidden md:flex relative">
+            {/* Search (Desktop - Moved to Left) */}
+            <form onSubmit={handleSearch} className="hidden lg:flex relative max-w-md w-full ml-4">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search events..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-64 bg-white/5 border border-white/10 rounded-full py-1.5 pl-10 pr-4 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-white/20 focus:bg-white/10 transition-all"
+                className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-white/20 focus:bg-white/10 transition-all"
+              />
+            </form>
+          </div>
+
+          {/* Right side: User Actions */}
+          <div className="flex items-center gap-3">
+            {/* Search (Mobile/Tablet - Hidden on Desktop) */}
+            <form onSubmit={handleSearch} className="hidden md:flex lg:hidden relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-40 bg-white/5 border border-white/10 rounded-full py-1.5 pl-10 pr-4 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-white/20 focus:bg-white/10 transition-all"
               />
             </form>
 

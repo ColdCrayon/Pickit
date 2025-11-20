@@ -124,4 +124,3 @@ const FreePicksLeague: React.FC = () => {
 };
 
 export default FreePicksLeague;
-```

@@ -58,7 +58,7 @@ function App() {
 
       {/* Main Content Area */}
       <main
-        className={`relative z-10 transition-all duration-300 ${isSidebarOpen ? "ml-64" : ""
+        className={`relative z-10 transition-all duration-300 pt-16 ${isSidebarOpen ? "pl-64" : ""
           }`}
       >
         <Routes>

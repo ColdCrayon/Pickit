@@ -121,8 +121,7 @@ const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
   return (
     <div className="min-h-screen bg-transparent text-white">
       <main
-        className={`relative z-10 transition-all duration-300 ${isSidebarOpen ? "ml-64 lg:ml-64" : ""
-          } pt-16`}
+        className="relative z-10 transition-all duration-300 pt-16"
       >
         <div className="max-w-7xl mx-auto px-6 py-8">
           {/* Header */}

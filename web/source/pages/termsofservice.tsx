@@ -1,186 +1,86 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { Footer } from "../components";
+import { Card, CardContent } from "../components/ui/Card";
 
-const logo = "/logo.png";
-
-const TermsOfService: React.FC = () => {
+const TermsOfService = () => {
   return (
-    <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
-      {/* Background */}
-      <div
-        className="absolute inset-0 bg-cover bg-center pointer-events-none"
-        style={{
-          minHeight: "100vh",
-          color: "white",
-        }}
-      />
+    <div className="min-h-screen bg-transparent text-white">
+      <div className="max-w-4xl mx-auto px-6 py-12 pt-24">
+        <Card className="glass-card">
+          <CardContent className="p-8 sm:p-12">
+            <div className="mb-8 border-b border-white/10 pb-8">
+              <h1 className="text-3xl font-bold text-white text-glow mb-4">Terms of Service</h1>
+              <p className="text-gray-400">Last updated: November 2025</p>
+            </div>
 
-      {/* Content */}
-      <main className="relative z-10 max-w-5xl mx-auto py-28 px-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-10">
-          <div className="flex items-center space-x-3">
-            <img
-              src={logo}
-              alt="PickIt"
-              className="w-10 h-10 rounded-full border border-white/20"
-            />
-            <h1 className="text-3xl font-bold">Terms of Service</h1>
-          </div>
-          <div className="hidden md:flex items-center gap-4 text-sm text-gray-300">
-            <Link to="/" className="hover:text-white">
-              Home
-            </Link>
-            <span className="opacity-40">/</span>
-            <Link to="/privacy" className="hover:text-white">
-              Privacy Policy
-            </Link>
-          </div>
-        </div>
+            <div className="space-y-8 text-gray-300 leading-relaxed">
+              <section>
+                <h2 className="text-xl font-semibold text-white mb-3">1. Agreement to Terms</h2>
+                <p>
+                  By accessing our website, you agree to be bound by these Terms
+                  of Service and to comply with all applicable laws and
+                  regulations. If you do not agree with these terms, you are
+                  prohibited from using or accessing this site.
+                </p>
+              </section>
 
-        {/* Body */}
-        <div className="bg-white/5 border border-white/10 rounded-3xl p-8 md:p-10 leading-7">
-          <p className="text-sm text-gray-300 mb-6">
-            <span className="font-semibold">Effective Date:</span> 2/9/2025
-          </p>
+              <section>
+                <h2 className="text-xl font-semibold text-white mb-3">2. Use License</h2>
+                <p>
+                  Permission is granted to temporarily download one copy of the
+                  materials (information or software) on PickIt's website for
+                  personal, non-commercial transitory viewing only. This is the
+                  grant of a license, not a transfer of title, and under this
+                  license you may not:
+                </p>
+                <ul className="list-disc pl-5 mt-2 space-y-1">
+                  <li>modify or copy the materials;</li>
+                  <li>use the materials for any commercial purpose, or for any public display (commercial or non-commercial);</li>
+                  <li>attempt to decompile or reverse engineer any software contained on PickIt's website;</li>
+                  <li>remove any copyright or other proprietary notations from the materials; or</li>
+                  <li>transfer the materials to another person or "mirror" the materials on any other server.</li>
+                </ul>
+              </section>
 
-          <p className="mb-6">
-            Welcome to PickIt! By accessing or using our sports betting advice
-            app, you agree to these Terms of Service. If you do not agree,
-            please do not use the App.
-          </p>
+              <section>
+                <h2 className="text-xl font-semibold text-white mb-3">3. Disclaimer</h2>
+                <p>
+                  The materials on PickIt's website are provided on an 'as is'
+                  basis. PickIt makes no warranties, expressed or implied, and
+                  hereby disclaims and negates all other warranties including,
+                  without limitation, implied warranties or conditions of
+                  merchantability, fitness for a particular purpose, or
+                  non-infringement of intellectual property or other violation
+                  of rights.
+                </p>
+              </section>
 
-          <section className="space-y-3 mb-8">
-            <h2 className="text-xl font-semibold">1. Eligibility</h2>
-            <p>
-              You must be at least 18 years old (or the legal age in your
-              jurisdiction) to use this App. By using the App, you confirm that
-              you meet the eligibility requirements.
-            </p>
-          </section>
+              <section>
+                <h2 className="text-xl font-semibold text-white mb-3">4. Limitations</h2>
+                <p>
+                  In no event shall PickIt or its suppliers be liable for any
+                  damages (including, without limitation, damages for loss of
+                  data or profit, or due to business interruption) arising out
+                  of the use or inability to use the materials on PickIt's
+                  website, even if PickIt or a PickIt authorized representative
+                  has been notified orally or in writing of the possibility of
+                  such damage.
+                </p>
+              </section>
 
-          <section className="space-y-3 mb-8">
-            <h2 className="text-xl font-semibold">2. No Real Money Gambling</h2>
-            <p>
-              PickIt does not facilitate real-money gambling, betting, or
-              wagering. We provide sports betting advice, insights, and
-              analytics for entertainment and informational purposes only. Any
-              decisions you make based on our content are at your own risk.
-            </p>
-            <p className="italic text-gray-300">
-              Apple Compliance Notice: This app does not enable, support, or
-              promote gambling activities and complies with Apple's App Store
-              Review Guidelines, including Section 5.3 (Gaming, Gambling, and
-              Lotteries).
-            </p>
-          </section>
-
-          <section className="space-y-3 mb-8">
-            <h2 className="text-xl font-semibold">
-              3. Responsible Betting Disclaimer
-            </h2>
-            <p>
-              We encourage responsible betting and do not endorse excessive
-              gambling. If you or someone you know has a gambling problem,
-              please seek help from a certified gambling support organization in
-              your area (e.g., National Council on Problem Gambling —
-              1-800-522-4700).
-            </p>
-          </section>
-
-          <section className="space-y-3 mb-8">
-            <h2 className="text-xl font-semibold">
-              4. User Accounts &amp; Subscriptions
-            </h2>
-            <ul className="list-disc pl-6 space-y-2">
-              <li>
-                You may be required to create an account to access premium
-                features.
-              </li>
-              <li>
-                If you subscribe to paid services, you agree to our billing and
-                cancellation terms available in the App.
-              </li>
-              <li>
-                You are responsible for maintaining the confidentiality of your
-                account credentials.
-              </li>
-            </ul>
-          </section>
-
-          <section className="space-y-3 mb-8">
-            <h2 className="text-xl font-semibold">5. Prohibited Conduct</h2>
-            <p className="mb-2">By using the App, you agree NOT to:</p>
-            <ul className="list-disc pl-6 space-y-2">
-              <li>Use the App for illegal gambling or real-money wagering.</li>
-              <li>Share false or misleading information.</li>
-              <li>
-                Attempt to hack, exploit, or manipulate the App's algorithms.
-              </li>
-              <li>
-                Violate any applicable laws or Apple's Developer Policies.
-              </li>
-            </ul>
-            <p>
-              We reserve the right to suspend or terminate accounts violating
-              these Terms.
-            </p>
-          </section>
-
-          <section className="space-y-3 mb-8">
-            <h2 className="text-xl font-semibold">6. Intellectual Property</h2>
-            <p>
-              All content, trademarks, and features within the App are owned by
-              PickIt or its licensors. You may not copy, distribute, or modify
-              any App content without prior written permission.
-            </p>
-          </section>
-
-          <section className="space-y-3 mb-8">
-            <h2 className="text-xl font-semibold">
-              7. Limitation of Liability
-            </h2>
-            <p>
-              PickIt is not responsible for any financial loss, betting losses,
-              or other damages resulting from your use of our advice or
-              predictions. The App is provided "AS IS" without warranties of any
-              kind.
-            </p>
-          </section>
-
-          <section className="space-y-3 mb-8">
-            <h2 className="text-xl font-semibold">8. Privacy Policy</h2>
-            <p>
-              Our Privacy Policy governs how we collect, use, and protect your
-              data. By using the App, you agree to the terms outlined in our
-              Privacy Policy.
-            </p>
-          </section>
-
-          <section className="space-y-3 mb-8">
-            <h2 className="text-xl font-semibold">9. Changes to These Terms</h2>
-            <p>
-              We may update these Terms from time to time. Continued use of the
-              App after changes take effect means you accept the revised Terms.
-            </p>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="text-xl font-semibold">10. Contact Us</h2>
-            <p>
-              For questions or concerns, contact us at{" "}
-              <a
-                href="mailto:support@email.com"
-                className="underline hover:text-white"
-              >
-                support@email.com
-              </a>
-              .
-            </p>
-          </section>
-        </div>
-      </main>
+              <section>
+                <h2 className="text-xl font-semibold text-white mb-3">5. Governing Law</h2>
+                <p>
+                  These terms and conditions are governed by and construed in
+                  accordance with the laws of the State of Delaware and you
+                  irrevocably submit to the exclusive jurisdiction of the courts
+                  in that State or location.
+                </p>
+              </section>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
       <Footer />
     </div>
   );

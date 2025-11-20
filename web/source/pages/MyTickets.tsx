@@ -33,15 +33,17 @@ export const MyTickets: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="min-h-screen bg-transparent text-white">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
         {/* Header */}
-        <div className="mb-8 mt-10">
+        <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <Star className="w-8 h-8 text-yellow-400 fill-yellow-400" />
-            <h1 className="text-4xl font-bold">My Saved Tickets</h1>
+            <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md shadow-lg">
+              <Star className="w-6 h-6 text-blue-400" />
+            </div>
+            <h1 className="text-3xl font-bold text-white text-glow">My Saved Tickets</h1>
           </div>
-          <p className="text-gray-400">
+          <p className="text-gray-400 font-medium ml-1">
             Track your favorite arbitrage opportunities and game picks
           </p>
         </div>
@@ -50,11 +52,11 @@ export const MyTickets: React.FC = () => {
         <UserTicketList />
 
         {/* Info Card */}
-        <div className="mt-8 bg-white/5 border border-white/10 rounded-xl p-6">
+        <div className="mt-8 bg-white/5 border border-white/10 rounded-xl p-6 backdrop-blur-sm">
           <div className="flex items-start gap-4">
             <Settings className="w-6 h-6 text-gray-400 mt-1" />
             <div>
-              <h3 className="font-semibold mb-2">How it works</h3>
+              <h3 className="font-semibold mb-2 text-white">How it works</h3>
               <ul className="text-sm text-gray-400 space-y-2">
                 <li>
                   • Click the "Save" button on any arbitrage or game ticket to

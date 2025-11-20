@@ -1,17 +1,21 @@
 /**
- * EventBrowser Page - DEBUG VERSION
- *
- * Added extensive logging to diagnose why NBA filter isn't showing
+ * EventBrowser Page
+ * Allows users to browse and search for events across different sports
  */
 
 import React, { useState, useMemo } from "react";
-import { Search, Filter, Calendar, TrendingUp } from "lucide-react";
+import { Search, TrendingUp, Calendar, Filter } from "lucide-react";
 import {
   useAvailableEvents,
   useMultiSportEvents,
 } from "../hooks/useAvailableEvents";
 import { EventCard } from "../components/watchlist/EventCard";
-import { SportKey, leagueToSportKey, League } from "../types/events";
+import { SportKey, League } from "../types/events";
+import { Input } from "../components/ui/Input";
+import { Button } from "../components/ui/Button";
+import { Card, CardContent } from "../components/ui/Card";
+import { Badge } from "../components/ui/Badge";
+import { Footer } from "../components";
 
 const SPORTS: { key: SportKey; label: League }[] = [
   { key: "americanfootball_nfl", label: "NFL" },
@@ -20,21 +24,22 @@ const SPORTS: { key: SportKey; label: League }[] = [
   { key: "baseball_mlb", label: "MLB" },
 ];
 
-console.log("[EventBrowser] SPORTS array defined:", SPORTS);
+import { useSearchParams } from "react-router-dom";
 
 export default function EventBrowser() {
+  const [searchParams] = useSearchParams();
   const [selectedSport, setSelectedSport] = useState<SportKey | "all">("all");
-  const [searchQuery, setSearchQuery] = useState("");
-
-  console.log("[EventBrowser] Component rendered", {
-    selectedSport,
-    searchQuery,
-    SPORTS,
-  });
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
 
   const sportKeys = useMemo(() => SPORTS.map((s) => s.key), []);
 
-  console.log("[EventBrowser] sportKeys memoized:", sportKeys);
+  // Sync search query with URL parameters
+  React.useEffect(() => {
+    const query = searchParams.get("search");
+    if (query !== null) {
+      setSearchQuery(query);
+    }
+  }, [searchParams]);
 
   // Fetch events based on selected sport
   const singleSportResult = useAvailableEvents({
@@ -47,17 +52,6 @@ export default function EventBrowser() {
   const { events, loading, error, refresh } =
     selectedSport === "all" ? multiSportResult : singleSportResult;
 
-  console.log("[EventBrowser] Events state:", {
-    eventCount: events.length,
-    loading,
-    error,
-    selectedSport,
-    eventsBreakdown: events.reduce((acc, e) => {
-      acc[e.sport] = (acc[e.sport] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>),
-  });
-
   // Filter events by search query
   const filteredEvents = events.filter((event) => {
     if (!searchQuery) return true;
@@ -68,128 +62,119 @@ export default function EventBrowser() {
     );
   });
 
-  console.log("[EventBrowser] Filtered events:", {
-    originalCount: events.length,
-    filteredCount: filteredEvents.length,
-    searchQuery,
-  });
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white">
-      <div className="container mx-auto px-4 py-8 max-w-6xl mt-12">
+    <div className="min-h-screen bg-transparent text-white">
+      <div className="max-w-7xl mx-auto px-6 py-8 pt-24">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2 flex items-center gap-3">
-            <TrendingUp className="w-8 h-8 text-yellow-400" />
-            Browse Events
-          </h1>
-          <p className="text-gray-400">
-            Add upcoming games to your watchlist to track odds and receive
-            notifications
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md shadow-lg">
+              <TrendingUp className="w-6 h-6 text-blue-400" />
+            </div>
+            <h1 className="text-3xl font-bold text-white text-glow">Browse Events</h1>
+          </div>
+          <p className="text-gray-400 font-medium ml-1">
+            Find upcoming games and track odds movements
           </p>
         </div>
 
-        {/* Filters */}
-        <div className="mb-6 space-y-4">
-          {/* Search Bar */}
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search teams..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400/50 transition"
-            />
-          </div>
-
-          {/* Sport Filter Tabs */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2">
-            <button
-              onClick={() => {
-                console.log("[EventBrowser] Clicked All Sports");
-                setSelectedSport("all");
-              }}
-              className={`px-4 py-2 rounded-lg whitespace-nowrap transition ${
-                selectedSport === "all"
-                  ? "bg-yellow-400 text-black font-semibold"
-                  : "bg-white/5 hover:bg-white/10 text-gray-300"
-              }`}
-            >
-              All Sports ({events.length})
-            </button>
-            {SPORTS.map((sport) => {
-              const sportEventCount = events.filter(
-                (e) => e.sport === sport.key
-              ).length;
-              console.log(
-                `[EventBrowser] Rendering button for ${sport.label}:`,
-                sport
-              );
-              return (
-                <button
-                  key={sport.key}
-                  onClick={() => {
-                    console.log(`[EventBrowser] Clicked ${sport.label}`);
-                    setSelectedSport(sport.key);
-                  }}
-                  className={`px-4 py-2 rounded-lg whitespace-nowrap transition ${
-                    selectedSport === sport.key
-                      ? "bg-yellow-400 text-black font-semibold"
-                      : "bg-white/5 hover:bg-white/10 text-gray-300"
-                  }`}
+        {/* Filters & Search */}
+        <Card className="glass-card mb-8">
+          <CardContent className="p-6">
+            <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
+              {/* Sport Tabs */}
+              <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 w-full md:w-auto no-scrollbar">
+                <Button
+                  variant={selectedSport === "all" ? "liquid" : "ghost"}
+                  size="sm"
+                  onClick={() => setSelectedSport("all")}
+                  className={selectedSport !== "all" ? "text-gray-400 hover:text-white" : ""}
                 >
-                  {sport.label} ({sportEventCount})
-                </button>
-              );
-            })}
-          </div>
-        </div>
+                  All Sports
+                  <Badge variant="secondary" className="ml-2 bg-white/10 text-xs">
+                    {selectedSport === "all" ? events.length : ""}
+                  </Badge>
+                </Button>
+                {SPORTS.map((sport) => (
+                  <Button
+                    key={sport.key}
+                    variant={selectedSport === sport.key ? "liquid" : "ghost"}
+                    size="sm"
+                    onClick={() => setSelectedSport(sport.key)}
+                    className={selectedSport !== sport.key ? "text-gray-400 hover:text-white" : ""}
+                  >
+                    {sport.label}
+                  </Button>
+                ))}
+              </div>
+
+              {/* Search Bar */}
+              <div className="relative w-full md:w-72">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  type="text"
+                  placeholder="Search teams..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 bg-black/20 border-white/10 focus:border-blue-500/50"
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Results */}
         <div>
           {/* Loading State */}
           {loading && (
-            <div className="text-center py-12">
-              <div className="inline-block w-8 h-8 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
-              <p className="mt-4 text-gray-400">Loading events...</p>
+            <div className="flex flex-col items-center justify-center py-20">
+              <div className="w-12 h-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-4"></div>
+              <p className="text-gray-400 animate-pulse">Loading events...</p>
             </div>
           )}
 
           {/* Error State */}
           {error && (
-            <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6 text-center">
+            <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6 text-center max-w-lg mx-auto">
               <p className="text-red-400 mb-4">{error}</p>
-              <button
+              <Button
+                variant="outline"
                 onClick={refresh}
-                className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 rounded-lg transition"
+                className="border-red-500/30 text-red-400 hover:bg-red-500/10"
               >
                 Try Again
-              </button>
+              </Button>
             </div>
           )}
 
           {/* No Results */}
           {!loading && !error && filteredEvents.length === 0 && (
-            <div className="text-center py-12">
-              <Calendar className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-              <p className="text-gray-400 mb-2">No upcoming events found</p>
-              {searchQuery && (
-                <p className="text-sm text-gray-500">
-                  Try adjusting your search or filters
-                </p>
-              )}
+            <div className="text-center py-20">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+                <Calendar className="w-8 h-8 text-gray-500" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">No events found</h3>
+              <p className="text-gray-400">
+                {searchQuery
+                  ? `No matches for "${searchQuery}"`
+                  : "No upcoming events available for this category"}
+              </p>
             </div>
           )}
 
           {/* Event Grid */}
           {!loading && !error && filteredEvents.length > 0 && (
             <>
-              <div className="mb-4 text-sm text-gray-400">
-                Showing {filteredEvents.length} event
-                {filteredEvents.length !== 1 ? "s" : ""}
+              <div className="mb-4 flex items-center justify-between text-sm text-gray-400 px-1">
+                <span>
+                  Showing {filteredEvents.length} event{filteredEvents.length !== 1 ? "s" : ""}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Filter className="w-3 h-3" />
+                  Sorted by start time
+                </span>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredEvents.map((event) => (
                   <EventCard key={event.id} event={event} showOdds={true} />
                 ))}
@@ -198,6 +183,7 @@ export default function EventBrowser() {
           )}
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

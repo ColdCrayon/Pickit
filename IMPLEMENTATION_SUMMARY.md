@@ -21,6 +21,31 @@ PickIt! is a premium sports betting intelligence platform that provides:
 
 ---
 
+## 🎨 UI/UX Design System ("Liquid Metal" / "Apple Glass")
+
+**Theme**: Dark mode default with transparent backgrounds, glassmorphism, and "liquid metal" accents.
+
+- **Color Palette**:
+  - **Primary**: Blue/Silver (Cool tones for general UI)
+  - **Premium**: Amber/Gold (Warm tones for paid features)
+  - **Background**: Global gradient managed in `index.css`
+- **Components**:
+  - `Card`: Glassmorphic container with border glow.
+  - `Button`: "Liquid" variant for primary actions, ghost/outline for secondary.
+  - `Input`: Glass style inputs.
+  - `Badge`: Status indicators.
+  - `Tabs`: Segmented controls for filtering.
+- **Revamped Pages**:
+  - **Dashboard**: Central hub with quick access.
+  - **Event Browser**: Search and filter events with glass cards.
+  - **My Tickets / Watchlist**: Tracked items with consistent styling.
+  - **News**: Article grid with hover effects.
+  - **Free Picks**: Uses premium `ArbTicketCard` for consistency.
+  - **Odds Comparison**: Fixed layout and applied theme.
+  - **Legal Pages**: Clean, readable glass cards for Privacy/TOS.
+
+---
+
 ## 🏗️ System Architecture
 
 ```

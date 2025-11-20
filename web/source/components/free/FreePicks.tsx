@@ -23,24 +23,18 @@ const FreePicks: React.FC = () => {
   const [isPremium, setIsPremium] = React.useState<boolean | null>(null);
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
-      <div
-        className="absolute inset-0 bg-cover bg-center pointer-events-none"
-      />
-
-      <main className="relative z-10 max-w-6xl mx-auto py-28 px-6">
+    <div className="min-h-screen bg-transparent text-white relative overflow-hidden">
+      <main className="relative z-10 max-w-6xl mx-auto py-12 px-6 pt-24">
         <div className="flex items-center justify-between mb-10">
           <div className="flex items-center space-x-3">
-            <img
-              src={logo}
-              alt="PickIt Logo"
-              className="w-10 h-10 rounded-full border border-white/20"
-            />
-            <h1 className="text-3xl font-bold">Free Picks</h1>
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white to-gray-400 flex items-center justify-center shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+              <span className="text-black font-bold text-lg">P</span>
+            </div>
+            <h1 className="text-3xl font-bold text-white text-glow">Free Picks</h1>
           </div>
           <div className="hidden md:flex items-center gap-4 text-sm text-gray-300">
             {isPremium === false && (
-              <Link to="/upgrade" className="hover:text-white">
+              <Link to="/upgrade" className="hover:text-white transition-colors">
                 Get Premium
               </Link>
             )}
@@ -57,7 +51,7 @@ const FreePicks: React.FC = () => {
         <div className="text-center mt-12">
           <Link
             to="/free-picks/all"
-            className="inline-block px-6 py-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition"
+            className="inline-block px-8 py-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all hover:scale-105 backdrop-blur-sm"
           >
             See all free picks
           </Link>

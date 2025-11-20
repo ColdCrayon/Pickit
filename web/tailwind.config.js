@@ -8,8 +8,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Helvetica", "Arial", "sans-serif"],
-        heading: ["Helvetica", "Arial", "sans-serif"],
+        sans: ["Stack Sans Headline", "sans-serif"],
+        heading: ["Stack Sans Headline", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",

@@ -99,27 +99,26 @@ const OddsComparison: React.FC = () => {
   const selectedEvent = events?.find((e) => e.id === selectedEventId);
 
   return (
-    <div className="min-h-screen bg-background text-foreground pt-16 relative overflow-hidden">
-      <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]" />
+    <div className="min-h-screen bg-transparent text-white pt-16 relative">
 
       {/* Header */}
-      <header className="border-b border-white/10 bg-background/95 backdrop-blur-lg sticky top-16 z-40">
+      <header className="border-b border-white/10 bg-[#0a0a0a]/80 backdrop-blur-xl sticky top-16 z-30 shadow-lg">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Link
                 to="/dashboard"
-                className="p-2 hover:bg-white/10 rounded-lg transition"
+                className="p-2 hover:bg-white/10 rounded-lg transition text-gray-400 hover:text-white"
               >
                 <ArrowLeft className="w-5 h-5" />
               </Link>
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-primary/20 rounded-lg">
-                  <BarChart3 className="w-6 h-6 text-primary" />
+                <div className="p-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                  <BarChart3 className="w-6 h-6 text-blue-400" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold tracking-tight">Odds Comparison</h1>
-                  <p className="text-sm text-muted-foreground">
+                  <h1 className="text-2xl font-bold tracking-tight text-white text-glow">Odds Comparison</h1>
+                  <p className="text-sm text-gray-400">
                     Compare odds across all major sportsbooks
                   </p>
                 </div>
@@ -127,7 +126,7 @@ const OddsComparison: React.FC = () => {
             </div>
             <button
               onClick={() => refresh()}
-              className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition"
+              className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition text-sm font-medium"
             >
               <RefreshCw className="w-4 h-4" />
               <span className="hidden sm:inline">Refresh</span>
@@ -216,8 +215,8 @@ const OddsComparison: React.FC = () => {
                           key={event.id}
                           onClick={() => handleEventSelect(event.id)}
                           className={`w-full p-4 text-left transition-all ${isSelected
-                              ? "bg-primary/10 border-l-4 border-primary"
-                              : "hover:bg-white/5 border-l-4 border-transparent"
+                            ? "bg-primary/10 border-l-4 border-primary"
+                            : "hover:bg-white/5 border-l-4 border-transparent"
                             }`}
                         >
                           <p className="font-medium text-sm">
