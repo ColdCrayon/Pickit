@@ -206,7 +206,7 @@ exports.createCheckoutSession = onCall(
     const priceId = STRIPE_PREMIUM_PRICE_ID.value();
 
     if (!priceId) {
-      throw new HttpsError('failed-precondition', 'Stripe price ID not configured.');
+      throw new HttpsError('failed-precondition', 'Stripe price ID not configured. Set the STRIPE_PREMIUM_PRICE_ID parameter.');
     }
 
     try {
@@ -261,29 +261,28 @@ exports.createPortalSession = onCall(
     const user = request.auth;
 
     if (!user) {
-      throw new Error('UNAUTHENTICATED: User must be logged in to access portal');
+      throw new HttpsError('unauthenticated', 'User must be logged in to access portal');
     }
 
     try {
       const { returnUrl } = request.data || {};
-      const userDoc = await db.collection('users').doc(user.uid).get();
+      const userDoc = await admin.firestore().collection('users').doc(user.uid).get();
       const userData = userDoc.data();
-
+    
       if (!userData?.stripeCustomerId) {
-        throw new Error('No Stripe customer found. User must have an active subscription.');
+        throw new HttpsError('failed-precondition', 'No Stripe customer found. User must have an active subscription.');
       }
 
       const session = await getStripe().billingPortal.sessions.create({
         customer: userData.stripeCustomerId,
-        return_url: returnUrl || 'https://yourapp.com/account',
+        return_url: returnUrl || 'https://pickit.app/account',
       });
 
-      return {
-        url: session.url,
-      };
+      return { url: session.url };
     } catch (error) {
       console.error('Error creating portal session:', error);
-      throw new Error(`Failed to create portal session: ${error.message}`);
+      if (error instanceof HttpsError) throw error;
+      throw new HttpsError('internal', `Failed to create portal session: ${error.message}`);
     }
   }
 );

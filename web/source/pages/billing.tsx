@@ -84,6 +84,7 @@ const Billing: React.FC = () => {
     } catch (error) {
       console.error("Error opening portal:", error);
       alert("Failed to open billing portal");
+    } finally {
       setLoading(false);
     }
   };

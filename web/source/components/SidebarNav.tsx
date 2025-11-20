@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Home,
@@ -14,6 +14,8 @@ import {
   User,
   Settings,
   Trophy,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 import { Button } from "./ui/Button";
@@ -28,19 +30,22 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
   setIsSidebarOpen,
 }) => {
   const location = useLocation();
+  const [isSportsOpen, setIsSportsOpen] = useState(true);
 
   const NavItem = ({
     to,
     icon: Icon,
     label,
     className,
+    indent = false,
   }: {
     to: string;
     icon: React.ElementType;
     label: string;
     className?: string;
+    indent?: boolean;
   }) => {
-    const isActive = location.pathname === to;
+    const isActive = location.pathname === to || (to !== "/" && location.pathname.startsWith(to));
     return (
       <Button
         variant="ghost"
@@ -48,6 +53,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
         className={cn(
           "w-full justify-start text-muted-foreground hover:text-white hover:bg-white/5 transition-all",
           isActive && "bg-white/10 text-white font-semibold shadow-[inset_0_0_10px_rgba(255,255,255,0.05)]",
+          indent && "pl-11",
           className
         )}
         onClick={() => setIsSidebarOpen(false)}
@@ -94,19 +100,39 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
           </div>
 
           <div className="flex-1 py-6 px-3 space-y-1">
-            {/* Sports Section */}
-            <SectionHeader label="Sports" />
-            <NavItem to="/mlb" icon={Trophy} label="MLB" />
-            <NavItem to="/nfl" icon={Trophy} label="NFL" />
-            <NavItem to="/nba" icon={Trophy} label="NBA" />
-            <NavItem to="/nhl" icon={Trophy} label="NHL" />
-
             {/* Dashboard Section */}
             <SectionHeader label="Dashboard" />
             <NavItem to="/" icon={LayoutDashboard} label="Dashboard" />
             <NavItem to="/tickets" icon={Ticket} label="My Tickets" />
             <NavItem to="/watchlist" icon={Eye} label="Watchlist" />
             <NavItem to="/odds" icon={Scale} label="Odds Comparison" />
+
+            {/* Sports Dropdown Section */}
+            <SectionHeader label="Sports" />
+            <Button
+              variant="ghost"
+              className="w-full justify-between text-muted-foreground hover:text-white hover:bg-white/5 transition-all"
+              onClick={() => setIsSportsOpen(!isSportsOpen)}
+            >
+              <div className="flex items-center">
+                <Trophy className="mr-3 h-4 w-4" />
+                Leagues
+              </div>
+              {isSportsOpen ? (
+                <ChevronDown className="h-4 w-4 opacity-50" />
+              ) : (
+                <ChevronRight className="h-4 w-4 opacity-50" />
+              )}
+            </Button>
+
+            {isSportsOpen && (
+              <div className="space-y-1 animate-in slide-in-from-top-2 duration-200">
+                <NavItem to="/mlb" icon={Trophy} label="MLB" indent />
+                <NavItem to="/nfl" icon={Trophy} label="NFL" indent />
+                <NavItem to="/nba" icon={Trophy} label="NBA" indent />
+                <NavItem to="/nhl" icon={Trophy} label="NHL" indent />
+              </div>
+            )}
 
             {/* Account Section */}
             <SectionHeader label="Account" />

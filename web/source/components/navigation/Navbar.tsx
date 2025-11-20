@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { User, Menu, Search, Bell } from "lucide-react";
 import { Button } from "../ui/Button";
 
@@ -17,6 +17,8 @@ const Navbar: React.FC<NavbarProps> = ({
   user,
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -33,11 +35,18 @@ const Navbar: React.FC<NavbarProps> = ({
     };
   }, []);
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/browse-events?search=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b ${isScrolled
-          ? "bg-[#0a0a0a]/80 backdrop-blur-xl border-white/10 shadow-lg"
-          : "bg-transparent border-transparent"
+        ? "bg-[#0a0a0a]/80 backdrop-blur-xl border-white/10 shadow-lg"
+        : "bg-transparent border-transparent"
         }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -66,14 +75,16 @@ const Navbar: React.FC<NavbarProps> = ({
           {/* Right side: User Actions */}
           <div className="flex items-center gap-3">
             {/* Search (Hidden on mobile) */}
-            <div className="hidden md:flex relative">
+            <form onSubmit={handleSearch} className="hidden md:flex relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search events..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-64 bg-white/5 border border-white/10 rounded-full py-1.5 pl-10 pr-4 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-white/20 focus:bg-white/10 transition-all"
               />
-            </div>
+            </form>
 
             {/* Notifications */}
             <Button

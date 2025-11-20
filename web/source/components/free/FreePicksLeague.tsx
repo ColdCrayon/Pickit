@@ -9,7 +9,9 @@ const logo = "/logo.png";
 function toLeagueParam(value?: string): "NFL" | "NBA" | "MLB" | "NHL" | undefined {
   if (!value) return undefined;
   const v = value.toUpperCase();
-  return (["NFL", "NBA", "MLB", "NHL"] as const).includes(v as any) ? (v as any) : undefined;
+  const leagues = ["NFL", "NBA", "MLB", "NHL"] as const;
+  type League = typeof leagues[number];
+  return leagues.includes(v as League) ? (v as League) : undefined;
 }
 
 const FreePicksLeague: React.FC = () => {
@@ -66,6 +68,11 @@ const FreePicksLeague: React.FC = () => {
                                 <div className="text-xs text-gray-400">{leg.outcome} @ {leg.priceDecimal}</div>
                               </div>
                             ))}
+                            {a.legs && a.legs.length > 4 && (
+                              <div className="text-xs text-gray-400 pt-1 pl-1">
+                                + {a.legs.length - 4} more leg(s)
+                              </div>
+                            )}
                           </div>
                           <div className="text-xs text-gray-400 mt-2">{formatPickDate(a.createdAt ?? a.pickPublishDate)}</div>
                         </div>
@@ -117,3 +124,4 @@ const FreePicksLeague: React.FC = () => {
 };
 
 export default FreePicksLeague;
+```

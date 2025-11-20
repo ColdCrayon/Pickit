@@ -25,7 +25,7 @@ async function sendEmail({ to, subject, html, text }) {
       to,
       subject,
       html,
-      text: text || html.replace(/<[^>]*>?/gm, ""), // Fallback plain text
+      text: text ?? (typeof html === "string" ? html.replace(/<[^>]*>?/gm, "") : undefined),
     });
 
     console.log(`Email sent to ${to}:`, data);
