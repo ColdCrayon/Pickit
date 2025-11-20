@@ -309,24 +309,34 @@ exports.stripeWebhook = onRequest(
         STRIPE_WEBHOOK_SECRET.value()
       );
     } catch (err) {
-      console.error('❌ Webhook signature failed:', err.message);
+      console.error('❌ Webhook signature verification failed:', err.message);
       return res.status(400).send('Webhook Error: ' + err.message);
     }
+
+    console.log(`🔔 Webhook received: ${event.type} (ID: ${event.id})`);
 
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object;
         const userId = session.metadata?.firebaseUID;
 
+        console.log(`Processing checkout.session.completed for session ${session.id}`);
+
         if (!userId) {
-          console.error('No Firebase UID in checkout session metadata');
+          console.error('❌ No Firebase UID in checkout session metadata', session);
           break;
         }
 
         if (session.mode === 'subscription' && session.subscription) {
-          const subscription = await getStripe().subscriptions.retrieve(session.subscription);
-          await updateUserPremiumStatus(userId, true, subscription);
-          console.log(`User ${userId} upgraded to premium via checkout`);
+          try {
+            const subscription = await getStripe().subscriptions.retrieve(session.subscription);
+            await updateUserPremiumStatus(userId, true, subscription);
+            console.log(`✅ User ${userId} upgraded to premium via checkout`);
+          } catch (error) {
+            console.error(`❌ Failed to update user ${userId} status:`, error);
+          }
+        } else {
+          console.warn('Checkout session was not for a subscription or missing subscription ID');
         }
         break;
       }
@@ -337,16 +347,21 @@ exports.stripeWebhook = onRequest(
         const userId = await getUserIdFromStripeCustomer(subscription.customer);
 
         if (!userId) {
-          console.error(`No Firebase UID found for customer ${subscription.customer}`);
+          console.error(`❌ No Firebase UID found for customer ${subscription.customer}`);
           break;
         }
 
         const isPremium = subscription.status === 'active' ||
           subscription.status === 'trialing';
-        await updateUserPremiumStatus(userId, isPremium, subscription);
-        console.log(
-          `Subscription ${subscription.id} ${event.type} for user ${userId} - Premium: ${isPremium}`
-        );
+
+        try {
+          await updateUserPremiumStatus(userId, isPremium, subscription);
+          console.log(
+            `✅ Subscription ${subscription.id} ${event.type} for user ${userId} - Premium: ${isPremium}`
+          );
+        } catch (error) {
+          console.error(`❌ Failed to update subscription status for user ${userId}:`, error);
+        }
         break;
       }
 
@@ -355,17 +370,21 @@ exports.stripeWebhook = onRequest(
         const userId = await getUserIdFromStripeCustomer(subscription.customer);
 
         if (!userId) {
-          console.error(`No Firebase UID found for customer ${subscription.customer}`);
+          console.error(`❌ No Firebase UID found for customer ${subscription.customer}`);
           break;
         }
 
-        await updateUserPremiumStatus(userId, false);
-        console.log(`Subscription cancelled for user ${userId}`);
+        try {
+          await updateUserPremiumStatus(userId, false);
+          console.log(`✅ Subscription cancelled for user ${userId}`);
+        } catch (error) {
+          console.error(`❌ Failed to cancel subscription for user ${userId}:`, error);
+        }
         break;
       }
 
       default:
-        console.log(`Unhandled event type: ${event.type}`);
+        console.log(`ℹ️ Unhandled event type: ${event.type}`);
     }
 
     res.json({ received: true });
@@ -408,6 +427,62 @@ exports.cancelSubscription = onCall(
     } catch (error) {
       console.error('Error cancelling subscription:', error);
       throw new Error(`Failed to cancel subscription: ${error.message}`);
+    }
+  }
+);
+
+// -------------------------
+// Sync Subscription Status (Callable Function) - NEW
+// -------------------------
+
+exports.syncSubscriptionStatus = onCall(
+  {
+    cors: true,
+    secrets: [STRIPE_SECRET]
+  },
+  async (request) => {
+    const user = request.auth;
+
+    if (!user) {
+      throw new HttpsError('unauthenticated', 'User must be logged in');
+    }
+
+    try {
+      const userDoc = await db.collection('users').doc(user.uid).get();
+      const userData = userDoc.data();
+
+      if (!userData?.stripeCustomerId) {
+        console.log(`No Stripe customer ID for user ${user.uid}`);
+        return { isPremium: false, status: 'no_customer' };
+      }
+
+      // List subscriptions for this customer
+      const subscriptions = await getStripe().subscriptions.list({
+        customer: userData.stripeCustomerId,
+        status: 'all',
+        limit: 1,
+      });
+
+      if (subscriptions.data.length === 0) {
+        await updateUserPremiumStatus(user.uid, false);
+        return { isPremium: false, status: 'no_subscription' };
+      }
+
+      const subscription = subscriptions.data[0];
+      const isPremium = subscription.status === 'active' || subscription.status === 'trialing';
+
+      await updateUserPremiumStatus(user.uid, isPremium, subscription);
+
+      console.log(`Synced subscription for user ${user.uid}: ${subscription.status}`);
+
+      return {
+        isPremium,
+        status: subscription.status,
+        expiry: subscription.current_period_end
+      };
+    } catch (error) {
+      console.error('Error syncing subscription:', error);
+      throw new HttpsError('internal', 'Failed to sync subscription status');
     }
   }
 );
