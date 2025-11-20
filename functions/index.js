@@ -30,6 +30,7 @@ const {
   createPortalSession,
   stripeWebhook,
   cancelSubscription,
+  syncSubscriptionStatus,
 } = require('./lib/stripe');
 
 setGlobalOptions({ maxInstances: 10 });
@@ -129,8 +130,7 @@ exports.settleTickets = onSchedule(
 
       await batch.commit();
       logger.info(
-        `Settled batch ${Math.floor(i / 500) + 1}: ${i + slice.length}/${
-          refsToSettle.length
+        `Settled batch ${Math.floor(i / 500) + 1}: ${i + slice.length}/${refsToSettle.length
         } tickets`
       );
     }
@@ -170,10 +170,10 @@ exports.onArbTicketCreate = onDocumentCreated(
       const rawMargin = Number(marginValue);
       const marginBody =
         marginValue !== undefined &&
-        marginValue !== null &&
-        Number.isFinite(rawMargin) ?
+          marginValue !== null &&
+          Number.isFinite(rawMargin) ?
           `${(rawMargin * 100).toFixed(2)}% edge found! ` +
-            'Check your saved tickets.' :
+          'Check your saved tickets.' :
           'New arbitrage opportunity! Check your saved tickets.';
 
       const title = 'New Arbitrage! 💰';
@@ -188,7 +188,7 @@ exports.onArbTicketCreate = onDocumentCreated(
       const result = await sendBatchNotifications(userIds, title, body, data);
       logger.info(
         `Arb ticket ${ticketId}: Notified ` +
-          `${result.success}/${userIds.length} users`
+        `${result.success}/${userIds.length} users`
       );
 
       return null;
@@ -241,7 +241,7 @@ exports.onGameTicketSettle = onDocumentUpdated(
       const result = await sendBatchNotifications(userIds, title, body, data);
       logger.info(
         `Game ticket ${ticketId}: Notified ` +
-          `${result.success}/${userIds.length} users`
+        `${result.success}/${userIds.length} users`
       );
 
       return null;
@@ -405,3 +405,4 @@ exports.createCheckoutSession = createCheckoutSession;
 exports.createPortalSession = createPortalSession;
 exports.stripeWebhook = stripeWebhook;
 exports.cancelSubscription = cancelSubscription;
+exports.syncSubscriptionStatus = syncSubscriptionStatus;
