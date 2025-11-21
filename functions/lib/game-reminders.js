@@ -10,8 +10,8 @@ const logger = require('firebase-functions/logger');
 async function sendGameStartReminders() {
   const db = admin.firestore();
   const now = new Date();
-  const reminderStart = new Date(now.getTime() + 45 * 60000);  // 45 minutes from now
-  const reminderEnd = new Date(now.getTime() + 60 * 60000);     // 60 minutes from now
+  const reminderStart = new Date(now.getTime() + 45 * 60000); // 45 minutes from now
+  const reminderEnd = new Date(now.getTime() + 60 * 60000); // 60 minutes from now
 
   logger.info('Checking for games starting in 45-60 minutes...');
 
@@ -25,7 +25,7 @@ async function sendGameStartReminders() {
 
     for (const eventDoc of eventsSnapshot.docs) {
       const eventData = eventDoc.data();
-      
+
       // Find users watching this event
       const usersSnapshot = await db.collection('users')
         .where('watchlist.games', 'array-contains-any', [{ id: eventDoc.id }])
@@ -33,7 +33,7 @@ async function sendGameStartReminders() {
 
       for (const userDoc of usersSnapshot.docs) {
         const userData = userDoc.data();
-        
+
         if (userData.notificationPreferences?.gameStarts && userData.fcmToken) {
           try {
             await admin.messaging().send({

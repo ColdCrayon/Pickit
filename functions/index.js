@@ -31,6 +31,7 @@ const {
   stripeWebhook,
   cancelSubscription,
   syncSubscriptionStatus,
+  getBillingDetails,
 } = require('./lib/stripe');
 
 const { evaluateAlertRules } = require('./lib/alert-rules');
@@ -441,7 +442,7 @@ exports.onArbTicketCreateAlerts = onDocumentCreated(
 
       for (const ruleDoc of rulesSnapshot.docs) {
         const rule = ruleDoc.data();
-        const ruleId = ruleDoc.id;  // Use document ID, not rule.id field
+        const ruleId = ruleDoc.id; // Use document ID, not rule.id field
         const userId = ruleDoc.ref.parent.parent.id;
         const minMargin = rule.arbMinMargin || 5;
         const arbMargin = (ticketData.margin || 0) * 100;
@@ -464,7 +465,7 @@ exports.onArbTicketCreateAlerts = onDocumentCreated(
               },
               data: {
                 type: 'custom_alert_arb',
-                ruleId,  // Use ruleDoc.id
+                ruleId, // Use ruleDoc.id
                 ticketId,
               },
             });
@@ -472,7 +473,7 @@ exports.onArbTicketCreateAlerts = onDocumentCreated(
 
           // 2. Email (Resend)
           if (userData?.email && userData?.emailNotificationsEnabled) {
-             const emailHtml = `
+            const emailHtml = `
               <div style="font-family: sans-serif; color: #333;">
                 <h2>High Value Arbitrage Found! 💰</h2>
                 <p>${message}</p>
@@ -481,7 +482,7 @@ exports.onArbTicketCreateAlerts = onDocumentCreated(
                 <a href="https://pickit.app/picks/${ticketId}" style="display: inline-block; padding: 10px 20px; background: #000; color: #fff; text-decoration: none; border-radius: 5px;">View Opportunity</a>
               </div>
             `;
-            
+
             await sendEmail({
               to: userData.email,
               subject: `Arbitrage Alert: ${arbMargin.toFixed(2)}% Opportunity`,
@@ -494,7 +495,7 @@ exports.onArbTicketCreateAlerts = onDocumentCreated(
           const { createHistoryEntry } = require('./lib/alert-history');
           await createHistoryEntry(
             userId,
-            ruleId,  // Use ruleDoc.id
+            ruleId, // Use ruleDoc.id
             rule.name,
             'arb_opportunity',
             {
@@ -527,3 +528,4 @@ exports.createPortalSession = createPortalSession;
 exports.stripeWebhook = stripeWebhook;
 exports.cancelSubscription = cancelSubscription;
 exports.syncSubscriptionStatus = syncSubscriptionStatus;
+exports.getBillingDetails = getBillingDetails;

@@ -268,7 +268,7 @@ exports.createPortalSession = onCall(
       const { returnUrl } = request.data || {};
       const userDoc = await admin.firestore().collection('users').doc(user.uid).get();
       const userData = userDoc.data();
-    
+
       if (!userData?.stripeCustomerId) {
         throw new HttpsError('failed-precondition', 'No Stripe customer found. User must have an active subscription.');
       }
@@ -482,6 +482,87 @@ exports.syncSubscriptionStatus = onCall(
     } catch (error) {
       console.error('Error syncing subscription:', error);
       throw new HttpsError('internal', 'Failed to sync subscription status');
+    }
+  }
+);
+
+// -------------------------
+// Get Billing Details (Callable Function) - NEW
+// -------------------------
+
+exports.getBillingDetails = onCall(
+  {
+    cors: true,
+    secrets: [STRIPE_SECRET]
+  },
+  async (request) => {
+    const user = request.auth;
+
+    if (!user) {
+      throw new HttpsError('unauthenticated', 'User must be logged in');
+    }
+
+    try {
+      const userDoc = await db.collection('users').doc(user.uid).get();
+      const userData = userDoc.data();
+
+      if (!userData?.stripeCustomerId) {
+        return {
+          invoices: [],
+          upcomingInvoice: null,
+          paymentMethod: null
+        };
+      }
+
+      const customerId = userData.stripeCustomerId;
+      const stripe = getStripe();
+
+      // Run Stripe requests in parallel
+      const [paymentMethods, invoices, upcomingInvoice] = await Promise.all([
+        // 1. Get Payment Methods
+        stripe.paymentMethods.list({
+          customer: customerId,
+          type: 'card',
+        }),
+        // 2. Get Invoices (History)
+        stripe.invoices.list({
+          customer: customerId,
+          limit: 10,
+          status: 'paid',
+        }),
+        // 3. Get Upcoming Invoice (Next Bill) - FIXED for Stripe v19+
+        stripe.invoices.createPreview({
+          customer: customerId,
+          subscription: userData.subscriptionId,
+        }).catch(() => null) // Handle case where no upcoming invoice exists
+      ]);
+
+      return {
+        paymentMethod: paymentMethods.data.length > 0 ? {
+          brand: paymentMethods.data[0].card.brand,
+          last4: paymentMethods.data[0].card.last4,
+          expMonth: paymentMethods.data[0].card.exp_month,
+          expYear: paymentMethods.data[0].card.exp_year,
+        } : null,
+        invoices: invoices.data.map((inv) => ({
+          id: inv.id,
+          number: inv.number,
+          amount: inv.amount_paid,
+          currency: inv.currency,
+          status: inv.status,
+          date: inv.created,
+          pdfUrl: inv.invoice_pdf,
+          description: inv.lines.data[0]?.description || 'Subscription'
+        })),
+        upcomingInvoice: upcomingInvoice ? {
+          amount: upcomingInvoice.amount_due,
+          currency: upcomingInvoice.currency,
+          date: upcomingInvoice.next_payment_attempt,
+        } : null
+      };
+    } catch (error) {
+      console.error('Error fetching billing details:', error);
+      throw new HttpsError('internal', 'Failed to fetch billing details');
     }
   }
 );
