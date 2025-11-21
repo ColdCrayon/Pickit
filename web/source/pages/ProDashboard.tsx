@@ -22,10 +22,6 @@ import { useUserTickets } from "../hooks/useUserTickets";
 import { WatchlistGameItem } from "../components/watchlist/WatchlistGameItem";
 import { OddsComparisonPreview } from "../components/odds/OddsComparisonPreview";
 
-interface ProDashboardProps {
-  isSidebarOpen: boolean;
-}
-
 // Quick Stat Card Component
 const StatCard: React.FC<{
   icon: React.ReactNode;
@@ -64,7 +60,7 @@ const QuickLink: React.FC<{
   </Link>
 );
 
-const ProDashboard: React.FC<ProDashboardProps> = ({ isSidebarOpen }) => {
+const ProDashboard: React.FC = () => {
   const { user } = useAuth();
   const {
     watchlist,

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useUserPlan } from "../hooks";
+import { useUserPlan, useAuth } from "../hooks";
 import { AdminGuard, Navbar, SidebarNav } from "../components";
 import { ProGuard } from "../components/guards/ProGuard";
 
@@ -39,6 +39,7 @@ import MyTickets from "./MyTickets";
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { isPremium, isAdmin } = useUserPlan();
+  const { user } = useAuth();
 
   return (
     <div className="main-scroll min-h-screen bg-transparent text-white relative overflow-hidden overscroll-none">
@@ -48,6 +49,7 @@ function App() {
         isSidebarOpen={isSidebarOpen}
         setIsSidebarOpen={setIsSidebarOpen}
         userRole={{ isPremium, isAdmin }}
+        user={user}
       />
 
       {/* Sidebar */}
@@ -67,9 +69,9 @@ function App() {
             path="/"
             element={
               isPremium ? (
-                <ProDashboard isSidebarOpen={isSidebarOpen} />
+                <ProDashboard />
               ) : (
-                <Home isSidebarOpen={isSidebarOpen} />
+                <Home />
               )
             }
           />
@@ -79,7 +81,7 @@ function App() {
             path="/dashboard"
             element={
               <ProGuard>
-                <ProDashboard isSidebarOpen={isSidebarOpen} />
+                <ProDashboard />
               </ProGuard>
             }
           />

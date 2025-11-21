@@ -4,22 +4,16 @@ import { BarChart3, Users, Zap, Award, TrendingUp, Shield } from "lucide-react";
 import { useUserPlan } from "../hooks";
 import { Footer } from "../components";
 
-interface HomeProps {
-  isSidebarOpen: boolean;
-}
-
 /**
  * Home Page - Landing page for standard (non-premium) users
  * Shows hero section, features grid, and CTA
  */
-const Home: React.FC<HomeProps> = ({ isSidebarOpen }) => {
+const Home: React.FC = () => {
   const { isPremium } = useUserPlan();
 
   return (
     <main
-      className={`relative z-10 transition-all duration-300 ${
-        isSidebarOpen ? "ml-64" : ""
-      }`}
+      className="relative z-10 transition-all duration-300"
     >
       {/* Hero Section */}
       <section className="min-h-screen flex items-center justify-center px-6 text-center">

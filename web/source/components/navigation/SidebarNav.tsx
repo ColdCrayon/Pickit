@@ -22,7 +22,6 @@ import {
   Trophy,
   ChevronDown,
   ChevronRight,
-  Scale
 } from "lucide-react";
 import { useUserPlan } from "../../hooks";
 import { cn } from "../../lib/utils";
